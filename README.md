@@ -1,2 +1,2 @@
 # gladius-contracts
-See [./docs](./docs) for the Gladius Tokenomics and Documentation
+See [./docs](./docs/README.md) for the Gladius Economics and Documentation
