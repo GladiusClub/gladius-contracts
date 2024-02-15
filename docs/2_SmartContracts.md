@@ -1,7 +1,5 @@
 # Gladius Smart Contracts
 
-# Gladius Smart Contracts
-
 ## The Liquidity Pool: Gladius Coin Token Emitter
 This contract emits Gladius Coins at a rate of `v` for each unit of `EURC` received. It functions similarly to the [WETH Wrapped Contract](https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2#code).
 
