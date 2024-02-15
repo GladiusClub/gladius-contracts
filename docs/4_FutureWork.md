@@ -1,0 +1,4 @@
+# Future Work
+
+## Borrowable Assets
+In the future, Gladius Club plans to introduce a borrowable NFT standard, allowing students to borrow physical items associated with NFTs. These NFTs will represent tangible objects, such as training equipment, that can be borrowed from Sport Clubs. This feature will enable transparency and accountability, as both students and parents can track which items have been borrowed, whether they have been returned, and the duration of the borrowing period. By implementing this borrowable NFT standard, Gladius Club aims to enhance the borrowing experience for its users while promoting responsible usage of physical assets within the ecosystem.
