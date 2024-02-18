@@ -8,8 +8,11 @@ mod gladius_coin;
 mod storage_types;  
 
 use gladius_coin::{write_metadata};
-use gladius_coin::{has_administrator, write_administrator};
-use storage_types::GladiusDataKey;
+use gladius_coin::{read_administrator, has_administrator, write_administrator};
+use gladius_coin::{receive_balance};
+use soroban_token_sdk::TokenUtils;
+
+use storage_types::{GladiusDataKey, INSTANCE_BUMP_AMOUNT, INSTANCE_LIFETIME_THRESHOLD}; 
 
 
 pub fn read_pegged_token(e: &Env) -> Address {
@@ -34,6 +37,14 @@ pub fn write_ratio(e: &Env, id: &u32) {
 }
 
 
+fn check_nonnegative_amount(amount: i128) {
+    if amount < 0 {
+        panic!("negative amount is not allowed: {}", amount)
+    }
+}
+
+
+
 pub trait GladiusCoinEmitterTrait {
 
     fn initialize_gladius(e: Env,
@@ -43,6 +54,8 @@ pub trait GladiusCoinEmitterTrait {
         symbol: String, 
         pegged: Address,
         ratio: u32);
+
+    fn mint_gladius(e: Env, to: Address, amount: i128);
 
 
 }
@@ -79,5 +92,18 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
         write_pegged_token(&e, &pegged);
         write_ratio(&e, &ratio);
+    }
+
+    fn mint_gladius(e: Env, to: Address, amount: i128) {
+        check_nonnegative_amount(amount);
+        let admin = read_administrator(&e);
+        admin.require_auth();
+
+        e.storage()
+            .instance()
+            .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
+
+        receive_balance(&e, to.clone(), amount);
+        TokenUtils::new(&e).events().mint(admin, to, amount);
     }
 }

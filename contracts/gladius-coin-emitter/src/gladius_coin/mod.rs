@@ -9,4 +9,5 @@ mod test;
 
 pub use contract::TokenClient;
 pub use metadata::write_metadata;
-pub use admin::{has_administrator, write_administrator};
+pub use admin::{has_administrator, read_administrator, write_administrator};
+pub use balance::{receive_balance};
