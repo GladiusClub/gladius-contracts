@@ -23,9 +23,26 @@ pub fn write_pegged_token(e: &Env, id: &Address) {
 }
 
 
+pub fn read_ratio(e: &Env) -> u32 {
+    let key = GladiusDataKey::Ratio;
+    e.storage().instance().get(&key).unwrap()
+}
+
+pub fn write_ratio(e: &Env, id: &u32) {
+    let key = GladiusDataKey::Ratio;
+    e.storage().instance().set(&key, id);
+}
+
+
 pub trait GladiusCoinEmitterTrait {
 
-    fn initialize_gladius(e: Env, admin: Address, decimal: u32, name: String, symbol: String, pegged: Address);
+    fn initialize_gladius(e: Env,
+        admin: Address, 
+        decimal: u32, 
+        name: String, 
+        symbol: String, 
+        pegged: Address,
+        ratio: u32);
 
 
 }
@@ -36,7 +53,13 @@ struct GladiusCoinEmitter;
 #[contractimpl]
 impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
-    fn initialize_gladius(e: Env, admin: Address, decimal: u32, name: String, symbol: String, pegged: Address) {
+    fn initialize_gladius(e: Env,
+        admin: Address, 
+        decimal: u32, 
+        name: String, 
+        symbol: String, 
+        pegged: Address,
+        ratio: u32) {
         if has_administrator(&e) {
             panic!("already initialized")
         }
@@ -52,6 +75,9 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
                 name,
                 symbol,
             },
-        )
+        );
+
+        write_pegged_token(&e, &pegged);
+        write_ratio(&e, &ratio);
     }
 }
