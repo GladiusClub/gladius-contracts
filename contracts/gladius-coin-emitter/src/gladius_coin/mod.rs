@@ -7,4 +7,6 @@ mod metadata;
 mod storage_types;
 mod test;
 
-pub use crate::gladius_coin::contract::TokenClient;
+pub use contract::TokenClient;
+pub use metadata::write_metadata;
+pub use admin::{has_administrator, write_administrator};
