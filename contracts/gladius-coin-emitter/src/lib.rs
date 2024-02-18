@@ -44,6 +44,18 @@ fn check_nonnegative_amount(amount: i128) {
 }
 
 
+pub fn read_reserve(e: &Env) -> i128 {
+    e.storage().instance().
+get(&GladiusDataKey::Reserve).unwrap()
+}
+
+pub fn write_reserve(e: &Env, amount: i128) {
+    if amount < 0 {
+        panic!("put_reserve: amount cannot be negative")
+    }
+    e.storage().instance().
+set(&GladiusDataKey::Reserve, &amount)
+}
 
 pub trait GladiusCoinEmitterTrait {
 

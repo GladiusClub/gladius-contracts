@@ -12,5 +12,6 @@ pub(crate) const BALANCE_LIFETIME_THRESHOLD: u32 = BALANCE_BUMP_AMOUNT - DAY_IN_
 #[contracttype]
 pub enum GladiusDataKey {
     PeggedToken,
-    Ratio
+    Ratio,
+    Reserve
 }
