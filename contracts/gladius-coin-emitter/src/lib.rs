@@ -8,6 +8,7 @@ use soroban_token_sdk::metadata::TokenMetadata;
 
 mod gladius_coin;
 mod storage_types;  
+mod test;
 
 use gladius_coin::{write_metadata};
 use gladius_coin::{read_administrator, has_administrator, write_administrator};
@@ -63,15 +64,18 @@ pub trait GladiusCoinEmitterTrait {
 
     fn initialize_gladius(e: Env,
         admin: Address, 
-        decimal: u32, 
-        name: String, 
-        symbol: String, 
         pegged: Address,
         ratio: u32);
 
-    fn mint_gladius(e: Env, to: Address, amount: i128);
+    fn wrap_and_mint(e: Env, to: Address, amount: i128);
 
-    fn redeem(e: Env, from: Address, amount: i128);
+    fn unwrap_and_burn(e: Env, from: Address, amount: i128);
+
+    fn ratio(e: Env)  -> u32;
+
+    fn pegged(e: Env)  -> Address;
+
+    fn minter(e: Env)  -> Address;
 
 
 }
@@ -84,34 +88,37 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
     fn initialize_gladius(e: Env,
         admin: Address, 
-        decimal: u32, 
-        name: String, 
-        symbol: String, 
         pegged: Address,
         ratio: u32) {
-        if has_administrator(&e) {
-            panic!("already initialized")
-        }
-        write_administrator(&e, &admin);
-        if decimal > u8::MAX.into() {
-            panic!("Decimal must fit in a u8");
-        }
+            
+            let name = String::from_str(&e, "Gladius Coin");
+            let symbol = String::from_str(&e, "GLC");
+            let decimal = 7;
 
-        write_metadata(
-            &e,
-            TokenMetadata {
-                decimal,
-                name,
-                symbol,
-            },
-        );
+            if has_administrator(&e) {
+                panic!("already initialized")
+            }
+            write_administrator(&e, &admin);
+            if decimal > u8::MAX.into() {
+                panic!("Decimal must fit in a u8");
+            }
 
-        write_pegged_token(&e, &pegged);
-        write_ratio(&e, &ratio);
+            write_metadata(
+                &e,
+                TokenMetadata {
+                    decimal,
+                    name,
+                    symbol,
+                },
+            );
+
+            write_pegged_token(&e, &pegged);
+            write_ratio(&e, &ratio);
     }
 
     // Receives a pegged_amount of pegged_token and mints a ratio*pegged_amount units of gladius coins
-    fn mint_gladius(e: Env, to: Address, pegged_amount: i128) {
+    // Wraps a pegged_amount and mints
+    fn wrap_and_mint(e: Env, to: Address, pegged_amount: i128) {
         check_nonnegative_amount(pegged_amount);
         let admin = read_administrator(&e);
         admin.require_auth();
@@ -130,7 +137,7 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
         TokenUtils::new(&e).events().mint(admin, to, amount);
     }
 
-    fn redeem(e: Env, from: Address, pegged_amount: i128) {
+    fn unwrap_and_burn(e: Env, from: Address, pegged_amount: i128) {
         from.require_auth();
 
         check_nonnegative_amount(pegged_amount);
@@ -148,5 +155,17 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
         // Send back pegged_amount units of pegged token
         TokenClient::new(&e, &read_pegged_token(&e)).transfer(&e.current_contract_address(), &from, &pegged_amount);
+    }
+
+    fn ratio(e: Env) -> u32 {
+        read_ratio(&e)
+    }
+
+    fn pegged(e: Env) -> Address {
+        read_pegged_token(&e)
+    }
+
+    fn minter(e: Env) -> Address {
+        read_administrator(&e)
     }
 }
