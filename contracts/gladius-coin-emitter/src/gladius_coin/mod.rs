@@ -5,6 +5,8 @@ mod balance;
 mod contract;
 mod metadata;
 mod storage_types;
+mod total_supply;
+
 
 pub use contract::GladiusCoinTokenClient;
 pub use contract::GladiusCoinToken; 

@@ -7,6 +7,8 @@ use crate::gladius_coin::metadata::{read_decimal, read_name, read_symbol};
 #[cfg(test)]
 use crate::gladius_coin::storage_types::{AllowanceDataKey, AllowanceValue, DataKey};
 use crate::gladius_coin::storage_types::{INSTANCE_BUMP_AMOUNT, INSTANCE_LIFETIME_THRESHOLD};
+use crate::gladius_coin::total_supply::{read_total_supply, increase_total_supply, decrease_total_supply};
+
 use soroban_sdk::token::{self, Interface as _};
 use soroban_sdk::{contract, contractimpl, Address, Env, String};
 use soroban_token_sdk::TokenUtils;
@@ -33,6 +35,7 @@ impl GladiusCoinToken {
             .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
 
         receive_balance(&e, to.clone(), amount);
+        increase_total_supply(&e, amount);
         TokenUtils::new(&e).events().mint(admin, to, amount);
     }
 
@@ -44,8 +47,12 @@ impl GladiusCoinToken {
             .instance()
             .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
 
-        write_administrator(&e, &new_admin);
+        write_administrator(&e, &new_admin); 
         TokenUtils::new(&e).events().set_admin(admin, new_admin);
+    }
+
+    pub fn total_supply(e: Env) -> i128 {
+        read_total_supply(&e)
     }
 
     #[cfg(test)]
@@ -126,6 +133,7 @@ impl token::Interface for GladiusCoinToken {
             .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
 
         spend_balance(&e, from.clone(), amount);
+        decrease_total_supply(&e, amount);
         TokenUtils::new(&e).events().burn(from, amount);
     }
 
@@ -140,6 +148,7 @@ impl token::Interface for GladiusCoinToken {
 
         spend_allowance(&e, from.clone(), spender, amount);
         spend_balance(&e, from.clone(), amount);
+        decrease_total_supply(&e, amount);
         TokenUtils::new(&e).events().burn(from, amount)
     }
 
