@@ -61,6 +61,7 @@ impl<'a> GladiusCoinEmitterTest<'a> {
 
         pegged_token.initialize(&pegged_token_admin, &decimals, &name, &symbol);
         pegged_token.mint(&minter, &123_000_000_000_000_000_000);
+        pegged_token.mint(&user, &321_000_000_000_000_000_000);
 
         let contract = create_gladius_coin_emitter(
             &env,
@@ -80,3 +81,4 @@ impl<'a> GladiusCoinEmitterTest<'a> {
 }
            
 mod initialize;
+mod wrap;
