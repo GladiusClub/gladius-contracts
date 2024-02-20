@@ -7,8 +7,8 @@ pub enum GladiusCoinEmitterError {
     InitializeAlreadyInitialized = 101,
     NotInitialized = 102,
     InitializeDecimalMustFitU8 = 103,
-    WrapNegativesOutNotSupported = 104,
-    UnWrapNegativesOutNotSupported = 105,
+    WrapNegativesNotSupported = 104,
+    UnWrapNegativesNotSupported = 105,
 }
 
 

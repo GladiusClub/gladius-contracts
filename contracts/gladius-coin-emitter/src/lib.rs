@@ -42,12 +42,6 @@ pub fn write_ratio(e: &Env, id: &u32) {
 }
 
 
-fn check_nonnegative_amount(amount: i128) {
-    if amount < 0 {
-        panic!("negative amount is not allowed: {}", amount)
-    }
-}
-
 
 pub fn read_reserve(e: &Env) -> i128 {
     e.storage().instance().
@@ -69,9 +63,15 @@ pub trait GladiusCoinEmitterTrait {
         pegged: Address,
         ratio: u32) -> Result<(), GladiusCoinEmitterError>;
 
-    fn wrap_and_mint(e: Env, to: Address, amount: i128);
+    fn wrap_and_mint(
+        e: Env, 
+        to: Address, 
+        amount: i128) -> Result<(), GladiusCoinEmitterError>;
 
-    fn unwrap_and_burn(e: Env, from: Address, amount: i128);
+    fn unwrap_and_burn(
+        e: Env, 
+        from: Address, 
+        amount: i128) -> Result<(), GladiusCoinEmitterError>;
 
     fn ratio(e: Env)  -> u32;
 
@@ -100,6 +100,7 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
             if has_administrator(&e) {
                 return Err(GladiusCoinEmitterError::InitializeAlreadyInitialized);
             }
+
             write_administrator(&e, &admin);
             if decimal > u8::MAX.into() {
                 return Err(GladiusCoinEmitterError::InitializeDecimalMustFitU8);
@@ -122,8 +123,19 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
     // Receives a pegged_amount of pegged_token and mints a ratio*pegged_amount units of gladius coins
     // Wraps a pegged_amount and mints
-    fn wrap_and_mint(e: Env, to: Address, pegged_amount: i128) {
-        check_nonnegative_amount(pegged_amount);
+    fn wrap_and_mint(
+        e: Env,
+        to: Address,
+        pegged_amount: i128) -> Result<(), GladiusCoinEmitterError> {
+
+        if !has_administrator(&e) {
+            return Err(GladiusCoinEmitterError::NotInitialized);
+        }
+
+        if pegged_amount < 0 {
+            return Err(GladiusCoinEmitterError::WrapNegativesNotSupported);
+        }
+
         let admin = read_administrator(&e);
         admin.require_auth();
 
@@ -139,13 +151,25 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
         // Mint amount to user
         receive_balance(&e, to.clone(), amount);
         TokenUtils::new(&e).events().mint(admin, to, amount);
+
+        Ok(())
     }
 
-    fn unwrap_and_burn(e: Env, from: Address, pegged_amount: i128) {
+    fn unwrap_and_burn(
+        e: Env,
+        from: Address,
+        pegged_amount: i128) -> Result<(), GladiusCoinEmitterError> {
+        
+        if !has_administrator(&e) {
+            return Err(GladiusCoinEmitterError::NotInitialized);
+        }
+
+        if pegged_amount < 0 {
+            return Err(GladiusCoinEmitterError::UnWrapNegativesNotSupported);
+        }
+
         // TODO: Check that caller user is Sport Club
         from.require_auth();
-
-        check_nonnegative_amount(pegged_amount);
 
         e.storage()
             .instance()
@@ -160,6 +184,8 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
         // Send back pegged_amount units of pegged token
         TokenClient::new(&e, &read_pegged_token(&e)).transfer(&e.current_contract_address(), &from, &pegged_amount);
+
+        Ok(())
     }
 
     fn ratio(e: Env) -> u32 {
