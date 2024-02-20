@@ -138,6 +138,7 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
     }
 
     fn unwrap_and_burn(e: Env, from: Address, pegged_amount: i128) {
+        // TODO: Check that caller user is Sport Club
         from.require_auth();
 
         check_nonnegative_amount(pegged_amount);

@@ -82,3 +82,4 @@ impl<'a> GladiusCoinEmitterTest<'a> {
            
 mod initialize;
 mod wrap;
+mod unwrap;
