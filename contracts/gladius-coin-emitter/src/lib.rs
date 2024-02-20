@@ -154,25 +154,27 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
     fn unwrap_and_burn(
         e: Env,
         from: Address,
-        pegged_amount: i128) -> Result<(), GladiusCoinEmitterError> {
+        unwrap_amount: i128) -> Result<(), GladiusCoinEmitterError> {
         
         if !has_administrator(&e) {
             return Err(GladiusCoinEmitterError::NotInitialized);
         }
 
-        if pegged_amount < 0 {
+        if unwrap_amount < 0 { 
             return Err(GladiusCoinEmitterError::UnWrapNegativesNotSupported);
         }
 
         // TODO: Check that caller user is Sport Club
         from.require_auth();
 
-        // Send back pegged_amount units of pegged token
-        TokenClient::new(&e, &read_pegged_token(&e)).transfer(&e.current_contract_address(), &from, &pegged_amount);
+        // Send back unwrap_amount units of pegged token
+        TokenClient::new(&e, &read_pegged_token(&e)).transfer(&e.current_contract_address(), &from, &unwrap_amount);
 
-        // Amount to burn of Gladius Coins is ratio*pegged_amount
-        let amount = pegged_amount.checked_mul(read_ratio(&e) as i128).unwrap();
-        internal_burn(e.clone(), from, amount);
+        // Amount to burn of Gladius Coins is ratio*unwrap_amount
+        let burn_amount = unwrap_amount.checked_mul(read_ratio(&e) as i128).unwrap();
+        internal_burn(e.clone(), from.clone(), burn_amount.clone());
+
+        event::unwrap(&e, from, unwrap_amount, burn_amount);
 
         Ok(())
     }

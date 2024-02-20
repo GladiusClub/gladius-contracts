@@ -52,3 +52,26 @@ pub(crate) fn wrap(
     e.events().publish(("GladiusCoinEmitter", symbol_short!("wrap")), event);
 }
 
+
+// UNWRAP EVENT
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct UnwrapEvent {
+    pub from: Address,
+    pub unwrapped_amount: i128,
+    pub burned_amount: i128,
+}
+
+pub(crate) fn unwrap(
+    e: &Env, 
+    from: Address,
+    unwrapped_amount: i128,
+    burned_amount: i128) {
+    
+    let event: UnwrapEvent = UnwrapEvent {
+        from: from,
+        unwrapped_amount: unwrapped_amount,
+        burned_amount: burned_amount,
+    };
+    e.events().publish(("GladiusCoinEmitter", symbol_short!("unwrap")), event);
+}
