@@ -14,11 +14,11 @@ mod event;
 
 use gladius_coin::{write_metadata};
 use gladius_coin::{read_administrator, has_administrator, write_administrator};
-use gladius_coin::{receive_balance, spend_balance};
-use soroban_token_sdk::TokenUtils;
+use gladius_coin::{internal_mint, internal_burn};
 use error::GladiusCoinEmitterError;
 
-use storage_types::{GladiusDataKey, INSTANCE_BUMP_AMOUNT, INSTANCE_LIFETIME_THRESHOLD}; 
+
+use storage_types::{GladiusDataKey}; 
 
 
 pub fn read_pegged_token(e: &Env) -> Address {
@@ -138,19 +138,13 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
         let admin = read_administrator(&e);
         admin.require_auth();
-
-        e.storage()
-            .instance()
-            .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
-
+        // Amount to mint of Gladius Coins is ratio*pegged_amount
+        let amount = pegged_amount.checked_mul(read_ratio(&e) as i128).unwrap();
+        
         // Send peggued token from minter to this contract that will lock it
         TokenClient::new(&e, &read_pegged_token(&e)).transfer(&admin, &e.current_contract_address(), &pegged_amount);
 
-        // Amount to mint of Gladius Coins is ratio*pegged_amount
-        let amount = pegged_amount.checked_mul(read_ratio(&e) as i128).unwrap();
-        // Mint amount to user
-        receive_balance(&e, to.clone(), amount);
-        TokenUtils::new(&e).events().mint(admin, to, amount);
+        internal_mint(e.clone(), to, amount);
 
         Ok(())
     }
@@ -171,19 +165,12 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
         // TODO: Check that caller user is Sport Club
         from.require_auth();
 
-        e.storage()
-            .instance()
-            .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
-
-        // Amount to mint of Gladius Coins is ratio*pegged_amount
-        let amount = pegged_amount.checked_mul(read_ratio(&e) as i128).unwrap();
-
-        // Burn Gladius Coins of user
-        spend_balance(&e, from.clone(), amount);
-        TokenUtils::new(&e).events().burn(from.clone(), amount);
-
         // Send back pegged_amount units of pegged token
         TokenClient::new(&e, &read_pegged_token(&e)).transfer(&e.current_contract_address(), &from, &pegged_amount);
+
+        // Amount to burn of Gladius Coins is ratio*pegged_amount
+        let amount = pegged_amount.checked_mul(read_ratio(&e) as i128).unwrap();
+        internal_burn(e.clone(), from, amount);
 
         Ok(())
     }

@@ -2,7 +2,7 @@ use soroban_sdk::{String};
 use crate::test::{GladiusCoinEmitterTest}; 
 use crate::test::gladius_coin_emitter::GladiusCoinEmitterError;
 use crate::event::{InitializeEvent};
-use soroban_sdk::{testutils::{Ledger, Events}, vec, IntoVal, symbol_short};
+use soroban_sdk::{testutils::{Events}, vec, IntoVal, symbol_short};
 
 
 #[test]

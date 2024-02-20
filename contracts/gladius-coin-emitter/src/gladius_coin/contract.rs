@@ -19,6 +19,34 @@ fn check_nonnegative_amount(amount: i128) {
     }
 }
 
+
+pub fn internal_burn(e: Env, from: Address, amount: i128) {
+    check_nonnegative_amount(amount);
+ 
+    e.storage()
+    .instance()
+    .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
+    
+    spend_balance(&e, from.clone(), amount);
+    decrease_total_supply(&e, amount);
+
+    TokenUtils::new(&e).events().burn(from, amount);
+} 
+
+pub fn internal_mint(e: Env, to: Address, amount: i128) {
+    check_nonnegative_amount(amount);
+
+    e.storage()
+        .instance()
+        .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
+        
+    receive_balance(&e, to.clone(), amount);
+    increase_total_supply(&e, amount);
+
+    TokenUtils::new(&e).events().mint(e.current_contract_address(), to, amount);
+}
+
+
 #[contract]
 pub struct GladiusCoinToken;
 
@@ -125,16 +153,7 @@ impl token::Interface for GladiusCoinToken {
 
     fn burn(e: Env, from: Address, amount: i128) {
         from.require_auth();
-
-        check_nonnegative_amount(amount);
-
-        e.storage()
-            .instance()
-            .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
-
-        spend_balance(&e, from.clone(), amount);
-        decrease_total_supply(&e, amount);
-        TokenUtils::new(&e).events().burn(from, amount);
+        internal_burn(e, from, amount);
     }
 
     fn burn_from(e: Env, spender: Address, from: Address, amount: i128) {
