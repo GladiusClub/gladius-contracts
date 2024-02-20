@@ -116,7 +116,7 @@ fn wrap_correct_amounts() {
     assert_eq!(test.contract.balance(&test.minter), 0);
     assert_eq!(test.contract.balance(&test.user), 0);
     assert_eq!(test.contract.balance(&test.contract.address), 0);
-    // TODO: Test Total Supply
+    assert_eq!(test.contract.total_supply(), 0);
 
 
     test.contract.initialize(
@@ -138,7 +138,7 @@ fn wrap_correct_amounts() {
     assert_eq!(test.contract.balance(&test.minter), amount * (ratio as i128));
     assert_eq!(test.contract.balance(&test.user), 0);
     assert_eq!(test.contract.balance(&test.contract.address), 0);
-    // TODO: Test Total Supply
+    assert_eq!(test.contract.total_supply(), amount * (ratio as i128));
 
     // TODO: Test mint event
 
@@ -149,5 +149,6 @@ fn wrap_correct_amounts() {
     assert_eq!(test.contract.balance(&test.minter), amount * (ratio as i128) - transfer_amount);
     assert_eq!(test.contract.balance(&test.user), transfer_amount);
     assert_eq!(test.contract.balance(&test.contract.address), 0);
+    assert_eq!(test.contract.total_supply(), amount * (ratio as i128));
 
 }
