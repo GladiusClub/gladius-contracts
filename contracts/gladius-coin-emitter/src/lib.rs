@@ -9,11 +9,13 @@ use soroban_token_sdk::metadata::TokenMetadata;
 mod gladius_coin;
 mod storage_types;  
 mod test;
+mod error;
 
 use gladius_coin::{write_metadata};
 use gladius_coin::{read_administrator, has_administrator, write_administrator};
 use gladius_coin::{receive_balance, spend_balance};
 use soroban_token_sdk::TokenUtils;
+use error::GladiusCoinEmitterError;
 
 use storage_types::{GladiusDataKey, INSTANCE_BUMP_AMOUNT, INSTANCE_LIFETIME_THRESHOLD}; 
 
@@ -65,7 +67,7 @@ pub trait GladiusCoinEmitterTrait {
     fn initialize(e: Env,
         admin: Address, 
         pegged: Address,
-        ratio: u32);
+        ratio: u32) -> Result<(), GladiusCoinEmitterError>;
 
     fn wrap_and_mint(e: Env, to: Address, amount: i128);
 
@@ -89,18 +91,18 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
     fn initialize(e: Env,
         admin: Address, 
         pegged: Address,
-        ratio: u32) {
+        ratio: u32) -> Result<(), GladiusCoinEmitterError> {
             
             let name = String::from_str(&e, "Gladius Coin");
             let symbol = String::from_str(&e, "GLC");
             let decimal = 7;
 
             if has_administrator(&e) {
-                panic!("already initialized")
+                return Err(GladiusCoinEmitterError::InitializeAlreadyInitialized);
             }
             write_administrator(&e, &admin);
             if decimal > u8::MAX.into() {
-                panic!("Decimal must fit in a u8");
+                return Err(GladiusCoinEmitterError::InitializeDecimalMustFitU8);
             }
 
             write_metadata(
@@ -114,6 +116,8 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
             write_pegged_token(&e, &pegged);
             write_ratio(&e, &ratio);
+
+            Ok(())
     }
 
     // Receives a pegged_amount of pegged_token and mints a ratio*pegged_amount units of gladius coins
