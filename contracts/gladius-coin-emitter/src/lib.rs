@@ -10,6 +10,7 @@ mod gladius_coin;
 mod storage_types;  
 mod test;
 mod error;
+mod event;
 
 use gladius_coin::{write_metadata};
 use gladius_coin::{read_administrator, has_administrator, write_administrator};
@@ -114,6 +115,8 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
             write_pegged_token(&e, &pegged);
             write_ratio(&e, &ratio);
+
+            event::initialize(&e, admin, pegged, ratio);
 
             Ok(())
     }
