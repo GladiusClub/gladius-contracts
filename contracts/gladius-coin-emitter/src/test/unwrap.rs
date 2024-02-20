@@ -1,5 +1,7 @@
 extern crate std;
 use crate::test::{GladiusCoinEmitterTest}; 
+use crate::test::gladius_coin_emitter::GladiusCoinEmitterError;
+
 use soroban_sdk::{
     testutils::{MockAuth, MockAuthInvoke},
     IntoVal
@@ -7,7 +9,19 @@ use soroban_sdk::{
 
 
 #[test]
-#[should_panic] // TODO: Transform in error object
+fn unwrap_not_initialized() {
+    let test = GladiusCoinEmitterTest::setup();
+
+    let amount: i128 = 1000;
+    let res = test.contract.try_unwrap_and_burn(
+        &test.minter,
+        &amount,
+        );  
+    
+    assert_eq!(res, Err(Ok(GladiusCoinEmitterError::NotInitialized))); 
+}
+
+#[test]
 fn unwrap_negatives_not_allowed() {
     let test = GladiusCoinEmitterTest::setup();
 
@@ -20,10 +34,11 @@ fn unwrap_negatives_not_allowed() {
         );
 
     let amount: i128 = -1000;
-    test.contract.unwrap_and_burn(
+    let res = test.contract.try_unwrap_and_burn(
         &test.minter,
         &amount,
         );  
+    assert_eq!(res, Err(Ok(GladiusCoinEmitterError::UnWrapNegativesNotSupported))); 
 }
 
 #[test]
@@ -60,7 +75,7 @@ fn unwrap_user_with_coins_can_unwrap() {
 
 
 #[test]
-#[should_panic] // TODO: Transform in error object
+#[should_panic]
 fn unwrap_cannot_unwrap_for_others() {
     let test = GladiusCoinEmitterTest::setup();
 
