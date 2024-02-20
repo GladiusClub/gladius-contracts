@@ -53,20 +53,6 @@ pub struct GladiusCoinToken;
 #[contractimpl]
 impl GladiusCoinToken {
 
-    pub fn mint(e: Env, to: Address, amount: i128) {
-        check_nonnegative_amount(amount);
-        let admin = read_administrator(&e);
-        admin.require_auth();
-
-        e.storage()
-            .instance()
-            .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
-
-        receive_balance(&e, to.clone(), amount);
-        increase_total_supply(&e, amount);
-        TokenUtils::new(&e).events().mint(admin, to, amount);
-    }
-
     pub fn set_admin(e: Env, new_admin: Address) {
         let admin = read_administrator(&e);
         admin.require_auth();

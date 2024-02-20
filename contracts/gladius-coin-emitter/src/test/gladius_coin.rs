@@ -29,21 +29,11 @@ fn test() {
         &ratio
         );
 
-    test.contract.mint(&user1, &1000);
-    assert_eq!(
-        test.env.auths(),
-        std::vec![(
-            test.minter.clone(),
-            AuthorizedInvocation {
-                function: AuthorizedFunction::Contract((
-                    test.contract.address.clone(),
-                    symbol_short!("mint"),
-                    (&user1, 1000_i128).into_val(&test.env),
-                )),
-                sub_invocations: std::vec![]
-            }
-        )]
-    );
+    // Instead of mint 1000, we wrap 1 unit of pegged token and we send 1000 GLC to user
+    let amount: i128 = 1;
+    test.contract.wrap_and_mint(&test.minter, &amount);
+    test.contract.transfer(&test.minter, &user1, &1000);
+    
     assert_eq!(test.contract.balance(&user1), 1000);
     assert_eq!(test.contract.total_supply(), 1000);
 
@@ -157,7 +147,11 @@ fn test_burn() {
         &ratio
         );
 
-    test.contract.mint(&user1, &1000);
+    // Instead of mint 1000, we wrap 1 unit of pegged token and we send 1000 GLC to user
+    let amount: i128 = 1;
+    test.contract.wrap_and_mint(&test.minter, &amount);
+    test.contract.transfer(&test.minter, &user1, &1000);
+
     assert_eq!(test.contract.balance(&user1), 1000);
     assert_eq!(test.contract.total_supply(), 1000);
 
@@ -223,7 +217,11 @@ fn transfer_insufficient_balance() {
         &ratio
         );
 
-    test.contract.mint(&user1, &1000);
+    // Instead of mint 1000, we wrap 1 unit of pegged token and we send 1000 GLC to user
+    let amount: i128 = 1;
+    test.contract.wrap_and_mint(&test.minter, &amount);
+    test.contract.transfer(&test.minter, &user1, &1000);
+
     assert_eq!(test.contract.balance(&user1), 1000);
     assert_eq!(test.contract.total_supply(), 2000);
 
@@ -248,7 +246,11 @@ fn transfer_from_insufficient_allowance() {
         &ratio
         );
 
-    test.contract.mint(&user1, &1000);
+    // Instead of mint 1000, we wrap 1 unit of pegged token and we send 1000 GLC to user
+    let amount: i128 = 1;
+    test.contract.wrap_and_mint(&test.minter, &amount);
+    test.contract.transfer(&test.minter, &user1, &1000);
+
     assert_eq!(test.contract.balance(&user1), 1000);
     assert_eq!(test.contract.total_supply(), 1000);
 
