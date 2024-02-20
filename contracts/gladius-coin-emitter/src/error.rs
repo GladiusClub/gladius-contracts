@@ -6,9 +6,8 @@ use soroban_sdk::{self, contracterror};
 pub enum GladiusCoinEmitterError {
     InitializeAlreadyInitialized = 101,
     NotInitialized = 102,
-    InitializeDecimalMustFitU8 = 103,
-    WrapNegativesNotSupported = 104,
-    UnWrapNegativesNotSupported = 105,
+    WrapNegativesNotSupported = 103,
+    UnWrapNegativesNotSupported = 104,
 }
 
 

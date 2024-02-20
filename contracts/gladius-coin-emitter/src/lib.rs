@@ -102,10 +102,7 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
             }
 
             write_administrator(&e, &admin);
-            if decimal > u8::MAX.into() {
-                return Err(GladiusCoinEmitterError::InitializeDecimalMustFitU8);
-            }
-
+            
             write_metadata(
                 &e,
                 TokenMetadata {
