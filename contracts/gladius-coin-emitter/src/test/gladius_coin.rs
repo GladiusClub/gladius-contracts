@@ -45,6 +45,7 @@ fn test() {
         )]
     );
     assert_eq!(test.contract.balance(&user1), 1000);
+    assert_eq!(test.contract.total_supply(), 1000);
 
     test.contract.approve(&user2, &user3, &500, &200);
     assert_eq!(
@@ -158,6 +159,7 @@ fn test_burn() {
 
     test.contract.mint(&user1, &1000);
     assert_eq!(test.contract.balance(&user1), 1000);
+    assert_eq!(test.contract.total_supply(), 1000);
 
     test.contract.approve(&user1, &user2, &500, &200);
     assert_eq!(test.contract.allowance(&user1, &user2), 500);
@@ -178,6 +180,7 @@ fn test_burn() {
         )]
     );
 
+    assert_eq!(test.contract.total_supply(), 500);
     assert_eq!(test.contract.allowance(&user1, &user2), 0);
     assert_eq!(test.contract.balance(&user1), 500);
     assert_eq!(test.contract.balance(&user2), 0);
@@ -198,6 +201,7 @@ fn test_burn() {
         )]
     );
 
+    assert_eq!(test.contract.total_supply(), 0);
     assert_eq!(test.contract.balance(&user1), 0);
     assert_eq!(test.contract.balance(&user2), 0);
 }
@@ -221,6 +225,7 @@ fn transfer_insufficient_balance() {
 
     test.contract.mint(&user1, &1000);
     assert_eq!(test.contract.balance(&user1), 1000);
+    assert_eq!(test.contract.total_supply(), 2000);
 
     test.contract.transfer(&user1, &user2, &1001);
 }
@@ -245,6 +250,7 @@ fn transfer_from_insufficient_allowance() {
 
     test.contract.mint(&user1, &1000);
     assert_eq!(test.contract.balance(&user1), 1000);
+    assert_eq!(test.contract.total_supply(), 1000);
 
     test.contract.approve(&user1, &user3, &100, &200);
     assert_eq!(test.contract.allowance(&user1, &user3), 100);
