@@ -1,10 +1,7 @@
 #![no_std]
 use soroban_sdk::{contract, contractimpl, Address, Env, String}; 
 use soroban_sdk::token::Client as TokenClient;
-
 use soroban_token_sdk::metadata::TokenMetadata;
-
-
 
 mod gladius_coin;
 mod storage_types;  
@@ -16,10 +13,7 @@ use gladius_coin::{write_metadata};
 use gladius_coin::{read_administrator, has_administrator, write_administrator};
 use gladius_coin::{internal_mint, internal_burn};
 use error::GladiusCoinEmitterError;
-
-
 use storage_types::{GladiusDataKey}; 
-
 
 pub fn read_pegged_token(e: &Env) -> Address {
     let key = GladiusDataKey::PeggedToken;
@@ -31,7 +25,6 @@ pub fn write_pegged_token(e: &Env, id: &Address) {
     e.storage().instance().set(&key, id);
 }
 
-
 pub fn read_ratio(e: &Env) -> u32 {
     let key = GladiusDataKey::Ratio;
     e.storage().instance().get(&key).unwrap()
@@ -40,21 +33,6 @@ pub fn read_ratio(e: &Env) -> u32 {
 pub fn write_ratio(e: &Env, id: &u32) {
     let key = GladiusDataKey::Ratio;
     e.storage().instance().set(&key, id);
-}
-
-
-
-pub fn read_reserve(e: &Env) -> i128 {
-    e.storage().instance().
-get(&GladiusDataKey::Reserve).unwrap()
-}
-
-pub fn write_reserve(e: &Env, amount: i128) {
-    if amount < 0 {
-        panic!("put_reserve: amount cannot be negative")
-    }
-    e.storage().instance().
-set(&GladiusDataKey::Reserve, &amount)
 }
 
 pub trait GladiusCoinEmitterTrait {
@@ -80,7 +58,6 @@ pub trait GladiusCoinEmitterTrait {
 
     fn minter(e: Env)  -> Address;
 
-
 }
 
 #[contract]
@@ -94,32 +71,29 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
         pegged: Address,
         ratio: u32) -> Result<(), GladiusCoinEmitterError> {
             
-            let name = String::from_str(&e, "Gladius Coin");
-            let symbol = String::from_str(&e, "GLC");
-            let decimal = 7;
+        let name = String::from_str(&e, "Gladius Coin");
+        let symbol = String::from_str(&e, "GLC");
+        let decimal = 7;
 
-            if has_administrator(&e) {
-                return Err(GladiusCoinEmitterError::InitializeAlreadyInitialized);
-            }
+        if has_administrator(&e) {
+            return Err(GladiusCoinEmitterError::InitializeAlreadyInitialized);
+        }
 
-            write_administrator(&e, &admin);
-            
-            write_metadata(
-                &e,
-                TokenMetadata {
-                    decimal,
-                    name,
-                    symbol,
-                },
-            );
+        write_administrator(&e, &admin);
+        write_metadata(
+            &e,
+            TokenMetadata {
+                decimal,
+                name,
+                symbol,
+            },
+        );
+        write_pegged_token(&e, &pegged);
+        write_ratio(&e, &ratio);
 
-            write_pegged_token(&e, &pegged);
-            write_ratio(&e, &ratio);
-
-            event::initialize(&e, admin, pegged, ratio);
-
-            Ok(())
-    }
+        event::initialize(&e, admin, pegged, ratio);
+        Ok(())
+}
 
     // Receives a pegged_amount of pegged_token and mints a ratio*pegged_amount units of gladius coins
     // Wraps a pegged_amount and mints
@@ -138,16 +112,14 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
         let admin = read_administrator(&e);
         admin.require_auth();
-        // Amount to mint of Gladius Coins is ratio*wrap_amount
-        let mint_amount = wrap_amount.checked_mul(read_ratio(&e) as i128).unwrap();
-        
         // Send peggued token from minter to this contract that will lock it
         TokenClient::new(&e, &read_pegged_token(&e)).transfer(&admin, &e.current_contract_address(), &wrap_amount);
-
+        
+        // Amount to mint of Gladius Coins is ratio*wrap_amount
+        let mint_amount = wrap_amount.checked_mul(read_ratio(&e) as i128).unwrap();
         internal_mint(e.clone(), to.clone(), mint_amount.clone());
 
         event::wrap(&e, admin, wrap_amount, mint_amount, to);
-
         Ok(())
     }
 
@@ -175,7 +147,6 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
         internal_burn(e.clone(), from.clone(), burn_amount.clone());
 
         event::unwrap(&e, from, unwrap_amount, burn_amount);
-
         Ok(())
     }
 
