@@ -28,7 +28,6 @@ fn initialize_twice() {
     let test = GladiusCoinEmitterTest::setup();
 
     let ratio: u32 = 1000;
-    let decimals: u32 = 7;
 
     test.contract.initialize_gladius(
         &test.minter,

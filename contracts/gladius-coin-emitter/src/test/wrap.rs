@@ -1,7 +1,6 @@
 extern crate std;
 use crate::test::{GladiusCoinEmitterTest}; 
 use soroban_sdk::{
-    symbol_short,
     testutils::{MockAuth, MockAuthInvoke},
     IntoVal
 };
@@ -13,7 +12,6 @@ fn wrap_negatives_not_allowed() {
     let test = GladiusCoinEmitterTest::setup();
 
     let ratio: u32 = 1000;
-    let decimals: u32 = 7;
 
     test.contract.initialize_gladius(
         &test.minter,
@@ -33,7 +31,6 @@ fn wrap_minter_can_wrap() {
     let test = GladiusCoinEmitterTest::setup();
 
     let ratio: u32 = 1000;
-    let decimals: u32 = 7;
 
     test.contract.initialize_gladius(
         &test.minter,
@@ -72,7 +69,6 @@ fn wrap_user_cannot_wrap() {
     let test = GladiusCoinEmitterTest::setup();
 
     let ratio: u32 = 1000;
-    let decimals: u32 = 7;
 
     test.contract.initialize_gladius(
         &test.minter,
@@ -110,7 +106,6 @@ fn wrap_correct_amounts() {
     let test = GladiusCoinEmitterTest::setup();
 
     let ratio: u32 = 1000;
-    let decimals: u32 = 7;
     let minter_original_pegged_token_balance = 123_000_000_000_000_000_000;
     let user_original_pegged_token_balance = 321_000_000_000_000_000_000;
 
