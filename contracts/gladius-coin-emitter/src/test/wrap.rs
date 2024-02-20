@@ -1,13 +1,16 @@
 extern crate std;
-use crate::test::{GladiusCoinEmitterTest}; 
 use soroban_sdk::{
     testutils::{MockAuth, MockAuthInvoke},
-    IntoVal
 };
+use soroban_sdk::{testutils::{Events}, vec, IntoVal, symbol_short};
+
+use crate::test::{GladiusCoinEmitterTest}; 
+use crate::event::{WrapEvent};
+
 
 
 #[test]
-#[should_panic]
+#[should_panic] 
 fn wrap_negatives_not_allowed() {
     let test = GladiusCoinEmitterTest::setup();
 
@@ -128,6 +131,29 @@ fn wrap_correct_amounts() {
     let amount: i128 = 87654321;
 
     test.contract.wrap_and_mint(&test.minter, &amount);
+
+
+    let wrap_event = test.env.events().all().last().unwrap();
+
+    let expected_wrap_event: WrapEvent = WrapEvent {
+        minter: test.minter.clone(),
+        wrapped_amount: amount,
+        minted_amount:  amount * (ratio as i128),
+        to: test.minter.clone()
+    };
+
+    assert_eq!(
+        vec![&test.env, wrap_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusCoinEmitter", symbol_short!("wrap")).into_val(&test.env),
+                (expected_wrap_event).into_val(&test.env)
+            ),
+        ]
+    );
+    
 
     // New pegged token balances
     assert_eq!(test.pegged_token.balance(&test.minter), minter_original_pegged_token_balance - amount);

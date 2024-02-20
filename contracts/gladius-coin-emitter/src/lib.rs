@@ -126,25 +126,27 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
     fn wrap_and_mint(
         e: Env,
         to: Address,
-        pegged_amount: i128) -> Result<(), GladiusCoinEmitterError> {
+        wrap_amount: i128) -> Result<(), GladiusCoinEmitterError> {
 
         if !has_administrator(&e) {
             return Err(GladiusCoinEmitterError::NotInitialized);
         }
 
-        if pegged_amount < 0 {
+        if wrap_amount < 0 {
             return Err(GladiusCoinEmitterError::WrapNegativesNotSupported);
         }
 
         let admin = read_administrator(&e);
         admin.require_auth();
-        // Amount to mint of Gladius Coins is ratio*pegged_amount
-        let amount = pegged_amount.checked_mul(read_ratio(&e) as i128).unwrap();
+        // Amount to mint of Gladius Coins is ratio*wrap_amount
+        let mint_amount = wrap_amount.checked_mul(read_ratio(&e) as i128).unwrap();
         
         // Send peggued token from minter to this contract that will lock it
-        TokenClient::new(&e, &read_pegged_token(&e)).transfer(&admin, &e.current_contract_address(), &pegged_amount);
+        TokenClient::new(&e, &read_pegged_token(&e)).transfer(&admin, &e.current_contract_address(), &wrap_amount);
 
-        internal_mint(e.clone(), to, amount);
+        internal_mint(e.clone(), to.clone(), mint_amount.clone());
+
+        event::wrap(&e, admin, wrap_amount, mint_amount, to);
 
         Ok(())
     }
