@@ -1,5 +1,6 @@
 #![cfg(test)]
 extern crate std;
+
 use soroban_sdk::{
     testutils::{Address as _},
     Address, 
@@ -82,3 +83,4 @@ impl<'a> GladiusCoinEmitterTest<'a> {
 mod initialize;
 mod wrap;
 mod unwrap;
+mod gladius_coin;
