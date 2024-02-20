@@ -13,7 +13,7 @@ fn wrap_negatives_not_allowed() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -32,7 +32,7 @@ fn wrap_minter_can_wrap() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -70,7 +70,7 @@ fn wrap_user_cannot_wrap() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -119,7 +119,7 @@ fn wrap_correct_amounts() {
     // TODO: Test Total Supply
 
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio

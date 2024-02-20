@@ -23,7 +23,7 @@ fn test() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -150,7 +150,7 @@ fn test_burn() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -213,7 +213,7 @@ fn transfer_insufficient_balance() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -237,7 +237,7 @@ fn transfer_from_insufficient_allowance() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -256,31 +256,20 @@ fn transfer_from_insufficient_allowance() {
 #[should_panic]
 fn initialize_already_initialized() {
     let test = GladiusCoinEmitterTest::setup();
-    let admin = Address::generate(&test.env);
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
         );
 
-    test.contract.initialize(&admin, &10, &"name".into_val(&test.env), &"symbol".into_val(&test.env));
-    test.contract.initialize(&admin, &10, &"name".into_val(&test.env), &"symbol".into_val(&test.env));
-}
-
-#[test]
-#[should_panic]
-fn decimal_is_over_max() {
-    let test = GladiusCoinEmitterTest::setup();
-    let admin = Address::generate(&test.env);
     test.contract.initialize(
-        &admin,
-        &(u32::from(u8::MAX) + 1),
-        &"name".into_val(&test.env),
-        &"symbol".into_val(&test.env),
-    );
+        &test.minter,
+        &test.pegged_token.address,
+        &ratio
+        );
 }
 
 #[test]

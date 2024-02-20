@@ -62,7 +62,7 @@ set(&GladiusDataKey::Reserve, &amount)
 
 pub trait GladiusCoinEmitterTrait {
 
-    fn initialize_gladius(e: Env,
+    fn initialize(e: Env,
         admin: Address, 
         pegged: Address,
         ratio: u32);
@@ -86,7 +86,7 @@ struct GladiusCoinEmitter;
 #[contractimpl]
 impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
 
-    fn initialize_gladius(e: Env,
+    fn initialize(e: Env,
         admin: Address, 
         pegged: Address,
         ratio: u32) {

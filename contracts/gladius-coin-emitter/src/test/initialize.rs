@@ -8,7 +8,7 @@ fn initialize_basic_info() {
     let ratio: u32 = 1000;
     let decimals: u32 = 7;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -29,13 +29,13 @@ fn initialize_twice() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
         );
     
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio

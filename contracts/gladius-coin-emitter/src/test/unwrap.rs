@@ -13,7 +13,7 @@ fn unwrap_negatives_not_allowed() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -32,7 +32,7 @@ fn unwrap_user_with_coins_can_unwrap() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -66,7 +66,7 @@ fn unwrap_cannot_unwrap_for_others() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -100,7 +100,7 @@ fn unwrap_insufficient_coin_balance() {
 
     let ratio: u32 = 1000;
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
@@ -134,7 +134,7 @@ fn unwrap_correct_amounts() {
     // TODO: Test Total Supply
 
 
-    test.contract.initialize_gladius(
+    test.contract.initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio

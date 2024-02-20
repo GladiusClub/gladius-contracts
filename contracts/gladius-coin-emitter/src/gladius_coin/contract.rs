@@ -1,15 +1,14 @@
 //! This contract demonstrates a sample implementation of the Soroban token
 //! interface.
-use crate::gladius_coin::admin::{has_administrator, read_administrator, write_administrator};
+use crate::gladius_coin::admin::{read_administrator, write_administrator};
 use crate::gladius_coin::allowance::{read_allowance, spend_allowance, write_allowance};
 use crate::gladius_coin::balance::{read_balance, receive_balance, spend_balance};
-use crate::gladius_coin::metadata::{read_decimal, read_name, read_symbol, write_metadata};
+use crate::gladius_coin::metadata::{read_decimal, read_name, read_symbol};
 #[cfg(test)]
 use crate::gladius_coin::storage_types::{AllowanceDataKey, AllowanceValue, DataKey};
 use crate::gladius_coin::storage_types::{INSTANCE_BUMP_AMOUNT, INSTANCE_LIFETIME_THRESHOLD};
 use soroban_sdk::token::{self, Interface as _};
 use soroban_sdk::{contract, contractimpl, Address, Env, String};
-use soroban_token_sdk::metadata::TokenMetadata;
 use soroban_token_sdk::TokenUtils;
 
 fn check_nonnegative_amount(amount: i128) {
@@ -23,24 +22,6 @@ pub struct GladiusCoinToken;
 
 #[contractimpl]
 impl GladiusCoinToken {
-    pub fn initialize(e: Env, admin: Address, decimal: u32, name: String, symbol: String) {
-        if has_administrator(&e) {
-            panic!("already initialized")
-        }
-        write_administrator(&e, &admin);
-        if decimal > u8::MAX.into() {
-            panic!("Decimal must fit in a u8");
-        }
-
-        write_metadata(
-            &e,
-            TokenMetadata {
-                decimal,
-                name,
-                symbol,
-            },
-        )
-    }
 
     pub fn mint(e: Env, to: Address, amount: i128) {
         check_nonnegative_amount(amount);
