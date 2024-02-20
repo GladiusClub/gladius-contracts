@@ -1,5 +1,7 @@
+extern crate std;
 use crate::test::{GladiusCoinEmitterTest}; 
 use soroban_sdk::{
+    symbol_short,
     testutils::{MockAuth, MockAuthInvoke},
     IntoVal
 };
@@ -100,4 +102,57 @@ fn wrap_user_cannot_wrap() {
         }
     ])
     .wrap_and_mint(&test.user, &amount);
+}
+
+
+#[test]
+fn wrap_correct_amounts() {
+    let test = GladiusCoinEmitterTest::setup();
+
+    let ratio: u32 = 1000;
+    let decimals: u32 = 7;
+    let minter_original_pegged_token_balance = 123_000_000_000_000_000_000;
+    let user_original_pegged_token_balance = 321_000_000_000_000_000_000;
+
+    assert_eq!(test.pegged_token.balance(&test.minter), minter_original_pegged_token_balance);
+    assert_eq!(test.pegged_token.balance(&test.user), user_original_pegged_token_balance);
+    assert_eq!(test.pegged_token.balance(&test.contract.address), 0);
+
+    assert_eq!(test.contract.balance(&test.minter), 0);
+    assert_eq!(test.contract.balance(&test.user), 0);
+    assert_eq!(test.contract.balance(&test.contract.address), 0);
+    // TODO: Test Total Supply
+
+
+    test.contract.initialize_gladius(
+        &test.minter,
+        &test.pegged_token.address,
+        &ratio
+        );
+
+    let amount: i128 = 87654321;
+
+    test.contract.wrap_and_mint(&test.minter, &amount);
+
+    // New pegged token balances
+    assert_eq!(test.pegged_token.balance(&test.minter), minter_original_pegged_token_balance - amount);
+    assert_eq!(test.pegged_token.balance(&test.user), user_original_pegged_token_balance);
+    assert_eq!(test.pegged_token.balance(&test.contract.address), amount);
+
+    // New Gladius Coin token balances
+    assert_eq!(test.contract.balance(&test.minter), amount * (ratio as i128));
+    assert_eq!(test.contract.balance(&test.user), 0);
+    assert_eq!(test.contract.balance(&test.contract.address), 0);
+    // TODO: Test Total Supply
+
+    // TODO: Test mint event
+
+    // Minted Gladius Coin tokens can be sent to any user
+    let transfer_amount = 987;
+    test.contract.transfer(&test.minter, &test.user, &transfer_amount);
+
+    assert_eq!(test.contract.balance(&test.minter), amount * (ratio as i128) - transfer_amount);
+    assert_eq!(test.contract.balance(&test.user), transfer_amount);
+    assert_eq!(test.contract.balance(&test.contract.address), 0);
+
 }
