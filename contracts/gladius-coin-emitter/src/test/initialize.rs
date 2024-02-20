@@ -1,5 +1,7 @@
-use crate::test::{GladiusCoinEmitterTest}; 
 use soroban_sdk::{String};
+use crate::test::{GladiusCoinEmitterTest}; 
+use crate::test::gladius_coin_emitter::GladiusCoinEmitterError;
+
 
 #[test]
 fn initialize_basic_info() {
@@ -23,7 +25,6 @@ fn initialize_basic_info() {
 }
 
 #[test]
-#[should_panic]
 fn initialize_twice() {
     let test = GladiusCoinEmitterTest::setup();
 
@@ -35,11 +36,12 @@ fn initialize_twice() {
         &ratio
         );
     
-    test.contract.initialize(
+    let res = test.contract.try_initialize(
         &test.minter,
         &test.pegged_token.address,
         &ratio
         );
+    assert_eq!(res, Err(Ok(GladiusCoinEmitterError::InitializeAlreadyInitialized))); 
 }
 
 
