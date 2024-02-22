@@ -1,7 +1,7 @@
 #!/bin/bash
 
-previewHash=$(jq -r '.previewHash' configs.json)
-quickstartHash=$(jq -r '.quickstartHash' configs.json)
+previewHash=$(jq -r '.previewHash' config.json)
+quickstartHash=$(jq -r '.quickstartHash' config.json)
 
 previewVersion=$(echo "$previewHash" | cut -d'@' -f1)
 echo $previewVersion
