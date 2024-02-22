@@ -27,7 +27,7 @@ make build
 
 
 # Define the paths to the compiled WASM files
-GLADIUS_COIN_EMITTER_WASM="/workspace/contracts/gladius-coin-emitter/target/wasm32-unknown-unknown/release/gladius_coin_emitter.optimized.wasm"
+GLADIUS_COIN_EMITTER_WASM="/workspace/contracts/gladius-coin-emitter/target/wasm32-unknown-unknown/release/gladius_coin_emitter.wasm"
 TOKEN_WASM="/workspace/contracts/token/target/wasm32-unknown-unknown/release/soroban_token_contract.wasm"
 
 echo -e "${RED}===${NC}"

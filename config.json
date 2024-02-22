@@ -1,6 +1,6 @@
 {
-    "previewHash": "20.2.0@sha256:7315e09645c1a4f5460790e90a72c99752d879e286581e1f46191229c735d6e7",
-    "quickstartHash": "soroban-dev@sha256:64b2d14b8a531c534560e287768846f538b2f063fc776aa9ca016c788e86c782",
+    "previewHash": "20.3.0@sha256:5b01cdff8963335bbbe9c56f816895b1852954394eca10d876fdc6bfd2708f3a",
+    "quickstartHash": "latest@sha256:8d6f6520ad3842042bfe4e271f8b2324ec2f128564487abedd3876cea83af4f1",
     "networkConfig": [
         {
             "network": "standalone",
