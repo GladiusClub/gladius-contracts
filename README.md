@@ -8,18 +8,38 @@ Welcome to the Gladius Contracts repository! This guide provides comprehensive i
 
 To begin, copy the provided example environment file to create your own `.env` file where you can set your secret keys and other environment variables:
 
+1.- 
 ```sh
 cp .env.example .env
 ```
-
+2.- 
 Fill in the `.env` file with your desired secret keys as needed.
-you can run the following inside the docker container to generate secret keys and find them later on in `.soroban/identity` directory
+
+### Open Doker Containers:
+
+To correctly work with the contracts, you'll need to start the following scripts in separate terminals.
+
+- **Terminal 1:** Launch the quickstart script to set up the environment for contract interaction:
+
+```sh
+bash scripts/quickstart.sh standalone
+```
+
+- **Terminal 2:** Run the main script to start the `soroban-preview` container with the corret `soroban-cli` version:
+
+```sh
+bash scripts/run.sh
+```
+
+### Set up your addresses
+
+Inside the you can run the following inside the `soroban-preview` docker container to generate secret keys and find them later on in `.soroban/identity` directory
 
 ```bash
 bash scripts/setup.sh <network>
 ```
 
-to show a scret of an account and the list of name you can use you can run
+To show a secret of an account and the list of name you can use you can run
 
 ```bash
 # this will show the list of available accounts
@@ -30,27 +50,11 @@ soroban config identity show <name of account>
 
 ## Running the Contracts
 
-To work with the contracts, you'll need to start the necessary scripts in separate terminals.
-
-- **Terminal 1:** Launch the quickstart script to set up the environment for contract interaction:
-
-```sh
-bash scripts/quickstart.sh standalone
-```
-
-- **Terminal 2:** Run the main script to start the contract processes:
-
-```sh
-bash scripts/run.sh
-```
-
-### Testing and Deployment
-
-#### Testing Contracts
+### Testing and Building Contracts
 
 Before deploying, ensure the contracts work as expected:
 
-1. Navigate to the contracts directory and run the tests:
+Navigate to the contracts directory and run the tests:
 
 ```sh
 cd contracts
@@ -59,7 +63,7 @@ make test
 
 #### Deploying Contracts
 
-Deployment can be performed either in a standalone mode or on a testnet. Follow these steps to deploy your contracts:
+Deployment can be performed either in any of the **networks** configured in the `config.json` file. These are `standalone`, `futurenet` or `testnet`- Follow these steps to deploy your contracts:
 
 1. **Build the Contracts:**
 
@@ -89,7 +93,7 @@ cd /workspace
 yarn setup <network>
 ```
 
-This command generates a `.soroban/deployment.json` file. To make this deployment public within the repository:
+This command generates a `.soroban/deployments.json` file. To make this deployment public within the repository:
 
 ```sh
 mkdir -p public
