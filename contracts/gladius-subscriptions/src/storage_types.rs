@@ -1,4 +1,5 @@
-use soroban_sdk::{contracttype, Address};
+use soroban_sdk::{contracttype, Address, Env};
+use crate::models::{Course};
 
 pub(crate) const DAY_IN_LEDGERS: u32 = 17280;
 pub(crate) const INSTANCE_BUMP_AMOUNT: u32 = 7 * DAY_IN_LEDGERS;
@@ -16,24 +17,36 @@ pub enum DataKey {
     IsSportClub(Address),
     IsStudent(Address),
     IsParent(Address),
+    TotalCourses,
+    Course(u32)
 }
 
-// pub fn read_pegged_token(e: &Env) -> Address {
-//     let key = GladiusDataKey::PeggedToken;
-//     e.storage().instance().get(&key).unwrap()
-// }
 
-// pub fn write_pegged_token(e: &Env, id: &Address) {
-//     let key = GladiusDataKey::PeggedToken;
-//     e.storage().instance().set(&key, id);
-// }
+// TOTAL COURSES - INSTANCE STORAGE
+pub fn get_total_courses(e: &Env) -> u32 {
+    e.storage().instance().get(&DataKey::TotalCourses).unwrap()
+}
+pub fn set_total_courses(e: &Env, new_total_courses: u32) {
+    e.storage().instance().set(&DataKey::TotalCourses, &new_total_courses);
+}
 
-// pub fn read_ratio(e: &Env) -> u32 {
-//     let key = GladiusDataKey::Ratio;
-//     e.storage().instance().get(&key).unwrap()
-// }
-
-// pub fn write_ratio(e: &Env, id: &u32) {
-//     let key = GladiusDataKey::Ratio;
-//     e.storage().instance().set(&key, id);
-// }
+// COURSES - Each Course in an independent persistent storage
+pub fn set_course(e: &Env, course: Course, course_index: u32) {
+    e.storage().persistent().set(&DataKey::Course(course_index), &course);
+}
+pub fn get_course(e: &Env, course_index: u32) -> Course {
+    e.storage().persistent().get(&DataKey::Course(course_index)).unwrap()
+}
+pub fn exist_course(e: &Env, course_index: u32) -> bool {
+    e.storage().persistent().has(&DataKey::Course(course_index))
+}
+pub fn push_course(e: &Env, course: Course) {
+    let next_index = get_total_courses(&e);
+    set_course(&e, course, next_index.clone());
+    set_total_courses(&e, next_index.checked_add(1).unwrap());
+}
+pub fn desactivate_course(e: &Env, course_index: u32) {
+    let mut course = get_course(&e, course_index.clone());
+    course.active = false;
+    set_course(&e, course, course_index);
+}

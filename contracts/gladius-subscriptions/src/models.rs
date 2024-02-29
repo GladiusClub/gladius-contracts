@@ -26,10 +26,10 @@ pub struct Student {
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Class {
-    pub index: i32,
-    pub club: i32,
+pub struct Course {
+    pub club: Address,
     pub price: i128,
     pub k: i128,
-    pub subscriptions: Vec<Student>
+    pub subscriptions: Vec<Student>,
+    pub active: bool
 }
