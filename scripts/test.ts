@@ -1,4 +1,3 @@
-import { Address, SorobanRpc, nativeToScVal } from 'stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
 
 import { getTokenBalance } from '../utils/contract.js';
