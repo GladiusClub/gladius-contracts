@@ -12,4 +12,28 @@ pub(crate) const BALANCE_LIFETIME_THRESHOLD: u32 = BALANCE_BUMP_AMOUNT - DAY_IN_
 #[contracttype]
 pub enum DataKey {
     Admin,
+    SportClubs,
+    IsSportClub(Address),
+    IsStudent(Address),
+    IsParent(Address),
 }
+
+// pub fn read_pegged_token(e: &Env) -> Address {
+//     let key = GladiusDataKey::PeggedToken;
+//     e.storage().instance().get(&key).unwrap()
+// }
+
+// pub fn write_pegged_token(e: &Env, id: &Address) {
+//     let key = GladiusDataKey::PeggedToken;
+//     e.storage().instance().set(&key, id);
+// }
+
+// pub fn read_ratio(e: &Env) -> u32 {
+//     let key = GladiusDataKey::Ratio;
+//     e.storage().instance().get(&key).unwrap()
+// }
+
+// pub fn write_ratio(e: &Env, id: &u32) {
+//     let key = GladiusDataKey::Ratio;
+//     e.storage().instance().set(&key, id);
+// }
