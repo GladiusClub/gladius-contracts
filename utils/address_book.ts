@@ -42,7 +42,50 @@ export class AddressBook {
       networks = JSON.parse(fileContent);
     } else {
       // If the file doesn't exist, create a new empty array for networks
-      networks = [];
+      networks = [
+        {
+          network: 'standalone',
+          ids: {
+            pegged_token_admin_public: '',
+            gladius_admin_public: '',
+            token_id: '',
+            gladius_emitter_id: '',
+          },
+          hashes: {
+            gladius_coin_emitter: '',
+            gladius_subscriptions: '',
+            token: '',
+          },
+        },
+        {
+          network: 'testnet',
+          ids: {
+            pegged_token_admin_public: '',
+            gladius_admin_public: '',
+            token_id: '',
+            gladius_emitter_id: '',
+          },
+          hashes: {
+            gladius_coin_emitter: '',
+            gladius_subscriptions: '',
+            token: '',
+          },
+        },
+        {
+          network: 'mainnet',
+          ids: {
+            pegged_token_admin_public: '',
+            gladius_admin_public: '',
+            token_id: '',
+            gladius_emitter_id: '',
+          },
+          hashes: {
+            gladius_coin_emitter: '',
+            gladius_subscriptions: '',
+            token: '',
+          },
+        },
+      ];
     }
 
     return new AddressBook(networks, fileName);
