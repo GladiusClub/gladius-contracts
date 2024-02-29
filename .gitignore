@@ -7,4 +7,4 @@ contracts/*/test_snapshots
 .soroban
 node_modules/
 .env
-
+dist
