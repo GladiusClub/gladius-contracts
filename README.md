@@ -13,6 +13,20 @@ cp .env.example .env
 ```
 
 Fill in the `.env` file with your desired secret keys as needed.
+you can run the following inside the docker container to generate secret keys and find them later on in `.soroban/identity` directory
+
+```bash
+bash scripts/setup.sh <network>
+```
+
+to show a scret of an account and the list of name you can use you can run
+
+```bash
+# this will show the list of available accounts
+soroban config identity ls
+# this will show the secret key of an account
+soroban config identity show <name of account>
+```
 
 ## Running the Contracts
 
