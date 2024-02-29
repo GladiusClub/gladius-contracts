@@ -8,3 +8,9 @@ contracts/*/test_snapshots
 node_modules/
 .env
 
+secrets.txt
+gladius-contracts.code-workspace
+public/deployments copy.json
+public/deployments copy 2.json
+scripts/mint copy.sh
+test.py
