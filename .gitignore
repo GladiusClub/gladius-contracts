@@ -7,7 +7,7 @@ contracts/*/test_snapshots
 .soroban
 node_modules/
 .env
-
+dist
 secrets.txt
 gladius-contracts.code-workspace
 public/deployments copy.json
