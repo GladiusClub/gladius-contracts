@@ -1,5 +1,5 @@
 use soroban_sdk::{contracttype, Address, Env};
-use crate::models::{Course};
+use crate::models::{Course, Student};
 
 pub(crate) const DAY_IN_LEDGERS: u32 = 17280;
 pub(crate) const INSTANCE_BUMP_AMOUNT: u32 = 7 * DAY_IN_LEDGERS;
@@ -14,12 +14,15 @@ pub(crate) const BALANCE_LIFETIME_THRESHOLD: u32 = BALANCE_BUMP_AMOUNT - DAY_IN_
 pub enum DataKey {
     Admin,
     SportClubs,
+    Student(Address),
     IsSportClub(Address),
     IsStudent(Address),
     IsParent(Address),
     TotalCourses,
     Course(u32),
-    Token
+    TotalSubscriptions,
+    Subscription(u32),
+    Token,
 }
 
 
@@ -63,4 +66,12 @@ pub fn read_token(e: &Env) -> Address {
 pub fn write_token(e: &Env, id: &Address) {
     let key = DataKey::Token;
     e.storage().instance().set(&key, id);
+}
+
+
+pub fn set_student(e: &Env, student: Student) {
+    e.storage().persistent().set(&DataKey::Student(student.address.clone()), &student);
+}
+pub fn get_student(e: &Env, addr: Address) -> Student {
+    e.storage().persistent().get(&DataKey::Student(addr)).unwrap()
 }

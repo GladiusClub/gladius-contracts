@@ -89,7 +89,7 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         let new_course = Course {
             club: sport_club,
             price: price,
-            k: incentive,
+            incentive: incentive,
             subscriptions:vec![&e,].into(),
             active: true
         };
@@ -105,19 +105,21 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         course_index: u32) {
 
         parent_address.require_auth();
-        // check if parent is parent of student
+        // TODO: check if parent is parent of student
 
         // get course
-        let course = get_course(&e, course_index);
+        let mut course = get_course(&e, course_index);
+        let total_amount: i128 = course.price.checked_add(course.incentive).unwrap();
 
-        //get amount
-
-        // check if parent has enough token balance
+        // Function will fail if parent does not have total_amount
         TokenClient::new(&e,
             &read_token(&e))
-            .transfer(&parent_address, &e.current_contract_address(), &0);
+            .transfer(&parent_address, &e.current_contract_address(), &total_amount);
 
-        // subscript
+        // Add student to course
+        course.subscriptions.push_back(student_address);
+        // Create Subscription
+        // subscribe.push_back(env.current_contract_address().clone());
         // public event
 
     }
