@@ -18,7 +18,8 @@ pub enum DataKey {
     IsStudent(Address),
     IsParent(Address),
     TotalCourses,
-    Course(u32)
+    Course(u32),
+    Token
 }
 
 
@@ -49,4 +50,17 @@ pub fn desactivate_course(e: &Env, course_index: u32) {
     let mut course = get_course(&e, course_index.clone());
     course.active = false;
     set_course(&e, course, course_index);
+}
+
+
+// TOKEN
+
+pub fn read_token(e: &Env) -> Address {
+    let key = DataKey::Token;
+    e.storage().instance().get(&key).unwrap()
+}
+
+pub fn write_token(e: &Env, id: &Address) {
+    let key = DataKey::Token;
+    e.storage().instance().set(&key, id);
 }

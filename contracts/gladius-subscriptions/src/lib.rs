@@ -1,5 +1,7 @@
 #![no_std]
 use soroban_sdk::{contract, contractimpl, Address, Env, vec};
+use soroban_sdk::token::Client as TokenClient;
+
 
 mod models;
 mod storage_types;
@@ -8,14 +10,14 @@ mod sport_clubs;
 
 use admin::{read_administrator, has_administrator, write_administrator};
 use sport_clubs::{write_is_type, read_is_type};
-use storage_types::{DataKey};
+use storage_types::{DataKey, push_course, write_token, read_token,  get_course};
 use models::{Course};
 
 
 
 pub trait GladiusCoinSubscriptionTrait {
 
-    fn initialize(e: Env, admin: Address);
+    fn initialize(e: Env, admin: Address, token: Address);
 
     // Admin Functions
     fn set_is_sport_club(e: Env, addr: Address, is: bool);
@@ -24,6 +26,8 @@ pub trait GladiusCoinSubscriptionTrait {
 
     // Sport Clubs Functions
     fn create_course(e: Env, sport_club: Address, amount: i128, prizes_amount: i128);
+
+    fn subscribe_course(e:Env, parent_address: Address, student_address: Address, course_index: u32);
 
     fn is_sport_club(e:Env, addr: Address) -> bool;
     fn is_parent(e:Env, addr: Address) -> bool;
@@ -37,13 +41,17 @@ struct GladiusCoinSubscription;
 impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
 
     
-    fn initialize(e: Env, admin: Address) {
+    fn initialize(
+        e: Env,
+        admin: Address,
+        token: Address) {
             
         // if has_administrator(&e) {
         //     return Err(GladiusCoinEmitSubscriptionError::InitializeAlreadyInitialized);
         // }
 
         write_administrator(&e, &admin);
+        write_token(&e, &admin);
 
         // event::initialize(&e, admin, pegged, ratio);
         // Ok(())
@@ -70,18 +78,48 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
     }
 
     // Sport Clubs Functions
-    fn create_course(e: Env, sport_club: Address, amount: i128, prizes_amount: i128) {
+    fn create_course(e: Env,
+        sport_club: Address,
+        price: i128,
+        incentive: i128) {
         sport_club.require_auth();
         if Self::is_sport_club(e.clone(), sport_club.clone()) {
             panic!("Not a Sport Club");
         }
         let new_course = Course {
             club: sport_club,
-            price: amount,
-            k: prizes_amount,
+            price: price,
+            k: incentive,
             subscriptions:vec![&e,].into(),
             active: true
         };
+        push_course(&e, new_course); // TODO: Function should return index of pushed course
+        // Event of pushed course and index
+    }
+
+    // Parents Functions
+    fn subscribe_course(
+        e:Env,
+        parent_address: Address,
+        student_address: Address,
+        course_index: u32) {
+
+        parent_address.require_auth();
+        // check if parent is parent of student
+
+        // get course
+        let course = get_course(&e, course_index);
+
+        //get amount
+
+        // check if parent has enough token balance
+        TokenClient::new(&e,
+            &read_token(&e))
+            .transfer(&parent_address, &e.current_contract_address(), &0);
+
+        // subscript
+        // public event
+
     }
     
     
