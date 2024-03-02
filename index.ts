@@ -1,29 +1,11 @@
-import { Request, Response } from 'express';
+import express from 'express';
+import { GladiusContracts } from './scripts/contractsfunction.js'; // Adjust the path as necessary
 
-import { AddressBook } from './utils/address_book.js';
-import { getTokenBalance } from './utils/contract.js';
-import { config } from './utils/env_config.js';
+const app = express();
+app.use(express.json());
 
-export async function GladiusContracts(req: Request, res: Response): Promise<void> {
+// Define the route that uses your GladiusContracts function
+app.post('/gladius-contracts', GladiusContracts);
 
-  const network = process.argv[2];
-  const addressBook = AddressBook.loadFromFile();
-  const loadedConfig = config(network);
-
-  try {
-      const balanceCheck = await getTokenBalance(
-          addressBook.getContractId(network, 'token_id'),
-          loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET').publicKey(),
-          loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET')
-      );
-      console.log('🚀 « EURC balanceCheck:', balanceCheck);
-
-      // Responding with the balance check result
-      res.status(200).send(`EURC balanceCheck: ${balanceCheck}`);
-
-  } catch (error) {
-      console.error('Failed to check balance:', error);
-      // Sending error response if something goes wrong
-      res.status(500).send('Failed to check balance due to an error.');
-  }
-};
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
