@@ -50,6 +50,12 @@ pub trait GladiusCoinSubscriptionTrait {
         amount: i128, 
         prizes_amount: i128,
         title: String) -> u32;
+    
+    fn distribute_gladius_coins(
+        e: Env,
+        course_index: u32,
+        student: Address,
+        amount: i128);
 
     // Parents Functions
     fn subscribe_course(e:Env, parent_address: Address, student_address: Address, course_index: u32);
@@ -136,6 +142,44 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         // Event of pushed course and index
     }
 
+    fn distribute_gladius_coins(
+        e: Env,
+        course_index: u32,
+        student: Address,
+        amount: i128) {
+        
+        // This function can only be called by the sport club
+        let mut course = read_course(&e, course_index);
+        course.club.require_auth();
+
+        // Student should exist in the course
+        // TODO: Find a way more efficient to do it.
+        if !(course.subscriptions.contains(student.clone())) {
+            panic!("Student does not exist in that Course");
+        }
+
+        //Course should have enough Gladius Coin balance:
+        if amount > course.gladius_coin_balance{
+            panic!("Course does not have enought Gladius Coin balance");
+        }
+        // Update course balance before sending gladius coins (good practice)
+        course.gladius_coin_balance = course.gladius_coin_balance.checked_sub(amount).unwrap();
+        write_course(&e, course, course_index);
+
+        // Send Gladius Coins to Student
+        // The GladiusCoinEmitter it's the Gladius Coin Token Contract itself
+        let gladius_coin_client = GladiusCoinEmitterClient::new(&e, &read_gladius_coin_emitter(&e));
+        // from this contract to student
+        gladius_coin_client.transfer(&e.current_contract_address(), &student, &amount);
+
+        // TODO: Emit event
+
+
+
+
+
+    }
+
     // Parents Functions
     fn subscribe_course(
         e:Env,
@@ -194,6 +238,9 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
     }
     fn get_gladius_coin_emitter(e:Env) -> Address {
         read_gladius_coin_emitter(&e)
+    }
+    fn get_course(e: Env, course_index: u32) -> Course {
+        read_course(&e, course_index)
     }
 
 }
