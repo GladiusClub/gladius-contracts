@@ -23,6 +23,7 @@ pub enum DataKey {
     TotalSubscriptions,
     Subscription(u32),
     Token,
+    GladiusCoinEmitter
 }
 
 
@@ -67,6 +68,19 @@ pub fn write_token(e: &Env, id: &Address) {
     let key = DataKey::Token;
     e.storage().instance().set(&key, id);
 }
+
+// TOKEN
+
+pub fn read_gladius_coin_emitter(e: &Env) -> Address {
+    let key = DataKey::GladiusCoinEmitter;
+    e.storage().instance().get(&key).unwrap()
+}
+
+pub fn write_gladius_coin_emitter(e: &Env, id: &Address) {
+    let key = DataKey::GladiusCoinEmitter;
+    e.storage().instance().set(&key, id);
+}
+
 
 
 pub fn set_student(e: &Env, student: Student) {
