@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, Address, Env, vec};
+use soroban_sdk::{contract, contractimpl, Address, Env, vec, String};
 use soroban_sdk::token::Client as TokenClient;
 
 
@@ -40,7 +40,12 @@ pub trait GladiusCoinSubscriptionTrait {
     fn set_is_student(e: Env, addr: Address, is: bool);
 
     // Sport Clubs Functions
-    fn create_course(e: Env, sport_club: Address, amount: i128, prizes_amount: i128);
+    fn create_course(
+        e: Env, 
+        sport_club: Address, 
+        amount: i128, 
+        prizes_amount: i128,
+        title: String) -> u32;
 
     // Parents Functions
     fn subscribe_course(e:Env, parent_address: Address, student_address: Address, course_index: u32);
@@ -102,21 +107,26 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
     fn create_course(e: Env,
         sport_club: Address,
         price: i128,
-        incentive: i128) {
+        incentive: i128,
+        title: String) -> u32 {
         
         // This must be called by the sport_club itself
         sport_club.require_auth();
+        // Fail if caller is not a sport club
         if Self::is_sport_club(e.clone(), sport_club.clone()) {
             panic!("Not a Sport Club");
         }
+
         let new_course = Course {
             club: sport_club,
             price: price,
             incentive: incentive,
             subscriptions:vec![&e,].into(),
+            title: title,
             active: true
         };
-        push_course(&e, new_course); // TODO: Function should return index of pushed course
+        // push_course function returns the course index
+        push_course(&e, new_course)
         // Event of pushed course and index
     }
 

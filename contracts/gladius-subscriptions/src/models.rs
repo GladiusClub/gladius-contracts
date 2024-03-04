@@ -1,4 +1,4 @@
-use soroban_sdk::{contracttype, Vec, Address};
+use soroban_sdk::{contracttype, Vec, Address, String};
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -31,6 +31,7 @@ pub struct Course {
     pub price: i128,
     pub incentive: i128,
     pub subscriptions: Vec<Address>,
+    pub title: String,
     pub active: bool
 }
 
