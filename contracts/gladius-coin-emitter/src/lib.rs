@@ -77,12 +77,12 @@ pub trait GladiusCoinEmitterTrait {
     ///
     /// # Returns
     ///
-    /// Returns `Ok(())` if the wrapping and minting operation is successful, otherwise returns an
+    /// Returns `Ok((mint_amount))` if the wrapping and minting operation is successful, otherwise returns an
     /// error of type `GladiusCoinEmitterError`.
     fn wrap_and_mint(
         e: Env, 
         to: Address, 
-        amount: i128) -> Result<(), GladiusCoinEmitterError>;
+        amount: i128) -> Result<i128, GladiusCoinEmitterError>;
 
     /// Unwraps and burns Gladius Coins, converting them back to the pegged token.
     ///
@@ -220,12 +220,12 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
     ///
     /// # Returns
     ///
-    /// Returns `Ok(())` if the wrapping and minting operation is successful, otherwise returns an
+    /// Returns `Ok((mint_amount))` if the wrapping and minting operation is successful, otherwise returns an
     /// error of type `GladiusCoinEmitterError`.
     fn wrap_and_mint(
         e: Env,
         to: Address,
-        wrap_amount: i128) -> Result<(), GladiusCoinEmitterError> {
+        wrap_amount: i128) -> Result<i128, GladiusCoinEmitterError> {
 
         if !has_administrator(&e) {
             return Err(GladiusCoinEmitterError::NotInitialized);
@@ -245,7 +245,7 @@ impl GladiusCoinEmitterTrait for GladiusCoinEmitter {
         internal_mint(e.clone(), to.clone(), mint_amount.clone());
 
         event::wrap(&e, admin, wrap_amount, mint_amount, to);
-        Ok(())
+        Ok(mint_amount)
     }
 
     /// Unwraps and burns Gladius Coins, converting them back to the pegged token.
