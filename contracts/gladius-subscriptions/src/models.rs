@@ -30,9 +30,10 @@ pub struct Course {
     pub club: Address,
     pub price: i128,
     pub incentive: i128,
-    pub subscriptions: Vec<Address>,
     pub title: String,
-    pub active: bool
+    pub active: bool,
+    pub subscriptions: Vec<Address>,
+    pub gladius_coin_balance: i128
 }
 
 #[contracttype]

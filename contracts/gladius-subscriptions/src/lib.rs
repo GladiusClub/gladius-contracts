@@ -16,10 +16,14 @@ use admin::{read_administrator, has_administrator, write_administrator};
 use sport_clubs::{write_is_type, read_is_type};
 use storage_types::{
     DataKey,
+    // COURSES
+    read_course,
+    write_course,
     push_course,
+    // TOKEN
     write_token, 
-    read_token,  
-    get_course,
+    read_token,
+    // COIN EMITTER  
     read_gladius_coin_emitter,
     write_gladius_coin_emitter};
 use models::{Course};
@@ -56,6 +60,7 @@ pub trait GladiusCoinSubscriptionTrait {
 
     fn get_token(e:Env) -> Address;
     fn get_gladius_coin_emitter(e:Env) -> Address;
+    fn get_course(e: Env, course_index: u32) -> Course;
 }
 
 #[contract]
@@ -123,7 +128,8 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
             incentive: incentive,
             subscriptions:vec![&e,].into(),
             title: title,
-            active: true
+            active: true,
+            gladius_coin_balance: 0
         };
         // push_course function returns the course index
         push_course(&e, new_course)
@@ -141,7 +147,7 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         // TODO: check if parent is parent of student
 
         // get course
-        let mut course = get_course(&e, course_index);
+        let mut course = read_course(&e, course_index);
         let total_amount: i128 = course.price.checked_add(course.incentive).unwrap();
         
         let token_client = TokenClient::new(&e, &read_token(&e));
@@ -155,15 +161,17 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         // This contract triggers the wrap_and_mint funtion in the Gladius Coin Emitter Contract
         let gladius_coin_emitter_client = GladiusCoinEmitterClient::new(&e, &read_gladius_coin_emitter(&e));
         //fn wrap_and_mint(e: Env, to: Address, amount: i128)
-        gladius_coin_emitter_client.wrap_and_mint(
+        let minted_amount = gladius_coin_emitter_client.wrap_and_mint(
             &e.current_contract_address(), // to
             &course.incentive // amount
         );
-
+        // We assign the minted amount to the Course.
+        course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).unwrap();
         // Add student to course // Can we do it better?
         course.subscriptions.push_back(student_address);
 
-        // public event
+        // Save the course.
+        write_course(&e, course, course_index);
     }
     
     
