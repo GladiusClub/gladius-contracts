@@ -7,7 +7,7 @@ test: build
 
 build:
 	soroban contract build
-	soroban contract optimize --wasm target/wasm32-unknown-unknown/release/gladius_coin_emitter.wasm  
+	soroban contract optimize --wasm target/wasm32-unknown-unknown/release/gladius_subscriptions.wasm  
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
