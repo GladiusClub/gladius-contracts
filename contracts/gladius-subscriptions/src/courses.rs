@@ -1,6 +1,6 @@
 use soroban_sdk::Env;
 use crate::structs::Course;
-use crate::storage_types::{DataKey, BALANCE_BUMP_AMOUNT, BALANCE_LIFETIME_THRESHOLD};
+use crate::storage_types::DataKey;
 
 pub fn write_total_courses(e: &Env, new_total_courses: u32) {
     e.storage().instance().set(&DataKey::TotalCourses, &new_total_courses);

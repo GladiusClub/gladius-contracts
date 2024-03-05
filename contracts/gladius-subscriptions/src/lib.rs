@@ -6,6 +6,7 @@ use soroban_sdk::token::Client as TokenClient;
 mod structs;
 mod storage_types;
 mod admin;
+mod payment_token;
 mod courses;
 mod user_types;
 mod gladius_coin_emitter;
@@ -16,11 +17,9 @@ use gladius_coin_emitter::GladiusCoinEmitterClient;
 use admin::{read_administrator, has_administrator, write_administrator};
 use user_types::{write_is_type, read_is_type};
 use courses::{read_course, write_course, push_course};
+use payment_token::{write_payment_token, read_payment_token};
 use storage_types::{
-    DataKey,
-    write_token, 
-    read_token,
-    // COIN EMITTER  
+    DataKey, 
     read_gladius_coin_emitter,
     write_gladius_coin_emitter};
 use structs::{Course};
@@ -92,7 +91,7 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         // }
 
         write_administrator(&e, &admin);
-        write_token(&e, &token);
+        write_payment_token(&e, &token);
         write_gladius_coin_emitter(&e, &gladius_coin_emitter);
 
         // event::initialize(&e, admin, pegged, ratio);
@@ -195,7 +194,7 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         let mut course = read_course(&e, course_index);
         let total_amount: i128 = course.price.checked_add(course.incentive).unwrap();
         
-        let token_client = TokenClient::new(&e, &read_token(&e));
+        let token_client = TokenClient::new(&e, &read_payment_token(&e));
         // Parent sends total_amount (EURC) to this contrat
         // Function will fail if parent does not have total_amount
         token_client.transfer(&parent_address, &e.current_contract_address(), &total_amount);
@@ -234,7 +233,7 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         read_is_type(&e, key)
     }
     fn get_token(e:Env) -> Address {
-        read_token(&e)
+        read_payment_token(&e)
 
     }
     fn get_gladius_coin_emitter(e:Env) -> Address {
