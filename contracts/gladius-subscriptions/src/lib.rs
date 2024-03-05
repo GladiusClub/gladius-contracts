@@ -23,6 +23,11 @@ use payment_token::{write_payment_token, read_payment_token};
 use storage_types::SubsDataKey;
 use structs::Course;
 
+pub fn check_initialized(e: &Env) {
+    if !has_administrator(&e) {
+        panic!("Not yet initialized");
+    }
+}
 
 pub trait GladiusSubscriptionsTrait {
 
@@ -176,6 +181,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a sport club.
     fn set_is_sport_club(e: Env, addr: Address, is: bool) {
+        check_initialized(&e);
         // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
@@ -193,6 +199,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a parent.
     fn set_is_parent(e: Env, addr: Address, is: bool) {
+        check_initialized(&e);
         // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
@@ -210,6 +217,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a student.
     fn set_is_student(e: Env, addr: Address, is: bool) {
+        check_initialized(&e);
         // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
@@ -242,6 +250,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         incentive: i128,
         title: String,
     ) -> u32 {
+        check_initialized(&e);
+
         // Ensure that the caller is the sport club itself
         sport_club.require_auth();
         
@@ -280,6 +290,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         student: Address,
         amount: i128,
     ) {
+        check_initialized(&e);
         // Ensure that the caller is the sport club
         let mut course = read_course(&e, course_index);
         course.club.require_auth();
@@ -322,6 +333,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         student_address: Address,
         course_index: u32,
     ) {
+        check_initialized(&e);
         // Ensure that the caller is the parent
         parent_address.require_auth();
         
@@ -376,20 +388,25 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         let key = SubsDataKey::IsStudent(addr.clone());
         read_is_type(&e, key)
     }
+    
+    fn get_course(e: Env, course_index: u32) -> Course {
+        read_course(&e, course_index)
+    }
 
+    // BASIC INFO
     fn get_admin(e:Env) -> Address {
+        check_initialized(&e);
         read_administrator(&e)
     }
 
     fn get_token(e:Env) -> Address {
+        check_initialized(&e);
         read_payment_token(&e)
     }
 
     fn get_gladius_coin_emitter(e:Env) -> Address {
+        check_initialized(&e);
         read_gladius_coin_emitter(&e)
     }
 
-    fn get_course(e: Env, course_index: u32) -> Course {
-        read_course(&e, course_index)
-    }
 }

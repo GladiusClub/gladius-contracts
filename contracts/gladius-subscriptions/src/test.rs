@@ -63,6 +63,7 @@ pub struct GladiusSubscriptionsTest<'a> {
     club_1: Address,
     student_0: Address,
     student_1: Address,
+    user: Address,
     payment_token: TokenClient<'a>,
     gladius_coin_emitter: GladiusCoinEmitterClient<'a>,
     contract: GladiusSubscriptionsClient<'a>,
@@ -84,6 +85,7 @@ impl<'a> GladiusSubscriptionsTest<'a> {
         let club_1 = Address::generate(&env);
         let student_0 = Address::generate(&env);
         let student_1 = Address::generate(&env);
+        let user = Address::generate(&env);
 
         // Contrats
 
@@ -117,6 +119,7 @@ impl<'a> GladiusSubscriptionsTest<'a> {
             club_1,
             student_0,
             student_1,
+            user,
             payment_token,
             gladius_coin_emitter,
             contract,
@@ -125,6 +128,7 @@ impl<'a> GladiusSubscriptionsTest<'a> {
 }
            
 mod initialize;
+mod set_functions;
 // // mod wrap;
 // // mod unwrap;
 // // mod gladius_coin;
