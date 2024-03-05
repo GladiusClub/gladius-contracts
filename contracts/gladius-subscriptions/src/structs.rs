@@ -16,13 +16,13 @@ pub struct Parent {
     pub students: Vec<Address>
 } 
 
-#[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Student {
-    // pub index: i32,
-    pub address: Address,
-    pub parent: Address,
-}
+// #[contracttype]
+// #[derive(Clone, Debug, Eq, PartialEq)]
+// pub struct Student {
+//     // pub index: i32,
+//     pub address: Address,
+//     pub parent: Address,
+// }
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]

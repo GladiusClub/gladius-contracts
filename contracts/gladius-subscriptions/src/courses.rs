@@ -18,9 +18,9 @@ pub fn read_course(e: &Env, course_index: u32) -> Course {
     e.storage().persistent().get(&SubsDataKey::Course(course_index)).unwrap()
 }
 
-pub fn exist_course(e: &Env, course_index: u32) -> bool {
-    e.storage().persistent().has(&SubsDataKey::Course(course_index))
-}
+// pub fn exist_course(e: &Env, course_index: u32) -> bool {
+//     e.storage().persistent().has(&SubsDataKey::Course(course_index))
+// }
 
 pub fn push_course(e: &Env, course: Course) -> u32 {
     let next_index = read_total_courses(&e);
@@ -30,8 +30,8 @@ pub fn push_course(e: &Env, course: Course) -> u32 {
     next_index
 }
 
-pub fn deactivate_course(e: &Env, course_index: u32) {
-    let mut course = read_course(&e, course_index.clone());
-    course.active = false;
-    write_course(&e, course, course_index);
-}
+// pub fn deactivate_course(e: &Env, course_index: u32) {
+//     let mut course = read_course(&e, course_index.clone());
+//     course.active = false;
+//     write_course(&e, course, course_index);
+// }
