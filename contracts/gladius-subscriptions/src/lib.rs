@@ -40,8 +40,34 @@ pub trait GladiusCoinSubscriptionTrait {
         gladius_coin_emitter: Address);
 
     // Admin Functions
+
+    // TODO: Write change admin function
+
+    /// Sets the status of whether an address is a sport club or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `addr` - The address to set the status for.
+    /// * `is` - The boolean value indicating whether the address is a sport club.
     fn set_is_sport_club(e: Env, addr: Address, is: bool);
+
+    /// Sets the status of whether an address is a parent or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `addr` - The address to set the status for.
+    /// * `is` - The boolean value indicating whether the address is a parent.
     fn set_is_parent(e: Env, addr: Address, is: bool);
+
+    /// Sets the status of whether an address is a student or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `addr` - The address to set the status for.
+    /// * `is` - The boolean value indicating whether the address is a student.
     fn set_is_student(e: Env, addr: Address, is: bool);
 
     // Sport Clubs Functions
@@ -110,24 +136,58 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
     }
 
     // Admin Functions
-    fn set_is_sport_club(e: Env, addr: Address, is: bool){
+
+    /// Sets the status of whether an address is a sport club or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `addr` - The address to set the status for.
+    /// * `is` - The boolean value indicating whether the address is a sport club.
+    fn set_is_sport_club(e: Env, addr: Address, is: bool) {
+        // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
+        
+        // Set the status of whether the address is a sport club
         let key = SubsDataKey::IsSportClub(addr.clone());
         write_is_type(&e, key, is);
     }
-    fn set_is_parent(e: Env, addr: Address, is: bool){
+
+    /// Sets the status of whether an address is a parent or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `addr` - The address to set the status for.
+    /// * `is` - The boolean value indicating whether the address is a parent.
+    fn set_is_parent(e: Env, addr: Address, is: bool) {
+        // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
+        
+        // Set the status of whether the address is a parent
         let key = SubsDataKey::IsParent(addr.clone());
         write_is_type(&e, key, is);
     }
-    fn set_is_student(e: Env, addr: Address, is: bool){
+
+    /// Sets the status of whether an address is a student or not.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `addr` - The address to set the status for.
+    /// * `is` - The boolean value indicating whether the address is a student.
+    fn set_is_student(e: Env, addr: Address, is: bool) {
+        // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
+        
+        // Set the status of whether the address is a student
         let key = SubsDataKey::IsStudent(addr.clone());
         write_is_type(&e, key, is);
     }
+
 
     // Sport Clubs Functions
     fn create_course(e: Env,
@@ -145,7 +205,7 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
 
         let new_course = Course {
             club: sport_club,
-            price: price,
+            price: price,   
             incentive: incentive,
             subscriptions:vec![&e,].into(),
             title: title,
