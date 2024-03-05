@@ -36,24 +36,28 @@ fn initialize_basic_info() {
 }
 
 
-// #[test]
-// fn initialize_twice() {
-//     let test = GladiusCoinEmitterTest::setup();
+#[test]
+#[should_panic] // TODO: Change for errors
+fn initialize_twice() {
+    let test = GladiusSubscriptionsTest::setup();
 
-//     let ratio: u32 = 1000;
+    test.contract.initialize(
+        &test.gladius_admin,
+        &test.payment_token.address,
+        &test.gladius_coin_emitter.address
+    );
+    test.contract.initialize(
+        &test.gladius_admin,
+        &test.payment_token.address,
+        &test.gladius_coin_emitter.address
+    );
 
-//     test.contract.initialize(
-//         &test.minter,
-//         &test.pegged_token.address,
-//         &ratio
-//         );
-    
-//     let res = test.contract.try_initialize(
-//         &test.minter,
-//         &test.pegged_token.address,
-//         &ratio
-//         );
-//     assert_eq!(res, Err(Ok(GladiusCoinEmitterError::InitializeAlreadyInitialized))); 
-// }
+    // let res = test.contract.initialize(
+    //     &test.gladius_admin,
+    //     &test.payment_token.address,
+    //     &test.gladius_coin_emitter.address
+    // );
+    // assert_eq!(res, Err(Ok(GladiusCoinEmitterError::InitializeAlreadyInitialized))); 
+}
 
 
