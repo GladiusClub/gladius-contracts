@@ -1,6 +1,6 @@
 use soroban_sdk::{Address, Env};
 use crate::storage_types::DataKey;
-use crate::models::Subscription;
+use crate::structs::Subscription;
 
 
 // Subscription - Each Course in an independent persistent storage

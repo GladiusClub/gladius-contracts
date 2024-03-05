@@ -3,30 +3,27 @@ use soroban_sdk::{contract, contractimpl, Address, Env, vec, String};
 use soroban_sdk::token::Client as TokenClient;
 
 
-mod models;
+mod structs;
 mod storage_types;
 mod admin;
-mod sport_clubs;
+mod courses;
+mod user_types;
 mod gladius_coin_emitter;
 
 
 use gladius_coin_emitter::GladiusCoinEmitterClient;
 
 use admin::{read_administrator, has_administrator, write_administrator};
-use sport_clubs::{write_is_type, read_is_type};
+use user_types::{write_is_type, read_is_type};
+use courses::{read_course, write_course, push_course};
 use storage_types::{
     DataKey,
-    // COURSES
-    read_course,
-    write_course,
-    push_course,
-    // TOKEN
     write_token, 
     read_token,
     // COIN EMITTER  
     read_gladius_coin_emitter,
     write_gladius_coin_emitter};
-use models::{Course};
+use structs::{Course};
 
 
 
@@ -51,11 +48,15 @@ pub trait GladiusCoinSubscriptionTrait {
         prizes_amount: i128,
         title: String) -> u32;
     
+    // Sport Clubs can distribute these Gladius Coins only to Students who have been subscribed.
     fn distribute_gladius_coins(
         e: Env,
         course_index: u32,
         student: Address,
         amount: i128);
+    
+    // Sport Clubs can also distribute these Gladius Coins to some NFT contract so physically redeemable NFTs have economic value
+    // TODO: Do this when NFT contract is ready
 
     // Parents Functions
     fn subscribe_course(e:Env, parent_address: Address, student_address: Address, course_index: u32);
@@ -142,6 +143,7 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         // Event of pushed course and index
     }
 
+    // Sport Clubs can distribute these Gladius Coins only to Students who have been subscribed.
     fn distribute_gladius_coins(
         e: Env,
         course_index: u32,
@@ -173,11 +175,6 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         gladius_coin_client.transfer(&e.current_contract_address(), &student, &amount);
 
         // TODO: Emit event
-
-
-
-
-
     }
 
     // Parents Functions
