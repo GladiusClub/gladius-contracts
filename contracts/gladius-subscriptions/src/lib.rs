@@ -109,6 +109,15 @@ pub trait GladiusCoinSubscriptionTrait {
     // TODO: Add function to create NFT when NFT contract is ready.
 
     // Parents Functions
+
+    /// Subscribes a student to a course and handles payment and token transfer.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `parent_address` - The address of the parent.
+    /// * `student_address` - The address of the student.
+    /// * `course_index` - The index of the course to subscribe to.
     fn subscribe_course(e:Env, parent_address: Address, student_address: Address, course_index: u32);
 
     fn is_sport_club(e:Env, addr: Address) -> bool;
@@ -296,42 +305,61 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
 
 
     // Parents Functions
+
+    /// Subscribes a student to a course and handles payment and token transfer.
+    ///
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `parent_address` - The address of the parent.
+    /// * `student_address` - The address of the student.
+    /// * `course_index` - The index of the course to subscribe to.
     fn subscribe_course(
-        e:Env,
+        e: Env,
         parent_address: Address,
         student_address: Address,
-        course_index: u32) {
-
+        course_index: u32,
+    ) {
+        // Ensure that the caller is the parent
         parent_address.require_auth();
-        // TODO: check if parent is parent of student
-
-        // get course
-        let mut course = read_course(&e, course_index);
-        let total_amount: i128 = course.price.checked_add(course.incentive).unwrap();
         
+        // TODO: Check if parent is the parent of the student (not implemented)
+
+        // Get the course
+        let mut course = read_course(&e, course_index);
+        
+        // Calculate the total amount required for subscription
+        let total_amount = course.price.checked_add(course.incentive).expect("Overflow when calculating total amount");
+
+        // Initialize the token client
         let token_client = TokenClient::new(&e, &read_payment_token(&e));
-        // Parent sends total_amount (EURC) to this contrat
-        // Function will fail if parent does not have total_amount
+
+        // Parent sends the total amount (EURC) to this contract
+        // Function will fail if parent does not have enough tokens
         token_client.transfer(&parent_address, &e.current_contract_address(), &total_amount);
-        // This contrat sends course.price (EUR) to Sport Club
+
+        // This contract sends course.price (EUR) to the sport club
         token_client.transfer(&e.current_contract_address(), &course.club, &course.price);
 
-        
-        // This contract triggers the wrap_and_mint funtion in the Gladius Coin Emitter Contract
+        // This contract triggers the `wrap_and_mint` function in the Gladius Coin Emitter Contract
         let gladius_coin_emitter_client = GladiusCoinEmitterClient::new(&e, &read_gladius_coin_emitter(&e));
-        //fn wrap_and_mint(e: Env, to: Address, amount: i128)
+        
+        // Wrap and mint the incentive amount
         let minted_amount = gladius_coin_emitter_client.wrap_and_mint(
             &e.current_contract_address(), // to
             &course.incentive // amount
         );
-        // We assign the minted amount to the Course.
-        course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).unwrap();
-        // Add student to course // Can we do it better?
+
+        // Assign the minted amount to the course
+        course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
+
+        // Add the student to the course subscriptions
         course.subscriptions.push_back(student_address);
 
-        // Save the course.
+        // Save the updated course
         write_course(&e, course, course_index);
     }
+
     
     
     
