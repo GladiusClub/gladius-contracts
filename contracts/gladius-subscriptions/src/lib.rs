@@ -359,31 +359,31 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
         // Save the updated course
         write_course(&e, course, course_index);
     }
-
-    
-    
     
     fn is_sport_club(e:Env, addr: Address) -> bool {
         let key = SubsDataKey::IsSportClub(addr.clone());
         read_is_type(&e, key)
     }
+
     fn is_parent(e:Env, addr: Address) -> bool {
         let key = SubsDataKey::IsParent(addr.clone());
         read_is_type(&e, key)
     }
+
     fn is_student(e:Env, addr: Address) -> bool {
         let key = SubsDataKey::IsStudent(addr.clone());
         read_is_type(&e, key)
     }
+
     fn get_token(e:Env) -> Address {
         read_payment_token(&e)
-
     }
+
     fn get_gladius_coin_emitter(e:Env) -> Address {
         read_gladius_coin_emitter(&e)
     }
+
     fn get_course(e: Env, course_index: u32) -> Course {
         read_course(&e, course_index)
     }
-
 }
