@@ -1,25 +1,25 @@
 use soroban_sdk::Env;
 use crate::structs::Course;
-use crate::storage_types::DataKey;
+use crate::storage_types::SubsDataKey;
 
 pub fn write_total_courses(e: &Env, new_total_courses: u32) {
-    e.storage().instance().set(&DataKey::TotalCourses, &new_total_courses);
+    e.storage().instance().set(&SubsDataKey::TotalCourses, &new_total_courses);
 }
 
 pub fn read_total_courses(e: &Env) -> u32 {
-    e.storage().instance().get(&DataKey::TotalCourses).unwrap()
+    e.storage().instance().get(&SubsDataKey::TotalCourses).unwrap()
 }
 
 pub fn write_course(e: &Env, course: Course, course_index: u32) {
-    e.storage().persistent().set(&DataKey::Course(course_index), &course);
+    e.storage().persistent().set(&SubsDataKey::Course(course_index), &course);
 }
 
 pub fn read_course(e: &Env, course_index: u32) -> Course {
-    e.storage().persistent().get(&DataKey::Course(course_index)).unwrap()
+    e.storage().persistent().get(&SubsDataKey::Course(course_index)).unwrap()
 }
 
 pub fn exist_course(e: &Env, course_index: u32) -> bool {
-    e.storage().persistent().has(&DataKey::Course(course_index))
+    e.storage().persistent().has(&SubsDataKey::Course(course_index))
 }
 
 pub fn push_course(e: &Env, course: Course) -> u32 {

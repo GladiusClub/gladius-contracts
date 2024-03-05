@@ -1,12 +1,12 @@
 use soroban_sdk::{Address, Env};
 
 use crate::storage_types::{
-    DataKey, 
+    SubsDataKey, 
     BALANCE_BUMP_AMOUNT, 
     BALANCE_LIFETIME_THRESHOLD};
 
-pub fn read_is_type(e: &Env, key: DataKey) -> bool {
-    if let Some(is_type) = e.storage().persistent().get::<DataKey, bool>(&key) {
+pub fn read_is_type(e: &Env, key: SubsDataKey) -> bool {
+    if let Some(is_type) = e.storage().persistent().get::<SubsDataKey, bool>(&key) {
         e.storage()
             .persistent()
             .extend_ttl(&key, BALANCE_LIFETIME_THRESHOLD, BALANCE_BUMP_AMOUNT);
@@ -16,7 +16,7 @@ pub fn read_is_type(e: &Env, key: DataKey) -> bool {
     }
 }
 
-pub fn write_is_type(e: &Env, key: DataKey, is_type: bool) {
+pub fn write_is_type(e: &Env, key: SubsDataKey, is_type: bool) {
     e.storage().persistent().set(&key, &is_type);
     e.storage()
         .persistent()

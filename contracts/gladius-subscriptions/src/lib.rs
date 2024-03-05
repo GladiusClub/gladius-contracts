@@ -12,16 +12,16 @@ mod user_types;
 mod gladius_coin_emitter;
 
 
-use gladius_coin_emitter::GladiusCoinEmitterClient;
+use gladius_coin_emitter::{
+    GladiusCoinEmitterClient,
+    write_gladius_coin_emitter,
+    read_gladius_coin_emitter};
 
 use admin::{read_administrator, has_administrator, write_administrator};
 use user_types::{write_is_type, read_is_type};
 use courses::{read_course, write_course, push_course};
 use payment_token::{write_payment_token, read_payment_token};
-use storage_types::{
-    DataKey, 
-    read_gladius_coin_emitter,
-    write_gladius_coin_emitter};
+use storage_types::SubsDataKey;
 use structs::{Course};
 
 
@@ -102,19 +102,19 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
     fn set_is_sport_club(e: Env, addr: Address, is: bool){
         let admin = read_administrator(&e);
         admin.require_auth();
-        let key = DataKey::IsSportClub(addr.clone());
+        let key = SubsDataKey::IsSportClub(addr.clone());
         write_is_type(&e, key, is);
     }
     fn set_is_parent(e: Env, addr: Address, is: bool){
         let admin = read_administrator(&e);
         admin.require_auth();
-        let key = DataKey::IsParent(addr.clone());
+        let key = SubsDataKey::IsParent(addr.clone());
         write_is_type(&e, key, is);
     }
     fn set_is_student(e: Env, addr: Address, is: bool){
         let admin = read_administrator(&e);
         admin.require_auth();
-        let key = DataKey::IsStudent(addr.clone());
+        let key = SubsDataKey::IsStudent(addr.clone());
         write_is_type(&e, key, is);
     }
 
@@ -221,15 +221,15 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
     
     
     fn is_sport_club(e:Env, addr: Address) -> bool {
-        let key = DataKey::IsSportClub(addr.clone());
+        let key = SubsDataKey::IsSportClub(addr.clone());
         read_is_type(&e, key)
     }
     fn is_parent(e:Env, addr: Address) -> bool {
-        let key = DataKey::IsParent(addr.clone());
+        let key = SubsDataKey::IsParent(addr.clone());
         read_is_type(&e, key)
     }
     fn is_student(e:Env, addr: Address) -> bool {
-        let key = DataKey::IsStudent(addr.clone());
+        let key = SubsDataKey::IsStudent(addr.clone());
         read_is_type(&e, key)
     }
     fn get_token(e:Env) -> Address {
