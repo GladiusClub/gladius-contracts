@@ -125,6 +125,7 @@ pub trait GladiusSubscriptionsTrait {
     fn is_parent(e:Env, addr: Address) -> bool;
     fn is_student(e:Env, addr: Address) -> bool;
 
+    fn get_admin(e:Env) -> Address;
     fn get_token(e:Env) -> Address;
     fn get_gladius_coin_emitter(e:Env) -> Address;
     fn get_course(e: Env, course_index: u32) -> Course;
@@ -374,6 +375,10 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     fn is_student(e:Env, addr: Address) -> bool {
         let key = SubsDataKey::IsStudent(addr.clone());
         read_is_type(&e, key)
+    }
+
+    fn get_admin(e:Env) -> Address {
+        read_administrator(&e)
     }
 
     fn get_token(e:Env) -> Address {

@@ -54,7 +54,7 @@ fn create_gladius_subscriptions<'a>(
 
 // THE TEST
 pub struct GladiusSubscriptionsTest<'a> {
-    e: Env,
+    env: Env,
     payment_token_admin: Address,
     gladius_admin: Address,
     parent_0: Address,
@@ -72,32 +72,32 @@ pub struct GladiusSubscriptionsTest<'a> {
 impl<'a> GladiusSubscriptionsTest<'a> {
     fn setup() -> Self {
 
-        let e = Env::default();
-        e.mock_all_auths();
+        let env = Env::default();
+        env.mock_all_auths();
 
         // Addresses
-        let payment_token_admin = Address::generate(&e);
-        let gladius_admin = Address::generate(&e);
-        let parent_0 = Address::generate(&e);
-        let parent_1 = Address::generate(&e);
-        let club_0 = Address::generate(&e);
-        let club_1 = Address::generate(&e);
-        let student_0 = Address::generate(&e);
-        let student_1 = Address::generate(&e);
+        let payment_token_admin = Address::generate(&env);
+        let gladius_admin = Address::generate(&env);
+        let parent_0 = Address::generate(&env);
+        let parent_1 = Address::generate(&env);
+        let club_0 = Address::generate(&env);
+        let club_1 = Address::generate(&env);
+        let student_0 = Address::generate(&env);
+        let student_1 = Address::generate(&env);
 
         // Contrats
 
-        let payment_token = create_token_contract(&e);
-        let name = String::from_str(&e, "EURC TOKEN");
-        let symbol = String::from_str(&e, "EURC");
+        let payment_token = create_token_contract(&env);
+        let name = String::from_str(&env, "EURC TOKEN");
+        let symbol = String::from_str(&env, "EURC");
         let decimals = 7;
         payment_token.initialize(&payment_token_admin, &decimals, &name, &symbol);
         payment_token.mint(&parent_0, &123_000_000_000_000_000_000);
         payment_token.mint(&parent_1, &321_000_000_000_000_000_000);
 
-        let contract = create_gladius_subscriptions(&e);
+        let contract = create_gladius_subscriptions(&env);
 
-        let gladius_coin_emitter = create_gladius_coin_emitter(&e);
+        let gladius_coin_emitter = create_gladius_coin_emitter(&env);
         let ratio: u32 = 1000;
         gladius_coin_emitter.initialize(
             &contract.address,
@@ -105,10 +105,10 @@ impl<'a> GladiusSubscriptionsTest<'a> {
             &ratio
             );
 
-        e.budget().reset_unlimited();  
+        env.budget().reset_unlimited();  
 
         GladiusSubscriptionsTest {
-            e,
+            env,
             payment_token_admin,
             gladius_admin,
             parent_0,
@@ -124,7 +124,7 @@ impl<'a> GladiusSubscriptionsTest<'a> {
     }
 }
            
-// // mod initialize;
+mod initialize;
 // // mod wrap;
 // // mod unwrap;
 // // mod gladius_coin;
