@@ -1,8 +1,10 @@
 #![no_std]
+
+// Import necessary items
 use soroban_sdk::{contract, contractimpl, Address, Env, vec, String};
 use soroban_sdk::token::Client as TokenClient;
 
-
+// Import modules
 mod structs;
 mod storage_types;
 mod admin;
@@ -11,27 +13,26 @@ mod courses;
 mod user_types;
 mod gladius_coin_emitter;
 
-
-use gladius_coin_emitter::{
-    GladiusCoinEmitterClient,
-    write_gladius_coin_emitter,
-    read_gladius_coin_emitter};
-
+// Import specific items from modules
+use gladius_coin_emitter::{GladiusCoinEmitterClient, write_gladius_coin_emitter, read_gladius_coin_emitter};
 use admin::{read_administrator, has_administrator, write_administrator};
 use user_types::{write_is_type, read_is_type};
 use courses::{read_course, write_course, push_course};
 use payment_token::{write_payment_token, read_payment_token};
 use storage_types::SubsDataKey;
-use structs::{Course};
-
-
-// e.storage()
-//             .instance()
-//             .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
+use structs::Course;
 
 
 pub trait GladiusCoinSubscriptionTrait {
 
+    /// Initializes the contract with administrator, token, and Gladius coin emitter addresses.
+    /// 
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `admin` - The address of the administrator.
+    /// * `token` - The address of the token.
+    /// * `gladius_coin_emitter` - The address of the Gladius coin emitter.
     fn initialize(
         e: Env,
         admin: Address,
@@ -80,22 +81,32 @@ struct GladiusCoinSubscription;
 impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
 
     
+    /// Initializes the contract with administrator, token, and Gladius coin emitter addresses.
+    /// 
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `admin` - The address of the administrator.
+    /// * `token` - The address of the token.
+    /// * `gladius_coin_emitter` - The address of the Gladius coin emitter.
     fn initialize(
         e: Env,
         admin: Address,
         token: Address,
-        gladius_coin_emitter: Address) {
-            
-        // if has_administrator(&e) {
-        //     return Err(GladiusCoinEmitSubscriptionError::InitializeAlreadyInitialized);
-        // }
+        gladius_coin_emitter: Address,
+    ) {
+        // Check if already initialized
+        if has_administrator(&e) {
+            // TODO: Transform in Error
+            panic!("Already Initialized");
+        }
 
+        // Write administrator, token, and Gladius coin emitter addresses
         write_administrator(&e, &admin);
         write_payment_token(&e, &token);
         write_gladius_coin_emitter(&e, &gladius_coin_emitter);
 
-        // event::initialize(&e, admin, pegged, ratio);
-        // Ok(())
+        // TODO: Add event
     }
 
     // Admin Functions

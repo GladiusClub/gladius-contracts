@@ -1,5 +1,4 @@
 use soroban_sdk::{Address, Env};
-
 use crate::storage_types::SubsDataKey;
 
 pub fn has_administrator(e: &Env) -> bool {
