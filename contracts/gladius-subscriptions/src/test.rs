@@ -95,21 +95,17 @@ impl<'a> GladiusSubscriptionsTest<'a> {
         payment_token.mint(&parent_0, &123_000_000_000_000_000_000);
         payment_token.mint(&parent_1, &321_000_000_000_000_000_000);
 
-        let gladius_coin_emitter = create_gladius_coin_emitter(&e);
         let contract = create_gladius_subscriptions(&e);
-        
-        
-        
-        
-        // let ratio: u32 = 1000;
-        // gladius_coin_emitter.initialize(
-        //     &test.minter,
-        //     &test.pegged_token.address,
-        //     &ratio
-        //     );
 
-        e.budget().reset_unlimited();
-    
+        let gladius_coin_emitter = create_gladius_coin_emitter(&e);
+        let ratio: u32 = 1000;
+        gladius_coin_emitter.initialize(
+            &contract.address,
+            &payment_token.address,
+            &ratio
+            );
+
+        e.budget().reset_unlimited();  
 
         GladiusSubscriptionsTest {
             e,
