@@ -12,6 +12,7 @@ mod payment_token;
 mod courses;
 mod user_types;
 mod gladius_coin_emitter;
+mod test;
 
 // Import specific items from modules
 use gladius_coin_emitter::{GladiusCoinEmitterClient, write_gladius_coin_emitter, read_gladius_coin_emitter};
@@ -23,7 +24,7 @@ use storage_types::SubsDataKey;
 use structs::Course;
 
 
-pub trait GladiusCoinSubscriptionTrait {
+pub trait GladiusSubscriptionsTrait {
 
     /// Initializes the contract with administrator, token, and Gladius coin emitter addresses.
     /// 
@@ -130,10 +131,10 @@ pub trait GladiusCoinSubscriptionTrait {
 }
 
 #[contract]
-struct GladiusCoinSubscription;
+struct GladiusSubscriptions;
 
 #[contractimpl]
-impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
+impl GladiusSubscriptionsTrait for GladiusSubscriptions {
 
     
     /// Initializes the contract with administrator, token, and Gladius coin emitter addresses.
