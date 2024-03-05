@@ -71,6 +71,20 @@ pub trait GladiusCoinSubscriptionTrait {
     fn set_is_student(e: Env, addr: Address, is: bool);
 
     // Sport Clubs Functions
+
+    /// Creates a new course and returns its index.
+    /// 
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `sport_club` - The address of the sport club creating the course.
+    /// * `price` - The price of the course.
+    /// * `incentive` - The incentive for the course.
+    /// * `title` - The title of the course.
+    ///
+    /// # Returns
+    ///
+    /// The index of the newly created course.
     fn create_course(
         e: Env, 
         sport_club: Address, 
@@ -78,15 +92,21 @@ pub trait GladiusCoinSubscriptionTrait {
         prizes_amount: i128,
         title: String) -> u32;
     
-    // Sport Clubs can distribute these Gladius Coins only to Students who have been subscribed.
+    /// Distributes Gladius Coins to students enrolled in the specified course.
+    /// 
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `course_index` - The index of the course.
+    /// * `student` - The address of the student to receive Gladius Coins.
+    /// * `amount` - The amount of Gladius Coins to distribute.
     fn distribute_gladius_coins(
         e: Env,
         course_index: u32,
         student: Address,
         amount: i128);
     
-    // Sport Clubs can also distribute these Gladius Coins to some NFT contract so physically redeemable NFTs have economic value
-    // TODO: Do this when NFT contract is ready
+    // TODO: Add function to create NFT when NFT contract is ready.
 
     // Parents Functions
     fn subscribe_course(e:Env, parent_address: Address, student_address: Address, course_index: u32);
@@ -190,66 +210,90 @@ impl GladiusCoinSubscriptionTrait for GladiusCoinSubscription {
 
 
     // Sport Clubs Functions
-    fn create_course(e: Env,
+
+    /// Creates a new course and returns its index.
+    /// 
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `sport_club` - The address of the sport club creating the course.
+    /// * `price` - The price of the course.
+    /// * `incentive` - The incentive for the course.
+    /// * `title` - The title of the course.
+    ///
+    /// # Returns
+    ///
+    /// The index of the newly created course.
+    fn create_course(
+        e: Env,
         sport_club: Address,
         price: i128,
         incentive: i128,
-        title: String) -> u32 {
-        
-        // This must be called by the sport_club itself
+        title: String,
+    ) -> u32 {
+        // Ensure that the caller is the sport club itself
         sport_club.require_auth();
+        
         // Fail if caller is not a sport club
-        if Self::is_sport_club(e.clone(), sport_club.clone()) {
+        if !Self::is_sport_club(e.clone(), sport_club.clone()) {
             panic!("Not a Sport Club");
         }
 
+        // Create a new course
         let new_course = Course {
             club: sport_club,
-            price: price,   
-            incentive: incentive,
-            subscriptions:vec![&e,].into(),
-            title: title,
+            price,
+            incentive,
+            subscriptions: vec![&e].into(),
+            title,
             active: true,
-            gladius_coin_balance: 0
+            gladius_coin_balance: 0,
         };
-        // push_course function returns the course index
+
+        // Push the course and return its index
         push_course(&e, new_course)
-        // Event of pushed course and index
+        // TODO: Emit event of pushed course and index
     }
 
-    // Sport Clubs can distribute these Gladius Coins only to Students who have been subscribed.
+    /// Distributes Gladius Coins to students enrolled in the specified course.
+    /// 
+    /// # Arguments
+    ///
+    /// * `e` - The environment.
+    /// * `course_index` - The index of the course.
+    /// * `student` - The address of the student to receive Gladius Coins.
+    /// * `amount` - The amount of Gladius Coins to distribute.
     fn distribute_gladius_coins(
         e: Env,
         course_index: u32,
         student: Address,
-        amount: i128) {
-        
-        // This function can only be called by the sport club
+        amount: i128,
+    ) {
+        // Ensure that the caller is the sport club
         let mut course = read_course(&e, course_index);
         course.club.require_auth();
 
-        // Student should exist in the course
-        // TODO: Find a way more efficient to do it.
-        if !(course.subscriptions.contains(student.clone())) {
+        // Ensure that the student exists in the course
+        if !course.subscriptions.contains(student.clone()) {
             panic!("Student does not exist in that Course");
         }
 
-        //Course should have enough Gladius Coin balance:
-        if amount > course.gladius_coin_balance{
-            panic!("Course does not have enought Gladius Coin balance");
+        // Ensure that the course has enough Gladius Coin balance
+        if amount > course.gladius_coin_balance {
+            panic!("Course does not have enough Gladius Coin balance");
         }
-        // Update course balance before sending gladius coins (good practice)
+
+        // Update course balance before sending Gladius Coins
         course.gladius_coin_balance = course.gladius_coin_balance.checked_sub(amount).unwrap();
         write_course(&e, course, course_index);
 
-        // Send Gladius Coins to Student
-        // The GladiusCoinEmitter it's the Gladius Coin Token Contract itself
+        // Send Gladius Coins to the student
         let gladius_coin_client = GladiusCoinEmitterClient::new(&e, &read_gladius_coin_emitter(&e));
-        // from this contract to student
         gladius_coin_client.transfer(&e.current_contract_address(), &student, &amount);
 
         // TODO: Emit event
     }
+
 
     // Parents Functions
     fn subscribe_course(
