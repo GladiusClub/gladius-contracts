@@ -26,6 +26,10 @@ use storage_types::{
 use structs::{Course};
 
 
+// e.storage()
+//             .instance()
+//             .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
+
 
 pub trait GladiusCoinSubscriptionTrait {
 

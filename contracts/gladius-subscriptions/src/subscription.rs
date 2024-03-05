@@ -14,9 +14,9 @@ pub fn exist_course(e: &Env, course_index: u32) -> bool {
     e.storage().persistent().has(&DataKey::Course(course_index))
 }
 pub fn push_course(e: &Env, course: Course) {
-    let next_index = get_total_courses(&e);
+    let next_index = read_total_courses(&e);
     set_course(&e, course, next_index.clone());
-    set_total_courses(&e, next_index.checked_add(1).unwrap());
+    write_total_courses(&e, next_index.checked_add(1).unwrap());
 }
 pub fn desactivate_course(e: &Env, course_index: u32) {
     let mut course = get_course(&e, course_index.clone());
