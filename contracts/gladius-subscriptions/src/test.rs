@@ -129,7 +129,8 @@ impl<'a> GladiusSubscriptionsTest<'a> {
            
 mod initialize;
 mod set_functions;
-mod courses;
+mod create_course;
+mod subscribe_course;
 // // mod wrap;
 // // mod unwrap;
 // // mod gladius_coin;

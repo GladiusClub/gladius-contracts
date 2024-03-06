@@ -3,7 +3,7 @@ use crate::test::{GladiusSubscriptionsTest};
 use crate::test::gladius_subscriptions::Course;
 use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
 
-
+// create_course
 #[test]
 #[should_panic] // TODO: Change for errors
 fn create_course_not_initialized() {
@@ -168,4 +168,18 @@ fn create_course() {
     let read_course = test.contract.get_course(&index);
 
     assert_eq!(read_course, expected_course);
+}
+
+
+#[test]
+#[should_panic] // TODO: Change for errors
+fn get_course_dont_exist() {
+    let test = GladiusSubscriptionsTest::setup();
+    test.contract.initialize(
+        &test.gladius_admin,
+        &test.payment_token.address,
+        &test.gladius_coin_emitter.address
+    );
+
+    let read_course = test.contract.get_course(&2);
 }

@@ -41,6 +41,18 @@ pub fn check_sport_club(e: &Env, addr: &Address) {
     }
 }
 
+pub fn check_parent(e: &Env, addr: &Address) {
+    if !GladiusSubscriptions::is_parent(e.clone(), addr.clone()) {
+       panic!("Not a Parent");
+   }
+}
+
+pub fn check_student(e: &Env, addr: &Address) {
+    if !GladiusSubscriptions::is_student(e.clone(), addr.clone()) {
+       panic!("Not a Student");
+   }
+}
+
 pub trait GladiusSubscriptionsTrait {
 
     /// Initializes the contract with administrator, token, and Gladius coin emitter addresses.
@@ -133,10 +145,10 @@ pub trait GladiusSubscriptionsTrait {
     /// # Arguments
     ///
     /// * `e` - The environment.
-    /// * `parent_address` - The address of the parent.
-    /// * `student_address` - The address of the student.
+    /// * `parent` - The address of the parent.
+    /// * `student` - The address of the student.
     /// * `course_index` - The index of the course to subscribe to.
-    fn subscribe_course(e:Env, parent_address: Address, student_address: Address, course_index: u32);
+    fn subscribe_course(e:Env, parent: Address, student: Address, course_index: u32);
 
     fn is_sport_club(e:Env, addr: Address) -> bool;
     fn is_parent(e:Env, addr: Address) -> bool;
@@ -334,22 +346,23 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     /// # Arguments
     ///
     /// * `e` - The environment.
-    /// * `parent_address` - The address of the parent.
-    /// * `student_address` - The address of the student.
+    /// * `parent` - The address of the parent.
+    /// * `student` - The address of the student.
     /// * `course_index` - The index of the course to subscribe to.
     fn subscribe_course(
         e: Env,
-        parent_address: Address,
-        student_address: Address,
+        parent: Address,
+        student: Address,
         course_index: u32,
     ) {
         check_initialized(&e);
-        // Ensure that the caller is the parent
-        parent_address.require_auth();
+        check_parent(&e, &parent);
+        check_student(&e, &student);
+        parent.require_auth();
         
         // TODO: Check if parent is the parent of the student (not implemented)
 
-        // Get the course
+        // Get the course // TODO: Add error if course does not exist
         let mut course = read_course(&e, course_index);
         
         // Calculate the total amount required for subscription
@@ -360,7 +373,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
 
         // Parent sends the total amount (EURC) to this contract
         // Function will fail if parent does not have enough tokens
-        token_client.transfer(&parent_address, &e.current_contract_address(), &total_amount);
+        token_client.transfer(&parent, &e.current_contract_address(), &total_amount);
 
         // This contract sends course.price (EUR) to the sport club
         token_client.transfer(&e.current_contract_address(), &course.club, &course.price);
@@ -378,7 +391,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
 
         // Add the student to the course subscriptions
-        course.subscriptions.push_back(student_address);
+        course.subscriptions.push_back(student);
 
         // Save the updated course
         write_course(&e, course, course_index);
