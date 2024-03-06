@@ -7,7 +7,15 @@ pub fn write_total_courses(e: &Env, new_total_courses: u32) {
 }
 
 pub fn read_total_courses(e: &Env) -> u32 {
-    e.storage().instance().get(&SubsDataKey::TotalCourses).unwrap()
+    let key = SubsDataKey::TotalCourses;
+    if let Some(total_courses) = e.storage().instance().get(&key) {
+        // e.storage()
+        //     .instance()
+        //     .extend_ttl(&key, BALANCE_LIFETIME_THRESHOLD, BALANCE_BUMP_AMOUNT);
+        total_courses
+    } else {
+        0
+    }
 }
 
 pub fn write_course(e: &Env, course: Course, course_index: u32) {

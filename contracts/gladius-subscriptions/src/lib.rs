@@ -29,6 +29,18 @@ pub fn check_initialized(e: &Env) {
     }
 }
 
+pub fn check_positive_amount(amount: i128) {
+    if amount<=0 {
+        panic!("Amount should be positive");
+    }
+}
+
+pub fn check_sport_club(e: &Env, addr: &Address) {
+     if !GladiusSubscriptions::is_sport_club(e.clone(), addr.clone()) {
+        panic!("Not a Sport Club");
+    }
+}
+
 pub trait GladiusSubscriptionsTrait {
 
     /// Initializes the contract with administrator, token, and Gladius coin emitter addresses.
@@ -251,15 +263,13 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         title: String,
     ) -> u32 {
         check_initialized(&e);
-
+        check_sport_club(&e, &sport_club);
+        check_positive_amount(price);
+        check_positive_amount(incentive);
+        
         // Ensure that the caller is the sport club itself
         sport_club.require_auth();
         
-        // Fail if caller is not a sport club
-        if !Self::is_sport_club(e.clone(), sport_club.clone()) {
-            panic!("Not a Sport Club");
-        }
-
         // Create a new course
         let new_course = Course {
             club: sport_club,
