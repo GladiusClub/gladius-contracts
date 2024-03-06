@@ -82,3 +82,43 @@ fn subscribe_course_not_exist() {
 
     );
 }
+
+
+#[test]
+fn subscribe_course() {
+    let test = GladiusSubscriptionsTest::setup();
+
+    test.contract.initialize(
+        &test.gladius_admin,
+        &test.payment_token.address,
+        &test.gladius_coin_emitter.address
+    );
+    
+    test.contract.set_is_sport_club(&test.club_0, &true);
+    test.contract.set_is_parent(&test.parent_0, &true);
+    test.contract.set_is_student(&test.student_0, &true);
+
+    let price = 100;
+    let incentive = 10;
+    let title = String::from_str(&test.env, "Title");
+
+    let index = test.contract
+    .create_course(
+        &test.club_0, 
+        &price,
+        &incentive,
+        &title
+    );
+
+    let initial_parent_0_balance = 123_000_000_000_000_000_000;
+    assert_eq!(test.payment_token.balance(&test.parent_0), initial_parent_0_balance);
+
+    // TODO: Implement env.authorize_as_current_contract to make it work
+    
+    test.contract.subscribe_course(
+        &test.parent_0, // parent: Address,
+        &test.student_0, // student: Address,
+        &0, // course_index: u32,
+
+    );
+}

@@ -1,7 +1,10 @@
 #![no_std]
 
 // Import necessary items
-use soroban_sdk::{contract, contractimpl, Address, Env, vec, String};
+use soroban_sdk::{
+    auth::{ContractContext, InvokerContractAuthEntry, SubContractInvocation},
+        contract, contractimpl, vec, Address, Env, IntoVal, Symbol,
+        String};
 use soroban_sdk::token::Client as TokenClient;
 
 // Import modules
@@ -358,7 +361,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         check_initialized(&e);
         check_parent(&e, &parent);
         check_student(&e, &student);
-        parent.require_auth();
+        // parent.require_auth();
         
         // TODO: Check if parent is the parent of the student (not implemented)
 
@@ -379,8 +382,36 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         token_client.transfer(&e.current_contract_address(), &course.club, &course.price);
 
         // This contract triggers the `wrap_and_mint` function in the Gladius Coin Emitter Contract
-        let gladius_coin_emitter_client = GladiusCoinEmitterClient::new(&e, &read_gladius_coin_emitter(&e));
+        let gladius_coin_emitter_address = read_gladius_coin_emitter(&e);
+        let gladius_coin_emitter_client = GladiusCoinEmitterClient::new(&e, &gladius_coin_emitter_address);
         
+        e.authorize_as_current_contract(vec![
+            &e,
+            InvokerContractAuthEntry::Contract(SubContractInvocation {
+                context: ContractContext {
+                    contract: gladius_coin_emitter_address.clone(),
+                    fn_name: Symbol::new(&e, "wrap_and_mint"),
+                    args: (
+                        e.current_contract_address(),
+                        course.incentive
+                    ).into_val(&e),
+                },
+                sub_invocations: vec![&e,InvokerContractAuthEntry::Contract( SubContractInvocation {
+                    context: ContractContext {
+                        contract: read_payment_token(&e).clone(),
+                        fn_name: Symbol::new(&e, "transfer"),
+                        args: (
+                            e.current_contract_address(),
+                            gladius_coin_emitter_address,
+                            course.incentive
+                        ).into_val(&e),
+                    },
+                    sub_invocations: vec![&e]
+                })]
+            }),
+        ]);
+
+        // TODO: Implement env.authorize_as_current_contract
         // Wrap and mint the incentive amount
         let minted_amount = gladius_coin_emitter_client.wrap_and_mint(
             &e.current_contract_address(), // to

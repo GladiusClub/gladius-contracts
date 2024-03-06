@@ -101,6 +101,7 @@ impl<'a> GladiusSubscriptionsTest<'a> {
 
         let gladius_coin_emitter = create_gladius_coin_emitter(&env);
         let ratio: u32 = 1000;
+
         gladius_coin_emitter.initialize(
             &contract.address,
             &payment_token.address,
@@ -131,6 +132,3 @@ mod initialize;
 mod set_functions;
 mod create_course;
 mod subscribe_course;
-// // mod wrap;
-// // mod unwrap;
-// // mod gladius_coin;
