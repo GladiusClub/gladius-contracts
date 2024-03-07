@@ -387,17 +387,6 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         
         e.authorize_as_current_contract(vec![
             &e,
-            InvokerContractAuthEntry::Contract(SubContractInvocation {
-                context: ContractContext {
-                    contract: gladius_coin_emitter_address.clone(),
-                    fn_name: Symbol::new(&e, "wrap_and_mint"),
-                    args: (
-                        e.current_contract_address(),
-                        course.incentive
-                    ).into_val(&e),
-                },
-                sub_invocations: vec![&e]
-            }),
             InvokerContractAuthEntry::Contract( SubContractInvocation {
                 context: ContractContext {
                     contract: read_payment_token(&e).clone(),
