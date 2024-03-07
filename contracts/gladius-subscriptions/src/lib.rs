@@ -16,6 +16,7 @@ mod courses;
 mod user_types;
 mod gladius_coin_emitter;
 mod test;
+mod error;
 
 // Import specific items from modules
 use gladius_coin_emitter::{GladiusCoinEmitterClient, write_gladius_coin_emitter, read_gladius_coin_emitter};
@@ -25,35 +26,41 @@ use courses::{read_course, write_course, push_course, read_total_courses, course
 use payment_token::{write_payment_token, read_payment_token};
 use storage_types::SubsDataKey;
 use structs::Course;
+use error::GladiusSubscriptionsError;
 
-pub fn check_initialized(e: &Env) {
+pub fn check_initialized(e: &Env) -> Result<(), GladiusSubscriptionsError> {
     if !has_administrator(&e) {
-        panic!("Not yet initialized");
+        return Err(GladiusSubscriptionsError::NotInitialized);
     }
+    Ok(())
 }
 
-pub fn check_positive_amount(amount: i128) {
-    if amount<=0 {
-        panic!("Amount should be positive");
+pub fn check_positive_amount(amount: i128) -> Result<(), GladiusSubscriptionsError> {
+    if amount <= 0 {
+        return Err(GladiusSubscriptionsError::NegativesNotSupported);
     }
+    Ok(())
 }
 
-pub fn check_sport_club(e: &Env, addr: &Address) {
-     if !GladiusSubscriptions::is_sport_club(e.clone(), addr.clone()) {
-        panic!("Not a Sport Club");
+pub fn check_sport_club(e: &Env, addr: &Address) -> Result<(), GladiusSubscriptionsError> {
+    if !GladiusSubscriptions::is_sport_club(e.clone(), addr.clone()) {
+        return Err(GladiusSubscriptionsError::SportClubNotFound);
     }
+    Ok(())
 }
 
-pub fn check_parent(e: &Env, addr: &Address) {
+pub fn check_parent(e: &Env, addr: &Address) -> Result<(), GladiusSubscriptionsError> {
     if !GladiusSubscriptions::is_parent(e.clone(), addr.clone()) {
-       panic!("Not a Parent");
-   }
+        return Err(GladiusSubscriptionsError::ParentNotFound);
+    }
+    Ok(())
 }
 
-pub fn check_student(e: &Env, addr: &Address) {
+pub fn check_student(e: &Env, addr: &Address) -> Result<(), GladiusSubscriptionsError> {
     if !GladiusSubscriptions::is_student(e.clone(), addr.clone()) {
-       panic!("Not a Student");
-   }
+        return Err(GladiusSubscriptionsError::StudentNotFound);
+    }
+    Ok(())
 }
 
 pub trait GladiusSubscriptionsTrait {
@@ -70,7 +77,7 @@ pub trait GladiusSubscriptionsTrait {
         e: Env,
         admin: Address,
         token: Address,
-        gladius_coin_emitter: Address);
+        gladius_coin_emitter: Address) -> Result<(), GladiusSubscriptionsError>;
 
     // Admin Functions
 
@@ -83,7 +90,7 @@ pub trait GladiusSubscriptionsTrait {
     /// * `e` - The environment.
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a sport club.
-    fn set_is_sport_club(e: Env, addr: Address, is: bool);
+    fn set_is_sport_club(e: Env, addr: Address, is: bool) -> Result<(), GladiusSubscriptionsError>;
 
     /// Sets the status of whether an address is a parent or not.
     ///
@@ -92,7 +99,7 @@ pub trait GladiusSubscriptionsTrait {
     /// * `e` - The environment.
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a parent.
-    fn set_is_parent(e: Env, addr: Address, is: bool);
+    fn set_is_parent(e: Env, addr: Address, is: bool) -> Result<(), GladiusSubscriptionsError>;
 
     /// Sets the status of whether an address is a student or not.
     ///
@@ -101,7 +108,7 @@ pub trait GladiusSubscriptionsTrait {
     /// * `e` - The environment.
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a student.
-    fn set_is_student(e: Env, addr: Address, is: bool);
+    fn set_is_student(e: Env, addr: Address, is: bool) -> Result<(), GladiusSubscriptionsError>;
 
     // Sport Clubs Functions
 
@@ -123,7 +130,7 @@ pub trait GladiusSubscriptionsTrait {
         sport_club: Address, 
         amount: i128, 
         prizes_amount: i128,
-        title: String) -> u32;
+        title: String) -> Result<u32, GladiusSubscriptionsError>;
     
     /// Distributes Gladius Coins to students enrolled in the specified course.
     /// 
@@ -137,7 +144,7 @@ pub trait GladiusSubscriptionsTrait {
         e: Env,
         course_index: u32,
         student: Address,
-        amount: i128);
+        amount: i128) -> Result<(), GladiusSubscriptionsError>;
     
     // TODO: Add function to create NFT when NFT contract is ready.
 
@@ -151,15 +158,19 @@ pub trait GladiusSubscriptionsTrait {
     /// * `parent` - The address of the parent.
     /// * `student` - The address of the student.
     /// * `course_index` - The index of the course to subscribe to.
-    fn subscribe_course(e:Env, parent: Address, student: Address, course_index: u32);
+    fn subscribe_course(
+        e:Env, 
+        parent: Address, 
+        student: Address, 
+        course_index: u32) -> Result<(), GladiusSubscriptionsError>;
 
     fn is_sport_club(e:Env, addr: Address) -> bool;
     fn is_parent(e:Env, addr: Address) -> bool;
     fn is_student(e:Env, addr: Address) -> bool;
 
-    fn get_admin(e:Env) -> Address;
-    fn get_token(e:Env) -> Address;
-    fn get_gladius_coin_emitter(e:Env) -> Address;
+    fn get_admin(e:Env) -> Result<Address, GladiusSubscriptionsError>;
+    fn get_token(e:Env) -> Result<Address, GladiusSubscriptionsError>;
+    fn get_gladius_coin_emitter(e:Env) -> Result<Address, GladiusSubscriptionsError>;
     fn get_course(e: Env, course_index: u32) -> Course;
     fn get_total_courses(e: Env) -> u32;
 }
@@ -183,8 +194,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         e: Env,
         admin: Address,
         token: Address,
-        gladius_coin_emitter: Address,
-    ) {
+        gladius_coin_emitter: Address)  -> Result<(), GladiusSubscriptionsError> {
         // Check if already initialized
         if has_administrator(&e) {
             // TODO: Transform in Error
@@ -195,8 +205,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         write_administrator(&e, &admin);
         write_payment_token(&e, &token);
         write_gladius_coin_emitter(&e, &gladius_coin_emitter);
-
         // TODO: Add event
+        Ok(())
     }
 
     // Admin Functions
@@ -208,8 +218,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     /// * `e` - The environment.
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a sport club.
-    fn set_is_sport_club(e: Env, addr: Address, is: bool) {
-        check_initialized(&e);
+    fn set_is_sport_club(e: Env, addr: Address, is: bool) -> Result<(), GladiusSubscriptionsError> {
+        check_initialized(&e)?;
         // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
@@ -217,6 +227,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // Set the status of whether the address is a sport club
         let key = SubsDataKey::IsSportClub(addr.clone());
         write_is_type(&e, key, is);
+        Ok(())
     }
 
     /// Sets the status of whether an address is a parent or not.
@@ -226,8 +237,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     /// * `e` - The environment.
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a parent.
-    fn set_is_parent(e: Env, addr: Address, is: bool) {
-        check_initialized(&e);
+    fn set_is_parent(e: Env, addr: Address, is: bool) -> Result<(), GladiusSubscriptionsError>  {
+        check_initialized(&e)?;
         // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
@@ -235,6 +246,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // Set the status of whether the address is a parent
         let key = SubsDataKey::IsParent(addr.clone());
         write_is_type(&e, key, is);
+        Ok(())
     }
 
     /// Sets the status of whether an address is a student or not.
@@ -244,8 +256,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     /// * `e` - The environment.
     /// * `addr` - The address to set the status for.
     /// * `is` - The boolean value indicating whether the address is a student.
-    fn set_is_student(e: Env, addr: Address, is: bool) {
-        check_initialized(&e);
+    fn set_is_student(e: Env, addr: Address, is: bool) -> Result<(), GladiusSubscriptionsError> {
+        check_initialized(&e)?;
         // Ensure that the caller is the administrator
         let admin = read_administrator(&e);
         admin.require_auth();
@@ -253,6 +265,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // Set the status of whether the address is a student
         let key = SubsDataKey::IsStudent(addr.clone());
         write_is_type(&e, key, is);
+        Ok(())
     }
 
 
@@ -277,8 +290,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         price: i128,
         incentive: i128,
         title: String,
-    ) -> u32 {
-        check_initialized(&e);
+    ) -> Result<u32, GladiusSubscriptionsError>  {
+        check_initialized(&e)?;
         check_sport_club(&e, &sport_club);
         check_positive_amount(price);
         check_positive_amount(incentive);
@@ -298,8 +311,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         };
 
         // Push the course and return its index
-        push_course(&e, new_course)
         // TODO: Emit event of pushed course and index
+        Ok(push_course(&e, new_course))
     }
 
     /// Distributes Gladius Coins to students enrolled in the specified course.
@@ -315,8 +328,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         course_index: u32,
         student: Address,
         amount: i128,
-    ) {
-        check_initialized(&e);
+    ) -> Result<(), GladiusSubscriptionsError>  {
+        check_initialized(&e)?;
         // Ensure that the caller is the sport club
         let mut course = read_course(&e, course_index);
         course.club.require_auth();
@@ -342,7 +355,9 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         gladius_coin_client.transfer(&e.current_contract_address(), &student, &amount);
 
         // TODO: Emit event
+        Ok(())
     }
+
 
 
     // Parents Functions
@@ -360,11 +375,11 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         parent: Address,
         student: Address,
         course_index: u32,
-    ) {
+    )  -> Result<(), GladiusSubscriptionsError> {
         parent.require_auth();
-        check_initialized(&e);
-        check_parent(&e, &parent);
-        check_student(&e, &student);
+        check_initialized(&e)?;
+        check_parent(&e, &parent)?;
+        check_student(&e, &student)?;
         
         // TODO: Check if parent is the parent of the student (not implemented)        
         // Get the course // TODO: Add error if course does not exist
@@ -420,6 +435,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
 
         // Save the updated course
         write_course(&e, course, course_index);
+        Ok(())
     }
     
     fn is_sport_club(e:Env, addr: Address) -> bool {
@@ -446,19 +462,19 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     }
 
     // BASIC INFO
-    fn get_admin(e:Env) -> Address {
-        check_initialized(&e);
-        read_administrator(&e)
+    fn get_admin(e:Env) -> Result<Address, GladiusSubscriptionsError> {
+        check_initialized(&e)?;
+        Ok(read_administrator(&e))
     }
 
-    fn get_token(e:Env) -> Address {
-        check_initialized(&e);
-        read_payment_token(&e)
+    fn get_token(e:Env) -> Result<Address, GladiusSubscriptionsError> {
+        check_initialized(&e)?;
+        Ok(read_payment_token(&e))
     }
 
-    fn get_gladius_coin_emitter(e:Env) -> Address {
-        check_initialized(&e);
-        read_gladius_coin_emitter(&e)
+    fn get_gladius_coin_emitter(e:Env) -> Result<Address, GladiusSubscriptionsError> {
+        check_initialized(&e)?;
+        Ok(read_gladius_coin_emitter(&e))
     }
 
 }
