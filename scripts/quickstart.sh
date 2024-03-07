@@ -66,7 +66,7 @@ currentDir=$(pwd)
 docker run -dti \
   --volume ${currentDir}:/workspace \
   --name soroban-preview-${previewVersion} \
-  -p 8001:8000 \
+  -p 8002:8000 \
   --ipc=host \
   --network soroban-network \
   esteblock/soroban-preview:${previewHash}

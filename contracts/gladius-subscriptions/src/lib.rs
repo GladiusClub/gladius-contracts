@@ -358,10 +358,10 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         student: Address,
         course_index: u32,
     ) {
+        parent.require_auth();
         check_initialized(&e);
         check_parent(&e, &parent);
         check_student(&e, &student);
-        // parent.require_auth();
         
         // TODO: Check if parent is the parent of the student (not implemented)
 
@@ -396,21 +396,23 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
                         course.incentive
                     ).into_val(&e),
                 },
-                sub_invocations: vec![&e,InvokerContractAuthEntry::Contract( SubContractInvocation {
-                    context: ContractContext {
-                        contract: read_payment_token(&e).clone(),
-                        fn_name: Symbol::new(&e, "transfer"),
-                        args: (
-                            e.current_contract_address(),
-                            gladius_coin_emitter_address,
-                            course.incentive
-                        ).into_val(&e),
-                    },
-                    sub_invocations: vec![&e]
-                })]
+                sub_invocations: vec![&e]
             }),
+            InvokerContractAuthEntry::Contract( SubContractInvocation {
+                context: ContractContext {
+                    contract: read_payment_token(&e).clone(),
+                    fn_name: Symbol::new(&e, "transfer"),
+                    args: (
+                        e.current_contract_address(),
+                        gladius_coin_emitter_address,
+                        course.incentive
+                    ).into_val(&e),
+                },
+                sub_invocations: vec![&e]
+            })
         ]);
 
+        let a =11 ;
         // TODO: Implement env.authorize_as_current_contract
         // Wrap and mint the incentive amount
         let minted_amount = gladius_coin_emitter_client.wrap_and_mint(
@@ -418,14 +420,14 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
             &course.incentive // amount
         );
 
-        // Assign the minted amount to the course
-        course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
+        // // Assign the minted amount to the course
+        // course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
 
-        // Add the student to the course subscriptions
-        course.subscriptions.push_back(student);
+        // // Add the student to the course subscriptions
+        // course.subscriptions.push_back(student);
 
-        // Save the updated course
-        write_course(&e, course, course_index);
+        // // Save the updated course
+        // write_course(&e, course, course_index);
     }
     
     fn is_sport_club(e:Env, addr: Address) -> bool {

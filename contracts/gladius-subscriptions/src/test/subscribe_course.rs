@@ -100,6 +100,8 @@ fn subscribe_course() {
 
     let price = 100;
     let incentive = 10;
+    let ratio: u32 = 1000;
+    let total_amount = price + incentive;
     let title = String::from_str(&test.env, "Title");
 
     let index = test.contract
@@ -113,12 +115,37 @@ fn subscribe_course() {
     let initial_parent_0_balance = 123_000_000_000_000_000_000;
     assert_eq!(test.payment_token.balance(&test.parent_0), initial_parent_0_balance);
 
-    // TODO: Implement env.authorize_as_current_contract to make it work
-    
-    test.contract.subscribe_course(
+    test.contract
+    .mock_auths(&[
+        MockAuth {
+            address: &test.parent_0.clone(),
+            invoke: 
+                &MockAuthInvoke {
+                    contract: &test.contract.address,
+                    fn_name: "subscribe_course",
+                    args: (test.parent_0.clone(), test.student_0.clone(), index.clone(),).into_val(&test.env),
+                    sub_invokes: &[
+
+                        MockAuthInvoke {
+                        contract: &test.payment_token.address,
+                        fn_name: "transfer",
+                        args: (test.parent_0.clone(), test.contract.address.clone(), total_amount.clone(),).into_val(&test.env),
+                        sub_invokes: &[],}
+                    ],
+                },
+        }
+    ])
+    .subscribe_course(
         &test.parent_0, // parent: Address,
         &test.student_0, // student: Address,
-        &0, // course_index: u32,
+        &index, // course_index: u32,
 
     );
+
+    assert_eq!(test.payment_token.balance(&test.parent_0), initial_parent_0_balance - total_amount);
+    assert_eq!(test.payment_token.balance(&test.contract.address), 0);
+    assert_eq!(test.payment_token.balance(&test.gladius_coin_emitter.address), incentive);
+    assert_eq!(test.payment_token.balance(&test.club_0), price);
+    assert_eq!(test.gladius_coin_emitter.balance(&test.contract.address), incentive*(ratio as i128));
+
 }
