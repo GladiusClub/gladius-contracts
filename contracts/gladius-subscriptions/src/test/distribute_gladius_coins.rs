@@ -1,23 +1,23 @@
 use soroban_sdk::{String};
+use crate::test::gladius_subscriptions::GladiusSubscriptionsError;
 use crate::test::{GladiusSubscriptionsTest}; 
 use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn distribute_not_initialized() {
     let test = GladiusSubscriptionsTest::setup();
-    test.contract.distribute_gladius_coins(
+    let res = test.contract.try_distribute_gladius_coins(
         &0, // parent: Address,
         &test.student_0, // student: Address,
         &0, // course_index: u32,
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::NotInitialized))); 
 }
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn distribute_course_does_not_exist() {
     let test = GladiusSubscriptionsTest::setup();
 
@@ -27,17 +27,18 @@ fn distribute_course_does_not_exist() {
         &test.gladius_coin_emitter.address
     );
 
-    test.contract.distribute_gladius_coins(
+    let res = test.contract.try_distribute_gladius_coins(
         &0, // index
         &test.student_0, // student: Address,
         &100, // amount
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::CourseDoesNotExist))); 
 }
 
 
+
 #[test]
-#[should_panic] // TODO: Change for errors
 fn distribute_student_not_subscribed() {
     let test = GladiusSubscriptionsTest::setup();
 
@@ -66,17 +67,17 @@ fn distribute_student_not_subscribed() {
         &title
     );
 
-    test.contract.distribute_gladius_coins(
+    let res = test.contract.try_distribute_gladius_coins(
         &index, // index
         &test.student_0, // student: Address,
         &100, // amount
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::CourseDoesNotContainsStudent))); 
 }
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn distribute_negative() {
     let test = GladiusSubscriptionsTest::setup();
 
@@ -111,18 +112,18 @@ fn distribute_negative() {
                 &index, // course_index: u32,
             );
 
-    test.contract.distribute_gladius_coins(
+    let res = test.contract.try_distribute_gladius_coins(
         &index, // index
         &test.student_0, // student: Address,
         &-10, // amount
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::ZeroOrNegativesNotSupported))); 
 }
 
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn distribute_not_enough() {
     let test = GladiusSubscriptionsTest::setup();
 
@@ -157,16 +158,16 @@ fn distribute_not_enough() {
                 &index, // course_index: u32,
             );
 
-    test.contract.distribute_gladius_coins(
+    let res = test.contract.try_distribute_gladius_coins(
         &index, // index
         &test.student_0, // student: Address,
         &10000000000000, // amount
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::InsufficientFunds))); 
 }
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn distribute_zero() {
     let test = GladiusSubscriptionsTest::setup();
 
@@ -201,12 +202,13 @@ fn distribute_zero() {
                 &index, // course_index: u32,
             );
 
-    test.contract.distribute_gladius_coins(
+    let res = test.contract.try_distribute_gladius_coins(
         &index, // index
         &test.student_0, // student: Address,
         &0, // amount
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::ZeroOrNegativesNotSupported))); 
 }
 
 
