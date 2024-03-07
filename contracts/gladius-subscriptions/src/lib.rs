@@ -37,7 +37,7 @@ pub fn check_initialized(e: &Env) -> Result<(), GladiusSubscriptionsError> {
 
 pub fn check_positive_amount(amount: i128) -> Result<(), GladiusSubscriptionsError> {
     if amount <= 0 {
-        return Err(GladiusSubscriptionsError::NegativesNotSupported);
+        return Err(GladiusSubscriptionsError::ZeroOrNegativesNotSupported);
     } else {
         Ok(())
     }
@@ -175,7 +175,7 @@ pub trait GladiusSubscriptionsTrait {
     fn get_admin(e:Env) -> Result<Address, GladiusSubscriptionsError>;
     fn get_token(e:Env) -> Result<Address, GladiusSubscriptionsError>;
     fn get_gladius_coin_emitter(e:Env) -> Result<Address, GladiusSubscriptionsError>;
-    fn get_course(e: Env, course_index: u32) -> Course;
+    fn get_course(e: Env, course_index: u32) -> Result<Course, GladiusSubscriptionsError>;
     fn get_total_courses(e: Env) -> u32;
 }
 
@@ -334,7 +334,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     ) -> Result<(), GladiusSubscriptionsError>  {
         check_initialized(&e)?;
         // Ensure that the caller is the sport club
-        let mut course = read_course(&e, course_index);
+        let mut course = read_course(&e, course_index)?;
         course.club.require_auth();
 
         // Ensure that the student exists in the course
@@ -386,7 +386,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         
         // TODO: Check if parent is the parent of the student (not implemented)        
         // Get the course // TODO: Add error if course does not exist
-        let mut course = read_course(&e, course_index);
+        let mut course = read_course(&e, course_index)?;
         if course_has_student(&course, &student) {
             return Err(GladiusSubscriptionsError::StudentAlreadyEnrolled);
         }
@@ -456,7 +456,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         read_is_type(&e, key)
     }
     
-    fn get_course(e: Env, course_index: u32) -> Course {
+    fn get_course(e: Env, course_index: u32) -> Result<Course, GladiusSubscriptionsError> {
         read_course(&e, course_index)
     }
 

@@ -1,6 +1,7 @@
 use soroban_sdk::{Env, Address};
 use crate::structs::Course;
 use crate::storage_types::SubsDataKey;
+use crate::error::GladiusSubscriptionsError;
 
 pub fn write_total_courses(e: &Env, new_total_courses: u32) {
     e.storage().instance().set(&SubsDataKey::TotalCourses, &new_total_courses);
@@ -22,8 +23,16 @@ pub fn write_course(e: &Env, course: Course, course_index: u32) {
     e.storage().persistent().set(&SubsDataKey::Course(course_index), &course);
 }
 
-pub fn read_course(e: &Env, course_index: u32) -> Course {
-    e.storage().persistent().get(&SubsDataKey::Course(course_index)).unwrap()
+pub fn read_course(e: &Env, course_index: u32) -> Result<Course, GladiusSubscriptionsError> { 
+    let key = SubsDataKey::Course(course_index);
+    if let Some(course) = e.storage().persistent().get(&key) {
+        // e.storage()
+        //     .instance()
+        //     .extend_ttl(&key, BALANCE_LIFETIME_THRESHOLD, BALANCE_BUMP_AMOUNT);
+        Ok(course)
+    } else {
+        return Err(GladiusSubscriptionsError::CourseDoesNotExist)
+    }
 }
 
 pub fn push_course(e: &Env, course: Course) -> u32 {

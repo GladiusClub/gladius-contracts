@@ -1,25 +1,24 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusSubscriptionsTest}; 
-use crate::test::gladius_subscriptions::Course;
+use crate::test::gladius_subscriptions::{Course, GladiusSubscriptionsError};
 use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
 
 // create_course
 #[test]
-#[should_panic] // TODO: Change for errors
 fn create_course_not_initialized() {
     let test = GladiusSubscriptionsTest::setup();
-    test.contract.create_course(
+    let res = test.contract.try_create_course(
         &test.club_0,
         &0,
         &0,
         &String::from_str(&test.env, "Title")
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::NotInitialized))); 
 }
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn create_course_not_sport_club() {
     let test = GladiusSubscriptionsTest::setup();
     test.contract.initialize(
@@ -28,18 +27,18 @@ fn create_course_not_sport_club() {
         &test.gladius_coin_emitter.address
     );
 
-    test.contract.create_course(
+    let res = test.contract.try_create_course(
         &test.club_0,
         &100,
         &100,
         &String::from_str(&test.env, "Title")
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::SportClubNotFound))); 
 }
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn create_course_zero_price() {
     let test = GladiusSubscriptionsTest::setup();
     test.contract.initialize(
@@ -47,18 +46,19 @@ fn create_course_zero_price() {
         &test.payment_token.address,
         &test.gladius_coin_emitter.address
     );
+    test.contract.set_is_sport_club(&test.club_0, &true);
 
-    test.contract.create_course(
+    let res = test.contract.try_create_course(
         &test.club_0,
         &0,
         &100,
         &String::from_str(&test.env, "Title")
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::ZeroOrNegativesNotSupported))); 
 }
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn create_course_zero_incentive() {
     let test = GladiusSubscriptionsTest::setup();
     test.contract.initialize(
@@ -66,19 +66,20 @@ fn create_course_zero_incentive() {
         &test.payment_token.address,
         &test.gladius_coin_emitter.address
     );
+    test.contract.set_is_sport_club(&test.club_0, &true);
 
-    test.contract.create_course(
+    let res = test.contract.try_create_course(
         &test.club_0,
         &100,
         &0,
         &String::from_str(&test.env, "Title")
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::ZeroOrNegativesNotSupported))); 
 }
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn create_course_negative_price() {
     let test = GladiusSubscriptionsTest::setup();
     test.contract.initialize(
@@ -86,19 +87,20 @@ fn create_course_negative_price() {
         &test.payment_token.address,
         &test.gladius_coin_emitter.address
     );
+    test.contract.set_is_sport_club(&test.club_0, &true);
 
-    test.contract.create_course(
+    let res = test.contract.try_create_course(
         &test.club_0,
         &-10,
         &100,
         &String::from_str(&test.env, "Title")
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::ZeroOrNegativesNotSupported))); 
 }
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn create_course_negative_incentive() {
     let test = GladiusSubscriptionsTest::setup();
     test.contract.initialize(
@@ -106,14 +108,16 @@ fn create_course_negative_incentive() {
         &test.payment_token.address,
         &test.gladius_coin_emitter.address
     );
+    test.contract.set_is_sport_club(&test.club_0, &true);
 
-    test.contract.create_course(
+    let res = test.contract.try_create_course(
         &test.club_0,
         &10,
         &-100,
         &String::from_str(&test.env, "Title")
 
     );
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::ZeroOrNegativesNotSupported))); 
 }
 
 
@@ -175,7 +179,6 @@ fn create_course() {
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn get_course_dont_exist() {
     let test = GladiusSubscriptionsTest::setup();
     test.contract.initialize(
@@ -184,5 +187,6 @@ fn get_course_dont_exist() {
         &test.gladius_coin_emitter.address
     );
 
-    test.contract.get_course(&2);
+    let res = test.contract.try_get_course(&2);
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::CourseDoesNotExist))); 
 }
