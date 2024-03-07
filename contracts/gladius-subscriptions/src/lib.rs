@@ -402,21 +402,21 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         ]);
 
         let a =11 ;
-        // TODO: Implement env.authorize_as_current_contract
+        
         // Wrap and mint the incentive amount
         let minted_amount = gladius_coin_emitter_client.wrap_and_mint(
             &e.current_contract_address(), // to
             &course.incentive // amount
         );
 
-        // // Assign the minted amount to the course
-        // course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
+        // Assign the minted amount to the course
+        course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
 
-        // // Add the student to the course subscriptions
-        // course.subscriptions.push_back(student);
+        // Add the student to the course subscriptions
+        course.subscriptions.push_back(student);
 
-        // // Save the updated course
-        // write_course(&e, course, course_index);
+        // Save the updated course
+        write_course(&e, course, course_index);
     }
     
     fn is_sport_club(e:Env, addr: Address) -> bool {

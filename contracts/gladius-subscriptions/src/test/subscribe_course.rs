@@ -142,10 +142,25 @@ fn subscribe_course() {
 
     );
 
+    let expected_gladius_coin_balance = incentive*(ratio as i128);
+
     assert_eq!(test.payment_token.balance(&test.parent_0), initial_parent_0_balance - total_amount);
     assert_eq!(test.payment_token.balance(&test.contract.address), 0);
     assert_eq!(test.payment_token.balance(&test.gladius_coin_emitter.address), incentive);
     assert_eq!(test.payment_token.balance(&test.club_0), price);
-    assert_eq!(test.gladius_coin_emitter.balance(&test.contract.address), incentive*(ratio as i128));
+    assert_eq!(test.gladius_coin_emitter.balance(&test.contract.address), expected_gladius_coin_balance);
+
+    let expected_course = Course {
+        club: test.club_0,
+        price,
+        incentive,
+        subscriptions: vec![&test.env, test.student_0],
+        title,
+        active: true,
+        gladius_coin_balance: expected_gladius_coin_balance,
+    };
+    let read_course = test.contract.get_course(&index);
+
+    assert_eq!(read_course, expected_course);
 
 }
