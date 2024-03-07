@@ -1,5 +1,7 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusSubscriptionsTest}; 
+use crate::test::gladius_subscriptions::GladiusSubscriptionsError;
+
 // use soroban_sdk::{testutils::{Events}, vec, IntoVal, symbol_short};
 
 
@@ -40,7 +42,6 @@ fn initialize_basic_info() {
 
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn initialize_twice() {
     let test = GladiusSubscriptionsTest::setup();
 
@@ -49,18 +50,13 @@ fn initialize_twice() {
         &test.payment_token.address,
         &test.gladius_coin_emitter.address
     );
-    test.contract.initialize(
+    let res = test.contract.try_initialize(
         &test.gladius_admin,
         &test.payment_token.address,
         &test.gladius_coin_emitter.address
     );
 
-    // let res = test.contract.initialize(
-    //     &test.gladius_admin,
-    //     &test.payment_token.address,
-    //     &test.gladius_coin_emitter.address
-    // );
-    // assert_eq!(res, Err(Ok(GladiusCoinEmitterError::InitializeAlreadyInitialized))); 
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::AlreadyInitialized))); 
 }
 
 
