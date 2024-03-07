@@ -132,3 +132,4 @@ mod initialize;
 mod set_functions;
 mod create_course;
 mod subscribe_course;
+mod distribute_gladius_coins;

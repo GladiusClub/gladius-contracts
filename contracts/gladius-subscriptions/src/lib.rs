@@ -326,6 +326,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
             panic!("Student does not exist in that Course");
         }
 
+        check_positive_amount(amount);
+
         // Ensure that the course has enough Gladius Coin balance
         if amount > course.gladius_coin_balance {
             panic!("Course does not have enough Gladius Coin balance");
@@ -364,12 +366,9 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         check_parent(&e, &parent);
         check_student(&e, &student);
         
-        // TODO: Check if parent is the parent of the student (not implemented)
-        // TODO: Check that parent cannot subscribe same student again 
-        
+        // TODO: Check if parent is the parent of the student (not implemented)        
         // Get the course // TODO: Add error if course does not exist
         let mut course = read_course(&e, course_index);
-        // let hehas = course.subscriptions.
         if course_has_student(&e, &course, &student) {
             panic!("Student already exist");
         }
