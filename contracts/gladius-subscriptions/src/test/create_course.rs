@@ -132,6 +132,8 @@ fn create_course() {
     let incentive = 10;
     let title = String::from_str(&test.env, "Title");
 
+    assert_eq!(test.contract.get_total_courses(), 0);
+
     let index = test.contract
     .mock_auths(&[
         MockAuth {
@@ -168,6 +170,7 @@ fn create_course() {
     let read_course = test.contract.get_course(&index);
 
     assert_eq!(read_course, expected_course);
+    assert_eq!(test.contract.get_total_courses(), 1);
 }
 
 

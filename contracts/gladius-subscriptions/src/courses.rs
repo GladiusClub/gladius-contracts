@@ -1,4 +1,4 @@
-use soroban_sdk::Env;
+use soroban_sdk::{Env, Address};
 use crate::structs::Course;
 use crate::storage_types::SubsDataKey;
 
@@ -32,6 +32,10 @@ pub fn push_course(e: &Env, course: Course) -> u32 {
     write_total_courses(&e, next_index.checked_add(1).unwrap());
     // Return the pushed course index
     next_index
+}
+
+pub fn course_has_student(e: &Env, course: &Course, student: &Address) -> bool {
+    course.subscriptions.contains(&*student)
 }
 
 // pub fn deactivate_course(e: &Env, course_index: u32) {

@@ -17,6 +17,8 @@ fn basic_info_before_initialize() {
     assert_eq!(test.gladius_coin_emitter.pegged(), test.payment_token.address);
     assert_eq!(test.gladius_coin_emitter.ratio(), 1000);
     assert_eq!(test.gladius_coin_emitter.minter(), test.contract.address);
+
+    assert_eq!(test.contract.get_total_courses(), 0);
 }
 
 #[test]
@@ -33,6 +35,7 @@ fn initialize_basic_info() {
     assert_eq!(test.contract.get_admin(), test.gladius_admin);
     assert_eq!(test.contract.get_token(), test.payment_token.address);
     assert_eq!(test.contract.get_gladius_coin_emitter(), test.gladius_coin_emitter.address);
+    assert_eq!(test.contract.get_total_courses(), 0);
 }
 
 

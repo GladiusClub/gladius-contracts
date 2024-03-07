@@ -23,3 +23,6 @@ pub fn desactivate_course(e: &Env, course_index: u32) {
     course.active = false;
     set_course(&e, course, course_index);
 }
+pub fn course_has_student(e:Env, course: Course, student: Address) -> {
+    course.subscriptions.has(&student)
+}

@@ -21,7 +21,7 @@ mod test;
 use gladius_coin_emitter::{GladiusCoinEmitterClient, write_gladius_coin_emitter, read_gladius_coin_emitter};
 use admin::{read_administrator, has_administrator, write_administrator};
 use user_types::{write_is_type, read_is_type};
-use courses::{read_course, write_course, push_course};
+use courses::{read_course, write_course, push_course, read_total_courses, course_has_student};
 use payment_token::{write_payment_token, read_payment_token};
 use storage_types::SubsDataKey;
 use structs::Course;
@@ -161,6 +161,7 @@ pub trait GladiusSubscriptionsTrait {
     fn get_token(e:Env) -> Address;
     fn get_gladius_coin_emitter(e:Env) -> Address;
     fn get_course(e: Env, course_index: u32) -> Course;
+    fn get_total_courses(e: Env) -> u32;
 }
 
 #[contract]
@@ -364,9 +365,14 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         check_student(&e, &student);
         
         // TODO: Check if parent is the parent of the student (not implemented)
-
+        // TODO: Check that parent cannot subscribe same student again 
+        
         // Get the course // TODO: Add error if course does not exist
         let mut course = read_course(&e, course_index);
+        // let hehas = course.subscriptions.
+        if course_has_student(&e, &course, &student) {
+            panic!("Student already exist");
+        }
         
         // Calculate the total amount required for subscription
         let total_amount = course.price.checked_add(course.incentive).expect("Overflow when calculating total amount");
@@ -400,8 +406,6 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
                 sub_invocations: vec![&e]
             })
         ]);
-
-        let a =11 ;
         
         // Wrap and mint the incentive amount
         let minted_amount = gladius_coin_emitter_client.wrap_and_mint(
@@ -436,6 +440,10 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     
     fn get_course(e: Env, course_index: u32) -> Course {
         read_course(&e, course_index)
+    }
+
+    fn get_total_courses(e: Env) -> u32 {
+        read_total_courses(&e)
     }
 
     // BASIC INFO
