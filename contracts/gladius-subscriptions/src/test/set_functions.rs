@@ -1,5 +1,7 @@
-use crate::test::{GladiusSubscriptionsTest}; 
 use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
+use crate::test::{GladiusSubscriptionsTest}; 
+use crate::test::gladius_subscriptions::GladiusSubscriptionsError;
+
 
 
 #[test]
@@ -12,23 +14,23 @@ fn no_address_is_role() {
 }
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn set_is_sport_club_not_initialized() {
     let test = GladiusSubscriptionsTest::setup();
-    test.contract.set_is_sport_club(&test.club_0, &true);
+    let res = test.contract.try_set_is_sport_club(&test.club_0, &true);
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::NotInitialized))); 
 }
 
 #[test]
-#[should_panic] // TODO: Change for errors
 fn set_is_parent_not_initialized() {
     let test = GladiusSubscriptionsTest::setup();
-    test.contract.set_is_parent(&test.club_0, &true);
+    let res = test.contract.try_set_is_parent(&test.club_0, &true);
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::NotInitialized))); 
 }
 #[test]
-#[should_panic] // TODO: Change for errors
 fn set_is_student_not_initialized() {
     let test = GladiusSubscriptionsTest::setup();
-    test.contract.set_is_student(&test.club_0, &true);
+    let res = test.contract.try_set_is_student(&test.club_0, &true);
+    assert_eq!(res, Err(Ok(GladiusSubscriptionsError::NotInitialized))); 
 }
 
 #[test]
