@@ -10,12 +10,9 @@ pub enum GladiusSubscriptionsError {
     SportClubNotFound = 224,
     ParentNotFound = 225,
     StudentNotFound = 208,
-    UnWrapNegativesNotSupported = 204,
-    CourseAlreadyExists = 205,
-    CourseNotFound = 206,
-    StudentAlreadyEnrolled = 207,
+    CourseDoesNotContainsStudent = 226,
     InsufficientFunds = 209,
-    Overflow = 210,
+    StudentAlreadyEnrolled = 207,
 }
 
 

@@ -38,29 +38,33 @@ pub fn check_initialized(e: &Env) -> Result<(), GladiusSubscriptionsError> {
 pub fn check_positive_amount(amount: i128) -> Result<(), GladiusSubscriptionsError> {
     if amount <= 0 {
         return Err(GladiusSubscriptionsError::NegativesNotSupported);
+    } else {
+        Ok(())
     }
-    Ok(())
 }
 
 pub fn check_sport_club(e: &Env, addr: &Address) -> Result<(), GladiusSubscriptionsError> {
     if !GladiusSubscriptions::is_sport_club(e.clone(), addr.clone()) {
         return Err(GladiusSubscriptionsError::SportClubNotFound);
+    } else {
+        Ok(())
     }
-    Ok(())
 }
 
 pub fn check_parent(e: &Env, addr: &Address) -> Result<(), GladiusSubscriptionsError> {
     if !GladiusSubscriptions::is_parent(e.clone(), addr.clone()) {
         return Err(GladiusSubscriptionsError::ParentNotFound);
+    } else {
+        Ok(())
     }
-    Ok(())
 }
 
 pub fn check_student(e: &Env, addr: &Address) -> Result<(), GladiusSubscriptionsError> {
     if !GladiusSubscriptions::is_student(e.clone(), addr.clone()) {
         return Err(GladiusSubscriptionsError::StudentNotFound);
+    } else {
+        Ok(())
     }
-    Ok(())
 }
 
 pub trait GladiusSubscriptionsTrait {
@@ -197,8 +201,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         gladius_coin_emitter: Address)  -> Result<(), GladiusSubscriptionsError> {
         // Check if already initialized
         if has_administrator(&e) {
-            // TODO: Transform in Error
-            panic!("Already Initialized");
+            return Err(GladiusSubscriptionsError::AlreadyInitialized);
         }
 
         // Write administrator, token, and Gladius coin emitter addresses
@@ -292,9 +295,9 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         title: String,
     ) -> Result<u32, GladiusSubscriptionsError>  {
         check_initialized(&e)?;
-        check_sport_club(&e, &sport_club);
-        check_positive_amount(price);
-        check_positive_amount(incentive);
+        check_sport_club(&e, &sport_club)?;
+        check_positive_amount(price)?;
+        check_positive_amount(incentive)?;
         
         // Ensure that the caller is the sport club itself
         sport_club.require_auth();
@@ -335,15 +338,15 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         course.club.require_auth();
 
         // Ensure that the student exists in the course
-        if !course.subscriptions.contains(student.clone()) {
-            panic!("Student does not exist in that Course");
+        if !course_has_student(&course, &student) {
+            return Err(GladiusSubscriptionsError::CourseDoesNotContainsStudent);
         }
 
-        check_positive_amount(amount);
+        check_positive_amount(amount)?;
 
         // Ensure that the course has enough Gladius Coin balance
         if amount > course.gladius_coin_balance {
-            panic!("Course does not have enough Gladius Coin balance");
+            return Err(GladiusSubscriptionsError::InsufficientFunds);
         }
 
         // Update course balance before sending Gladius Coins
@@ -385,7 +388,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // Get the course // TODO: Add error if course does not exist
         let mut course = read_course(&e, course_index);
         if course_has_student(&course, &student) {
-            panic!("Student already exist");
+            return Err(GladiusSubscriptionsError::StudentAlreadyEnrolled);
         }
         
         // Calculate the total amount required for subscription
