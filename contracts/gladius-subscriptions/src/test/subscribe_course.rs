@@ -215,3 +215,47 @@ fn subscribe_course() {
 
     assert_eq!(read_new_course, expected_new_course);
 }
+
+
+
+#[test]
+#[should_panic] // TODO: Change for errors
+fn subscribe_course_twice_same_student() {
+    let test = GladiusSubscriptionsTest::setup();
+
+    test.contract.initialize(
+        &test.gladius_admin,
+        &test.payment_token.address,
+        &test.gladius_coin_emitter.address
+    );
+    
+    test.contract.set_is_sport_club(&test.club_0, &true);
+    test.contract.set_is_parent(&test.parent_0, &true);
+    test.contract.set_is_student(&test.student_0, &true);
+    test.contract.set_is_student(&test.student_1, &true);
+
+    let price = 100;
+    let incentive = 10;
+    let ratio: u32 = 1000;
+    let total_amount = price + incentive;
+    let title = String::from_str(&test.env, "Title");
+
+    test.contract.create_course(
+        &test.club_0, 
+        &price,
+        &incentive,
+        &title
+    );
+
+    test.contract.subscribe_course(
+        &test.parent_0, // parent: Address,
+        &test.student_0, // student: Address,
+        &0, // course_index: u32,
+    );
+
+    test.contract.subscribe_course(
+        &test.parent_0, // parent: Address,
+        &test.student_0, // student: Address,
+        &0, // course_index: u32,
+    );
+}
