@@ -43,9 +43,9 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
   await installContract('gladius_coin_emitter', addressBook, loadedConfig.admin);
   await bumpContractCode('gladius_coin_emitter', addressBook, loadedConfig.admin);
   // Gladius Subscriptions
-  // console.log('-------------------------------------------------------');
-  // await installContract('gladius_subscriptions', addressBook, loadedConfig.admin);
-  // await bumpContractCode('gladius_subscriptions', addressBook, loadedConfig.admin);
+  console.log('-------------------------------------------------------');
+  await installContract('gladius_subscriptions', addressBook, loadedConfig.admin);
+  await bumpContractCode('gladius_subscriptions', addressBook, loadedConfig.admin);
 
   console.log('-------------------------------------------------------');
   console.log('Deploying and Initializing Gladius Emitter');
@@ -71,6 +71,31 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
     addressBook,
     'initialize',
     emitterInitParams,
+    loadedConfig.admin
+  );
+
+  console.log('-------------------------------------------------------');
+  console.log('Deploying and Initializing Gladius Subscriptions');
+  console.log('-------------------------------------------------------');
+  await deployContract(
+    'gladius_subscriptions_id',
+    'gladius_subscriptions',
+    addressBook,
+    loadedConfig.admin
+  );
+  await bumpContractInstance('gladius_subscriptions_id', addressBook, loadedConfig.admin);
+
+  // Initializing Gladius Subscriptions
+  const subscriptionsInitParams = [
+    new Address(loadedConfig.admin.publicKey()).toScVal(),
+    new Address(addressBook.getContractId(network, 'token_id')).toScVal(),
+    new Address(addressBook.getContractId(network, 'gladius_emitter_id')).toScVal(),
+  ];
+  await invokeContract(
+    'gladius_subscriptions_id',
+    addressBook,
+    'initialize',
+    subscriptionsInitParams,
     loadedConfig.admin
   );
 }
