@@ -236,8 +236,6 @@ fn subscribe_course_twice_same_student() {
 
     let price = 100;
     let incentive = 10;
-    let ratio: u32 = 1000;
-    let total_amount = price + incentive;
     let title = String::from_str(&test.env, "Title");
 
     test.contract.create_course(

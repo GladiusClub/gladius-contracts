@@ -55,7 +55,6 @@ fn create_gladius_subscriptions<'a>(
 // THE TEST
 pub struct GladiusSubscriptionsTest<'a> {
     env: Env,
-    payment_token_admin: Address,
     gladius_admin: Address,
     parent_0: Address,
     parent_1: Address,
@@ -112,7 +111,6 @@ impl<'a> GladiusSubscriptionsTest<'a> {
 
         GladiusSubscriptionsTest {
             env,
-            payment_token_admin,
             gladius_admin,
             parent_0,
             parent_1,

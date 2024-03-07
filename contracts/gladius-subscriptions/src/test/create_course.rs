@@ -184,5 +184,5 @@ fn get_course_dont_exist() {
         &test.gladius_coin_emitter.address
     );
 
-    let read_course = test.contract.get_course(&2);
+    test.contract.get_course(&2);
 }

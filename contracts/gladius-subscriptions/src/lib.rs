@@ -369,7 +369,7 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // TODO: Check if parent is the parent of the student (not implemented)        
         // Get the course // TODO: Add error if course does not exist
         let mut course = read_course(&e, course_index);
-        if course_has_student(&e, &course, &student) {
+        if course_has_student(&course, &student) {
             panic!("Student already exist");
         }
         

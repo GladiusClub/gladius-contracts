@@ -1,6 +1,5 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusSubscriptionsTest}; 
-use crate::test::gladius_subscriptions::Course;
 use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
 
 
@@ -56,8 +55,6 @@ fn distribute_student_not_subscribed() {
 
     let price = 100;
     let incentive = 10;
-    let ratio: u32 = 1000;
-    let total_amount = price + incentive;
     let title = String::from_str(&test.env, "Title");
 
     assert_eq!(test.contract.get_total_courses(), 0);
@@ -97,8 +94,6 @@ fn distribute_negative() {
 
     let price = 100;
     let incentive = 10;
-    let ratio: u32 = 1000;
-    let total_amount = price + incentive;
     let title = String::from_str(&test.env, "Title");
 
     assert_eq!(test.contract.get_total_courses(), 0);
@@ -145,8 +140,6 @@ fn distribute_not_enough() {
 
     let price = 100;
     let incentive = 10;
-    let ratio: u32 = 1000;
-    let total_amount = price + incentive;
     let title = String::from_str(&test.env, "Title");
 
     assert_eq!(test.contract.get_total_courses(), 0);
@@ -191,8 +184,6 @@ fn distribute_zero() {
 
     let price = 100;
     let incentive = 10;
-    let ratio: u32 = 1000;
-    let total_amount = price + incentive;
     let title = String::from_str(&test.env, "Title");
 
     assert_eq!(test.contract.get_total_courses(), 0);

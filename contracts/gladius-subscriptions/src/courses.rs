@@ -34,16 +34,6 @@ pub fn push_course(e: &Env, course: Course) -> u32 {
     next_index
 }
 
-pub fn course_has_student(e: &Env, course: &Course, student: &Address) -> bool {
+pub fn course_has_student(course: &Course, student: &Address) -> bool {
     course.subscriptions.contains(&*student)
 }
-
-// pub fn deactivate_course(e: &Env, course_index: u32) {
-    //     let mut course = read_course(&e, course_index.clone());
-    //     course.active = false;
-    //     write_course(&e, course, course_index);
-    // }
-    
-// pub fn exist_course(e: &Env, course_index: u32) -> bool {
-//     e.storage().persistent().has(&SubsDataKey::Course(course_index))
-// }
