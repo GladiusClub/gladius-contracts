@@ -17,6 +17,7 @@ mod user_types;
 mod gladius_coin_emitter;
 mod test;
 mod error;
+mod event;
 
 // Import specific items from modules
 use gladius_coin_emitter::{GladiusCoinEmitterClient, write_gladius_coin_emitter, read_gladius_coin_emitter};
@@ -132,8 +133,8 @@ pub trait GladiusSubscriptionsTrait {
     fn create_course(
         e: Env, 
         sport_club: Address, 
-        amount: i128, 
-        prizes_amount: i128,
+        price: i128, 
+        incentive: i128,
         title: String) -> Result<u32, GladiusSubscriptionsError>;
     
     /// Distributes Gladius Coins to students enrolled in the specified course.
