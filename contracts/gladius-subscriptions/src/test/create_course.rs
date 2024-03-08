@@ -1,7 +1,10 @@
 use soroban_sdk::{String};
+use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
+
+use crate::event::{CreateCourseEvent};
+use crate::structs::{Course as CourseStruct};
 use crate::test::{GladiusSubscriptionsTest}; 
 use crate::test::gladius_subscriptions::{Course, GladiusSubscriptionsError};
-use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
 
 // create_course
 #[test]
@@ -162,7 +165,19 @@ fn create_course() {
         &title
     );
 
+
     let expected_course = Course {
+        club: test.club_0.clone(),
+        price,
+        incentive,
+        subscriptions: vec![&test.env].into(),
+        title: title.clone(),
+        active: true,
+        gladius_coin_balance: 0,
+    };
+    let read_course = test.contract.get_course(&index);
+
+    let expected_course_for_event = CourseStruct {
         club: test.club_0,
         price,
         incentive,
@@ -171,7 +186,23 @@ fn create_course() {
         active: true,
         gladius_coin_balance: 0,
     };
-    let read_course = test.contract.get_course(&index);
+
+    let course_created_event = test.env.events().all().last().unwrap();
+    let expected_course_created_event: CreateCourseEvent = CreateCourseEvent {
+        course_index: index.clone(),
+        course: expected_course_for_event
+    };
+    assert_eq!(
+        vec![&test.env, course_created_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusSubscriptions", symbol_short!("course_cr")).into_val(&test.env),
+                (expected_course_created_event).into_val(&test.env)
+            ),
+        ]
+    );
 
     assert_eq!(read_course, expected_course);
     assert_eq!(test.contract.get_total_courses(), 1);
