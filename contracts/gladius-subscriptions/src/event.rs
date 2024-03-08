@@ -100,7 +100,7 @@ pub(crate) fn course_created(
         course_index: course_index,
         course: course
     };
-    e.events().publish(("GladiusSubscriptions", symbol_short!("course")), event);
+    e.events().publish(("GladiusSubscriptions", symbol_short!("course_cr")), event);
 }
 
 
@@ -127,4 +127,38 @@ pub(crate) fn gladius_coins_distributed(
         new_course_balance: new_course_balance
     };
     e.events().publish(("GladiusSubscriptions", symbol_short!("coin_dist")), event);
+}
+
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SubscribeCourseEvent {
+    pub course_index: u32,
+    pub parent: Address,
+    pub student: Address,
+    pub sport_club: Address,
+    pub price: i128,
+    pub incentive: i128,
+    pub new_course_balance: i128
+}
+
+pub(crate) fn course_subscribed(
+    e: &Env,
+    course_index: u32,
+    parent: Address,
+    student: Address,
+    sport_club: Address,
+    price: i128,
+    incentive: i128,
+    new_course_balance: i128) {
+    
+    let event: SubscribeCourseEvent = SubscribeCourseEvent {
+        course_index: course_index,
+        parent: parent,
+        student: student,
+        sport_club: sport_club,
+        price: price,
+        incentive: incentive,
+        new_course_balance: new_course_balance
+    };
+    e.events().publish(("GladiusSubscriptions", symbol_short!("course_sb")), event);
 }
