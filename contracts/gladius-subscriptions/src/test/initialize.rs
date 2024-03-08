@@ -1,6 +1,7 @@
-use soroban_sdk::{String};
+use soroban_sdk::{testutils::{Events}, vec, symbol_short, IntoVal, String};
 use crate::test::{GladiusSubscriptionsTest}; 
 use crate::test::gladius_subscriptions::GladiusSubscriptionsError;
+use crate::event::{InitializeEvent};
 
 // use soroban_sdk::{testutils::{Events}, vec, IntoVal, symbol_short};
 
@@ -31,6 +32,26 @@ fn initialize_basic_info() {
         &test.gladius_admin,
         &test.payment_token.address,
         &test.gladius_coin_emitter.address
+    );
+
+    let initialize_event = test.env.events().all().last().unwrap();
+
+    let expected_initialize_event: InitializeEvent = InitializeEvent {
+        admin: test.gladius_admin.clone(),
+        payment_token: test.payment_token.address.clone(),
+        gladius_coin_emitter: test.gladius_coin_emitter.address.clone(),
+    };
+
+    assert_eq!(
+        vec![&test.env, initialize_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusSubscriptions", symbol_short!("init")).into_val(&test.env),
+                (expected_initialize_event).into_val(&test.env)
+            ),
+        ]
     );
     
     // TODO: test admin
