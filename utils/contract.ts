@@ -23,7 +23,7 @@ const CONTRACT_REL_PATH: object = {
   gladius_coin_emitter:
     '../../contracts/gladius-coin-emitter/target/wasm32-unknown-unknown/release/gladius_coin_emitter.optimized.wasm',
   gladius_subscriptions:
-    '../../contracts/gladius-subscriptions/target/wasm32-unknown-unknown/release/gladius_coin_emitter.optimized.wasm',
+    '../../contracts/gladius-subscriptions/target/wasm32-unknown-unknown/release/gladius_subscriptions.optimized.wasm',
   token:
     '../../contracts/token/target/wasm32-unknown-unknown/release/soroban_token_contract.optimized.wasm',
 };

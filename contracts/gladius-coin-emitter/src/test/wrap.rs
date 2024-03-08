@@ -130,7 +130,7 @@ fn wrap_correct_amounts() {
 
     let amount: i128 = 87654321;
 
-    test.contract.wrap_and_mint(&test.minter, &amount);
+    let minted_amount = test.contract.wrap_and_mint(&test.minter, &amount);
 
 
     let wrap_event = test.env.events().all().last().unwrap();
@@ -153,6 +153,9 @@ fn wrap_correct_amounts() {
             ),
         ]
     );
+
+    // Correct returned minted_amount
+    assert_eq!(minted_amount, amount * (ratio as i128));
     
 
     // New pegged token balances

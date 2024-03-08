@@ -10,6 +10,7 @@ export interface ContractNames {
   gladius_admin_public: string;
   token_id: string;
   gladius_emitter_id: string;
+  gladius_subscriptions_id: string;
 }
 
 export interface WasmKeys {
@@ -50,6 +51,7 @@ export class AddressBook {
             gladius_admin_public: '',
             token_id: '',
             gladius_emitter_id: '',
+            gladius_subscriptions_id: '',
           },
           hashes: {
             gladius_coin_emitter: '',
@@ -64,6 +66,7 @@ export class AddressBook {
             gladius_admin_public: '',
             token_id: '',
             gladius_emitter_id: '',
+            gladius_subscriptions_id: '',
           },
           hashes: {
             gladius_coin_emitter: '',
@@ -78,6 +81,7 @@ export class AddressBook {
             gladius_admin_public: '',
             token_id: '',
             gladius_emitter_id: '',
+            gladius_subscriptions_id: '',
           },
           hashes: {
             gladius_coin_emitter: '',
