@@ -446,13 +446,24 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         );
 
         // Assign the minted amount to the course
-        course.gladius_coin_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
+        let new_course_balance = course.gladius_coin_balance.checked_add(minted_amount).expect("Overflow when updating course balance");
+        course.gladius_coin_balance = new_course_balance;
 
         // Add the student to the course subscriptions
-        course.subscriptions.push_back(student);
+        course.subscriptions.push_back(student.clone());
 
         // Save the updated course
-        write_course(&e, course, course_index);
+        write_course(&e, course.clone(), course_index);
+        event::course_subscribed(
+            &e,
+            course_index,
+            parent,
+            student,
+            course.club,
+            course.price,
+            course.incentive,
+            new_course_balance
+        );
         Ok(())
     }
     
