@@ -1,16 +1,46 @@
 [
   {
     "network": "standalone",
-    "pegged_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
-    "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
-    "token_id": "CDVERCIADMLLBF4T67OIUE6P4PZL37KBX34HLKBQJN2YCPP366SUGHTC",
-    "gladius_emitter_id": "CCKKNNRGPHL7WVLPUKCDDSOALUWHYJYU2JXKL27ASEYY5XEMQH7FBWLT"
+    "ids": {
+      "pegged_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
+      "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
+      "token_id": "CB4HDIDP3Y22JB5Z24QKDC4GZMKM5OZLWVWUWB43DHQD5PRUYUC64W6N",
+      "gladius_emitter_id": "CBHRF4C4YCE3H2VC2F2IV3PDWTGU3JFJB7CXGN3Y724HQPTFSBLEW3IO",
+      "gladius_subscriptions_id": "CA7WC5UNS5TZSKWNXDST5USYCK6OUJ532AHLPB5MHEO4RNINZBRE2I74"
+    },
+    "hashes": {
+      "gladius_coin_emitter": "c9c42bf83bb1d2bae19bdc6978399179265618648e84ffdb585fcb5f582615ac",
+      "gladius_subscriptions": "03fe14a03b95b07efc30aa71a2d880083c23a1ff7ac0b274e51b2ff4d3fb883c",
+      "token": "8d6e91977729029afff8d00fc573e74f4d2f55f5a4e0e593558b060030f762ee"
+    }
   },
   {
-    "network": "futurenet",
-    "pegged_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
-    "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
-    "token_id": "CDNLOZX2VGZUP3DFM3X7TD6WFCYCXNMQBIGBRW7WEDKCMSWFALVLXIA3",
-    "gladius_emitter_id": "CD5MC3TKDUMRSU3KEOCGI77BSCZ23HA2ADBUL55QY5C6QMK4QDWJTC2R"
+    "network": "testnet",
+    "ids": {
+      "pegged_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
+      "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
+      "token_id": "CCMVIIRJPZFXB2HIRAQ6WKWBOHMZW6U4GXPXOWZIBJES5AT4EBVIEKMA",
+      "gladius_emitter_id": "CB3DZ4RBY6JALDOFS5HWJLK6XEOWNWNSMI4EU75NYTVJQBN44LEMCMRO",
+      "gladius_subscriptions_id": "CA6WJNNEGXXX347ORGGZAUB6CTP725IEATLF4UXGY4LKVMCKUFNIO4TJ"
+    },
+    "hashes": {
+      "gladius_coin_emitter": "c9c42bf83bb1d2bae19bdc6978399179265618648e84ffdb585fcb5f582615ac",
+      "gladius_subscriptions": "03fe14a03b95b07efc30aa71a2d880083c23a1ff7ac0b274e51b2ff4d3fb883c",
+      "token": "8d6e91977729029afff8d00fc573e74f4d2f55f5a4e0e593558b060030f762ee"
+    }
+  },
+  {
+    "network": "mainnet",
+    "ids": {
+      "pegged_token_admin_public": "",
+      "gladius_admin_public": "",
+      "token_id": "",
+      "gladius_emitter_id": ""
+    },
+    "hashes": {
+      "gladius_coin_emitter": "",
+      "gladius_subscriptions": "",
+      "token": ""
+    }
   }
 ]
