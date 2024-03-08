@@ -1,8 +1,11 @@
-use soroban_sdk::{String};
+use soroban_sdk::{
+    testutils::{Events, MockAuthInvoke, MockAuth},
+     vec, IntoVal, symbol_short, String};
+
+use crate::event::{SubscribeCourseEvent};
 use crate::test::{GladiusSubscriptionsTest}; 
 use crate::test::gladius_subscriptions::GladiusSubscriptionsError;
 use crate::test::gladius_subscriptions::Course;
-use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
 
 
 // subscribe_course
@@ -146,9 +149,32 @@ fn subscribe_course() {
 
     );
 
-    assert_eq!(test.contract.get_total_courses(), 1);
-
     let expected_gladius_coin_balance = incentive*(ratio as i128);
+
+    let course_subscribed_event = test.env.events().all().last().unwrap();
+    let expected_course_subscribed_event: SubscribeCourseEvent = SubscribeCourseEvent {
+        course_index: index.clone(),
+        parent: test.parent_0.clone(),
+        student: test.student_0.clone(),
+        sport_club: test.club_0.clone(),
+        price: price.clone(),
+        incentive: incentive.clone(),
+        new_course_balance: expected_gladius_coin_balance.clone()
+    };
+
+    assert_eq!(
+        vec![&test.env, course_subscribed_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusSubscriptions", symbol_short!("course_sb")).into_val(&test.env),
+                (expected_course_subscribed_event).into_val(&test.env)
+            ),
+        ]
+    );
+
+    assert_eq!(test.contract.get_total_courses(), 1);
 
     assert_eq!(test.payment_token.balance(&test.parent_0), initial_parent_0_balance - total_amount);
     assert_eq!(test.payment_token.balance(&test.contract.address), 0);
