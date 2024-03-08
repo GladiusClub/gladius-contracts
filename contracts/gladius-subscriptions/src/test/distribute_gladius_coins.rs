@@ -1,7 +1,10 @@
-use soroban_sdk::{String};
+use soroban_sdk::{
+    testutils::{Events, MockAuthInvoke, MockAuth},
+    vec, IntoVal, symbol_short, String};
+
+use crate::event::{DistributeGladiusCoinsEvent};
 use crate::test::gladius_subscriptions::GladiusSubscriptionsError;
 use crate::test::{GladiusSubscriptionsTest}; 
-use soroban_sdk::{testutils::{Events, MockAuthInvoke, MockAuth}, vec, IntoVal, symbol_short};
 
 
 #[test]
@@ -11,7 +14,6 @@ fn distribute_not_initialized() {
         &0, // parent: Address,
         &test.student_0, // student: Address,
         &0, // course_index: u32,
-
     );
     assert_eq!(res, Err(Ok(GladiusSubscriptionsError::NotInitialized))); 
 }
@@ -267,7 +269,9 @@ fn distribute_gladius_coins() {
     assert_eq!(test.gladius_coin_emitter.total_supply(), expected_gladius_coin_balance);
 
     let distribute_amount_gladius_coins = 99;
+    let expected_new_course_balance = expected_gladius_coin_balance- distribute_amount_gladius_coins;
 
+    // TODO: Test with auth
     test.contract.distribute_gladius_coins(
         &index, // index
         &test.student_0, // student: Address,
@@ -275,8 +279,29 @@ fn distribute_gladius_coins() {
 
     );
 
+    let gladius_coins_distributed_event = test.env.events().all().last().unwrap();
+
+    let expected_gladius_coins_distributed_event: DistributeGladiusCoinsEvent = DistributeGladiusCoinsEvent {
+        course_index: index,
+        student: test.student_0.clone(),
+        amount: distribute_amount_gladius_coins,
+        new_course_balance: expected_new_course_balance
+    };
+
+    assert_eq!(
+        vec![&test.env, gladius_coins_distributed_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusSubscriptions", symbol_short!("coin_dist")).into_val(&test.env),
+                (expected_gladius_coins_distributed_event).into_val(&test.env)
+            ),
+        ]
+    );
+
     assert_eq!(test.gladius_coin_emitter.total_supply(), expected_gladius_coin_balance);
-    assert_eq!(test.gladius_coin_emitter.balance(&test.contract.address), expected_gladius_coin_balance- distribute_amount_gladius_coins);
+    assert_eq!(test.gladius_coin_emitter.balance(&test.contract.address), expected_new_course_balance);
     assert_eq!(test.gladius_coin_emitter.balance(&test.student_0), distribute_amount_gladius_coins);
 
 
