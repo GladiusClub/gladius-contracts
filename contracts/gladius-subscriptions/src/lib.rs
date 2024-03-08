@@ -1,10 +1,8 @@
 #![no_std]
-
-// Import necessary items
 use soroban_sdk::{
     auth::{ContractContext, InvokerContractAuthEntry, SubContractInvocation},
-        contract, contractimpl, vec, Address, Env, IntoVal, Symbol,
-        String};
+    contract, contractimpl, vec,
+    Address, Env, IntoVal, Symbol, String};
 use soroban_sdk::token::Client as TokenClient;
 
 // Import modules
@@ -198,18 +196,19 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
     fn initialize(
         e: Env,
         admin: Address,
-        token: Address,
+        payment_token: Address,
         gladius_coin_emitter: Address)  -> Result<(), GladiusSubscriptionsError> {
         // Check if already initialized
         if has_administrator(&e) {
             return Err(GladiusSubscriptionsError::AlreadyInitialized);
         }
 
-        // Write administrator, token, and Gladius coin emitter addresses
+        // Write administrator, payment_token, and Gladius coin emitter addresses
         write_administrator(&e, &admin);
-        write_payment_token(&e, &token);
+        write_payment_token(&e, &payment_token);
         write_gladius_coin_emitter(&e, &gladius_coin_emitter);
-        // TODO: Add event
+        
+        event::initialized(&e, admin, payment_token, gladius_coin_emitter);
         Ok(())
     }
 
@@ -231,6 +230,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // Set the status of whether the address is a sport club
         let key = SubsDataKey::IsSportClub(addr.clone());
         write_is_type(&e, key, is);
+
+        event::sport_club_set(&e, addr, is);
         Ok(())
     }
 
@@ -250,6 +251,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // Set the status of whether the address is a parent
         let key = SubsDataKey::IsParent(addr.clone());
         write_is_type(&e, key, is);
+
+        event::parent_set(&e, addr, is);
         Ok(())
     }
 
@@ -269,6 +272,8 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         // Set the status of whether the address is a student
         let key = SubsDataKey::IsStudent(addr.clone());
         write_is_type(&e, key, is);
+
+        event::student_set(&e, addr, is);
         Ok(())
     }
 
@@ -314,9 +319,12 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
             gladius_coin_balance: 0,
         };
 
-        // Push the course and return its index
-        // TODO: Emit event of pushed course and index
-        Ok(push_course(&e, new_course))
+        // Push the course
+        let course_index = push_course(&e, new_course.clone());
+        // // Emits event
+        event::course_created(&e, course_index, new_course);
+        // Returns the course index
+        Ok(course_index)
     }
 
     /// Distributes Gladius Coins to students enrolled in the specified course.
@@ -351,14 +359,20 @@ impl GladiusSubscriptionsTrait for GladiusSubscriptions {
         }
 
         // Update course balance before sending Gladius Coins
-        course.gladius_coin_balance = course.gladius_coin_balance.checked_sub(amount).unwrap();
+        let new_course_balance = course.gladius_coin_balance.checked_sub(amount).unwrap();
+        course.gladius_coin_balance = new_course_balance;
         write_course(&e, course, course_index);
 
         // Send Gladius Coins to the student
         let gladius_coin_client = GladiusCoinEmitterClient::new(&e, &read_gladius_coin_emitter(&e));
         gladius_coin_client.transfer(&e.current_contract_address(), &student, &amount);
 
-        // TODO: Emit event
+        event::gladius_coins_distributed(
+            &e,
+            course_index,
+            student,
+            amount,
+            new_course_balance);
         Ok(())
     }
 

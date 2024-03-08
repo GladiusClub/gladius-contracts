@@ -1,18 +1,20 @@
 use soroban_sdk::{contracttype, symbol_short, Env, Address, String};
+use crate::structs::Course;
+
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InitializeEvent {
     pub admin: Address,
     pub payment_token: Address,
-    pub gladius_coin_emitter: u32
+    pub gladius_coin_emitter: Address
 }
 
 pub(crate) fn initialized(
     e: &Env, 
     admin: Address,
     payment_token: Address,
-    gladius_coin_emitter: u32) {
+    gladius_coin_emitter: Address) {
     
     let event: InitializeEvent = InitializeEvent {
         admin: admin,
@@ -86,26 +88,17 @@ pub(crate) fn student_set(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CreateCourseEvent {
     pub course_index: u32,
-    pub sport_club: Address,
-    pub price: i128,
-    pub incentive: i128,
-    pub title: String
+    pub course: Course,
 }
 
 pub(crate) fn course_created(
     e: &Env,
     course_index: u32,
-    sport_club: Address,
-    price: i128,
-    incentive: i128,
-    title: String) {
+    course: Course) {
     
     let event: CreateCourseEvent = CreateCourseEvent {
         course_index: course_index,
-        sport_club: sport_club,
-        price: price,
-        incentive: incentive,
-        title: title,
+        course: course
     };
     e.events().publish(("GladiusSubscriptions", symbol_short!("course")), event);
 }
@@ -135,20 +128,3 @@ pub(crate) fn gladius_coins_distributed(
     };
     e.events().publish(("GladiusSubscriptions", symbol_short!("coin_dist")), event);
 }
-// fn distribute_gladius_coins(
-//     e: Env,
-//     course_index: u32,
-//     student: Address,
-//     amount: i128,
-
-// fn subscribe_course(
-    // e: Env,
-    // student: Address,
-    // student: Address,
-    // course_index: u32,
-    // PRICE
-    // CLUB
-    // INCENTIVE
-    //
-
-
