@@ -271,6 +271,32 @@ fn distribute_gladius_coins() {
     let distribute_amount_gladius_coins = 99;
     let expected_new_course_balance = expected_gladius_coin_balance- distribute_amount_gladius_coins;
 
+    // test.contract
+    // .mock_auths(&[
+    //     MockAuth {
+    //         address: &test.club_0.clone(),
+    //         invoke: 
+    //             &MockAuthInvoke {
+    //                 contract: &test.contract.address,
+    //                 fn_name: "distribute_gladius_coins",
+    //                 args: (index.clone(), test.student_0.clone(), distribute_amount_gladius_coins.clone(),).into_val(&test.env),
+    //                 sub_invokes: &[
+
+    //                     MockAuthInvoke {
+    //                     contract: &test.payment_token.address,
+    //                     fn_name: "transfer",
+    //                     args: (test.parent_0.clone(), test.contract.address.clone(), total_amount.clone(),).into_val(&test.env),
+    //                     sub_invokes: &[],}
+    //                 ],
+    //             },
+    //     }
+    // ])
+    // .distribute_gladius_coins(
+    //     &test.parent_0, // parent: Address,
+    //     &test.student_1, // student: Address,
+    //     &index, // course_index: u32,
+    // );
+
     // TODO: Test with auth
     test.contract.distribute_gladius_coins(
         &index, // index
