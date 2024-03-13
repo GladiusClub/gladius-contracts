@@ -317,3 +317,19 @@ export async function getIsRole(
   }
   return parsedResult;
 }
+
+export async function getTotalCourses(contractId: string, source: Keypair) {
+
+  const subscriptionContract = new Contract(contractId);
+  const op = subscriptionContract.call('get_total_courses');
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
+
+

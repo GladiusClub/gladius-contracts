@@ -1,7 +1,7 @@
-import { Address, nativeToScVal, xdr } from 'stellar-sdk';
+import { Address, nativeToScVal, xdr, scValToNative } from 'stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
 
-import { getTokenBalance, getIsRole, invokeContract } from '../utils/contract.js';
+import { getTokenBalance, getIsRole, getTotalCourses, invokeContract } from '../utils/contract.js';
 import { config } from '../utils/env_config.js';
 import { mintToken } from './mint_token.js';
 
@@ -88,6 +88,46 @@ export async function testGladius(addressBook: AddressBook) {
   console.log("~ testGladius ~ isParentAfter:", isParentAfter)
   console.log("~ testGladius ~ isSportClubAfter:", isSportClubAfter)
 
+  console.log("   ")
+  console.log("   ")
+
+  console.log("  📝  | Checking and Creating Courses")
+
+  const totalCoursesBefore = await getTotalCourses(
+    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    gladius_admin
+    );
+  console.log(" ~ testGladius ~ totalCoursesBefore:", totalCoursesBefore)
+
+  // let price = 100;
+  //   let incentive = 10;
+  //   let ratio: u32 = 1000;
+  //   let total_amount = price + incentive;
+  //   let title = String::from_str(&test.env, "Title");
+
+  //   assert_eq!(test.contract.get_total_courses(), 0);
+  //   let index = test.contract
+  //   .create_course(
+  //       &test.club_0, 
+  //       &price,
+  //       &incentive,
+  //       &title
+  //   );
+  const createCourseParams: xdr.ScVal[] = [
+    new Address(sport_club.publicKey()).toScVal(), // sport_club
+    nativeToScVal(100, { type: 'i128' }), // price
+    nativeToScVal(10, { type: 'i128' }), // incentive
+    nativeToScVal('My Course', { type: 'string' }), // title
+  ];
+  const courseReponse = await invokeContract('gladius_subscriptions_id', addressBook, 'create_course', createCourseParams, sport_club);
+  const courseIndex = scValToNative(courseReponse.returnValue);
+  console.log("~ testGladius ~ courseIndex:", courseIndex)
+  
+  const totalCoursesAfter = await getTotalCourses(
+    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    gladius_admin
+    );
+  console.log(" ~ testGladius ~ totalCoursesAfter:", totalCoursesAfter)
 
 
 
