@@ -295,7 +295,7 @@ export async function getTokenBalance(contractId: string, from: string, source: 
   if (parsedResult == 0) {
     return parsedResult;
   }
-  const resultNumber = parseInt(parsedResult.slice(0, -1));
+  const resultNumber = parseInt(parsedResult);
   return resultNumber;
 }
 
@@ -331,5 +331,9 @@ export async function getTotalCourses(contractId: string, source: Keypair) {
   }
   return parsedResult;
 }
+
+
+
+
 
 
