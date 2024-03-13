@@ -131,7 +131,7 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
 }
 
 const network = process.argv[2];
-const addressBook = AddressBook.loadFromFile();
+const addressBook = AddressBook.loadFromFile(network);
 
 const loadedConfig = config(network);
 

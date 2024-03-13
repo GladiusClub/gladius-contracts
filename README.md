@@ -2,6 +2,8 @@
 
 Welcome to the Gladius Contracts repository! This guide provides comprehensive instructions for setting up your development environment, testing, deploying, and interacting with the Gladius smart contracts. For detailed information on Gladius Economics and additional documentation, please refer to the [documentation directory](./docs/README.md).
 
+This guide should help you get started with Gladius Contracts smoothly. For further assistance or more detailed documentation, please refer to the docs directory.
+
 ## Getting Started
 
 ### Environment Setup
@@ -100,7 +102,7 @@ mkdir -p public
 cp .soroban/deployments.json public/
 ```
 
-#### Testing on Blockchain
+#### Testing on Blockchain (./soroban)
 
 After deployment, you can test the contracts on the blockchain:
 
@@ -109,12 +111,11 @@ cd /workspace
 yarn test <network>
 ```
 
-**Note:** If you modify the TypeScript scripts, such as adding more tests, remember to rebuild before running. Use the following one-liner to streamline the process:
+This, by default will read the contrat addresses in `.soroban`, which is an ignored folder.
 
+#### Testing on Blockchain (public)
+
+If you want to test with the published addresss available in the `public` folder, please do:
 ```bash
-yarn build && yarn setup <network>
-# or
-yarn build && yarn test <network>
+yarn test testnet public
 ```
-
-This guide should help you get started with Gladius Contracts smoothly. For further assistance or more detailed documentation, please refer to the docs directory.

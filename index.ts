@@ -7,7 +7,7 @@ import { config } from './utils/env_config.js';
 export async function GladiusContracts(req: Request, res: Response): Promise<void> {
 
   const network = process.argv[2];
-  const addressBook = AddressBook.loadFromFile();
+  const addressBook = AddressBook.loadFromFile(network);
   const loadedConfig = config(network);
 
   try {
