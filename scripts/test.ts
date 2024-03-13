@@ -296,8 +296,16 @@ export async function testGladius(addressBook: AddressBook) {
 }
 
 const network = process.argv[2];
-const addressBook = AddressBook.loadFromFile();
+const folder = process.argv[3];
+let addressBook: AddressBook;
+
+if (folder == 'public') {
+    addressBook = AddressBook.loadFromFile(network, folder);
+} else {
+    addressBook = AddressBook.loadFromFile(network);
+}
 
 const loadedConfig = config(network);
+
 
 await testGladius(addressBook);

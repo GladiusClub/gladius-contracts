@@ -25,7 +25,7 @@ interface NetworkContracts {
   hashes: WasmKeys;
 }
 
-export class AddressBook {
+export class AddressBook { 
   private networks: NetworkContracts[];
   private fileName: string;
 
@@ -34,8 +34,10 @@ export class AddressBook {
     this.fileName = fileName;
   }
 
-  static loadFromFile(fileName: string = 'deployments.json') {
-    const filePath = path.join(__dirname, '../../.soroban/', fileName);
+  static loadFromFile(network: string, folder: string = '.soroban') {
+    const fileName = `deployments.json`;
+    const filePath = path.join(__dirname, `../../${folder}/`, fileName);
+    console.log("🚀 ~ AddressBook ~ loadFromFile ~ filePath:", filePath)
     let networks: NetworkContracts[];
 
     if (existsSync(filePath)) {
