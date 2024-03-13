@@ -17,13 +17,18 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
   // Setting up public address for gladius accounts
   let gladius_admin = loadedConfig.admin;
   addressBook.setAddress(network, 'gladius_admin_public', gladius_admin.publicKey());
-  await airdropAccount(gladius_admin);
 
   if (network != 'mainnet') {
 
     // Gladius EURC Token
     console.log('-------------------------------------------------------');
     console.log('Because we are not in Mainnet.....');
+    await airdropAccount(gladius_admin);
+    await airdropAccount(loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET'));
+    await airdropAccount(loadedConfig.getUser('SPORT_CLUB_SECRET'));
+    await airdropAccount(loadedConfig.getUser('PARENT_SECRET'));
+    await airdropAccount(loadedConfig.getUser('STUDENT_SECRET'));
+    
     console.log('Deploying and Initializing  a Payment EURC token');
     console.log('-------------------------------------------------------');
     addressBook.setAddress(
@@ -31,7 +36,8 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
       'payment_token_admin_public',
       loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET').publicKey()
     );
-    await airdropAccount(loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET'));
+    console.log('Airdropping to all accounts');
+    
     await deployToken(
       'EURC Token',
       'EURC',

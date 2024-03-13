@@ -18,56 +18,72 @@ export async function testGladius(addressBook: AddressBook) {
   console.log('Testing Gladius Contracts');
   console.log('-------------------------------------------------------');
 
-  console.log("   Minting EURC to ")
+  console.log("   Minting 2500,000 EURC to parent")
   // Minting EURC tokens to the gladius admin account
   await mintToken(
     addressBook.getContractId(network, 'token_id'),
     25000000000000,
-    gladius_admin.publicKey(),
+    parent.publicKey(), // to
     payment_token_admin
   );
 
-  // Checking the balance of the gladius admin account
-  const balanceAdminBefore = await getTokenBalance(
+  const balanceParentBefore = await getTokenBalance(
     addressBook.getContractId(network, 'token_id'),
-    gladius_admin.publicKey(),
-    gladius_admin
+    parent.publicKey(),
+    parent
   );
-  console.log('🚀 « EURC balanceAdminBefore:', balanceAdminBefore);
+  const balanceSportClubBefore = await getTokenBalance(
+    addressBook.getContractId(network, 'token_id'),
+    sport_club.publicKey(),
+    sport_club
+  );
+  console.log('🚀 « EURC balanceParentBefore:', balanceParentBefore);
+  console.log("🚀 « EURC balanceSportClubBefore:", balanceSportClubBefore)
 
-  // Example of transfering a token with the token's transfer function from the admins account to the pegged token admin account
-  // ONLY EXAMPLE SHOULD BE REMOVED AFTER
-  console.log('-------------------------------------------------------');
-  console.log('Example of executing a method of an smart contract');
-  console.log('Making a transfer of EURC Token from gladius admin to pegged token admin');
-  console.log('-------------------------------------------------------');
-  const balanceTokenAdminBefore = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'),
-    payment_token_admin.publicKey(),
-    payment_token_admin
-  );
-  console.log('🚀 « EURC balanceTokenAdminBefore:', balanceTokenAdminBefore);
 
-  const transferInitParams: xdr.ScVal[] = [
-    new Address(gladius_admin.publicKey()).toScVal(),
-    new Address(payment_token_admin.publicKey()).toScVal(),
-    nativeToScVal(1000000000, { type: 'i128' }),
-  ];
-  await invokeContract('token_id', addressBook, 'transfer', transferInitParams, gladius_admin);
-  // Balances after transfering
-  const balanceAdminAfter = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'),
-    gladius_admin.publicKey(),
-    gladius_admin
-  );
-  console.log('🚀 « EURC balanceAdminAfter:', balanceAdminAfter);
-  const balanceTokenAdminAfter = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'),
-    payment_token_admin.publicKey(),
-    payment_token_admin
-  );
-  console.log('🚀 « EURC balanceTokenAdminAfter:', balanceTokenAdminAfter);
-  // END OF EXAMPLE
+
+
+
+
+
+
+
+
+
+
+  // // Example of transfering a token with the token's transfer function from the admins account to the pegged token admin account
+  // // ONLY EXAMPLE SHOULD BE REMOVED AFTER
+  // console.log('-------------------------------------------------------');
+  // console.log('Example of executing a method of an smart contract');
+  // console.log('Making a transfer of EURC Token from gladius admin to pegged token admin');
+  // console.log('-------------------------------------------------------');
+  // const balanceTokenAdminBefore = await getTokenBalance(
+  //   addressBook.getContractId(network, 'token_id'),
+  //   payment_token_admin.publicKey(),
+  //   payment_token_admin
+  // );
+  // console.log('🚀 « EURC balanceTokenAdminBefore:', balanceTokenAdminBefore);
+
+  // const transferInitParams: xdr.ScVal[] = [
+  //   new Address(gladius_admin.publicKey()).toScVal(),
+  //   new Address(payment_token_admin.publicKey()).toScVal(),
+  //   nativeToScVal(1000000000, { type: 'i128' }),
+  // ];
+  // await invokeContract('token_id', addressBook, 'transfer', transferInitParams, gladius_admin);
+  // // Balances after transfering
+  // const balanceAdminAfter = await getTokenBalance(
+  //   addressBook.getContractId(network, 'token_id'),
+  //   gladius_admin.publicKey(),
+  //   gladius_admin
+  // );
+  // console.log('🚀 « EURC balanceAdminAfter:', balanceAdminAfter);
+  // const balanceTokenAdminAfter = await getTokenBalance(
+  //   addressBook.getContractId(network, 'token_id'),
+  //   payment_token_admin.publicKey(),
+  //   payment_token_admin
+  // );
+  // console.log('🚀 « EURC balanceTokenAdminAfter:', balanceTokenAdminAfter);
+  // // END OF EXAMPLE
 }
 
 const network = process.argv[2];
