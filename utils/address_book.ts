@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export interface ContractNames {
-  pegged_token_admin_public: string;
+  payment_token_admin_public: string;
   gladius_admin_public: string;
   token_id: string;
   gladius_emitter_id: string;
@@ -47,7 +47,7 @@ export class AddressBook {
         {
           network: 'standalone',
           ids: {
-            pegged_token_admin_public: '',
+            payment_token_admin_public: '',
             gladius_admin_public: '',
             token_id: '',
             gladius_emitter_id: '',
@@ -62,7 +62,7 @@ export class AddressBook {
         {
           network: 'testnet',
           ids: {
-            pegged_token_admin_public: '',
+            payment_token_admin_public: '',
             gladius_admin_public: '',
             token_id: '',
             gladius_emitter_id: '',
@@ -77,7 +77,7 @@ export class AddressBook {
         {
           network: 'mainnet',
           ids: {
-            pegged_token_admin_public: '',
+            payment_token_admin_public: '',
             gladius_admin_public: '',
             token_id: '',
             gladius_emitter_id: '',
@@ -101,7 +101,7 @@ export class AddressBook {
     writeFileSync(filePath, fileContent);
   }
 
-  setContractId(networkName: string, contractKey: keyof ContractNames, contractId: string) {
+  setAddress(networkName: string, contractKey: keyof ContractNames, contractId: string) {
     const network = this.networks.find((n) => n.network === networkName);
     if (network) {
       network.ids[contractKey] = contractId;

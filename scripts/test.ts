@@ -6,23 +6,32 @@ import { config } from '../utils/env_config.js';
 import { mintToken } from './mint_token.js';
 
 export async function testGladius(addressBook: AddressBook) {
+
+
+  let gladius_admin = loadedConfig.admin;
+  let payment_token_admin = loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET');
+  let sport_club = loadedConfig.getUser('SPORT_CLUB_SECRET');
+  let parent = loadedConfig.getUser('PARENT_SECRET');
+  let student = loadedConfig.getUser('STUDENT_SECRET');
+
   console.log('-------------------------------------------------------');
   console.log('Testing Gladius Contracts');
   console.log('-------------------------------------------------------');
 
+  console.log("   Minting EURC to ")
   // Minting EURC tokens to the gladius admin account
   await mintToken(
     addressBook.getContractId(network, 'token_id'),
     25000000000000,
-    loadedConfig.admin.publicKey(),
-    loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET')
+    gladius_admin.publicKey(),
+    payment_token_admin
   );
 
   // Checking the balance of the gladius admin account
   const balanceAdminBefore = await getTokenBalance(
     addressBook.getContractId(network, 'token_id'),
-    loadedConfig.admin.publicKey(),
-    loadedConfig.admin
+    gladius_admin.publicKey(),
+    gladius_admin
   );
   console.log('🚀 « EURC balanceAdminBefore:', balanceAdminBefore);
 
@@ -34,28 +43,28 @@ export async function testGladius(addressBook: AddressBook) {
   console.log('-------------------------------------------------------');
   const balanceTokenAdminBefore = await getTokenBalance(
     addressBook.getContractId(network, 'token_id'),
-    loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET').publicKey(),
-    loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET')
+    payment_token_admin.publicKey(),
+    payment_token_admin
   );
   console.log('🚀 « EURC balanceTokenAdminBefore:', balanceTokenAdminBefore);
 
   const transferInitParams: xdr.ScVal[] = [
-    new Address(loadedConfig.admin.publicKey()).toScVal(),
-    new Address(loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET').publicKey()).toScVal(),
+    new Address(gladius_admin.publicKey()).toScVal(),
+    new Address(payment_token_admin.publicKey()).toScVal(),
     nativeToScVal(1000000000, { type: 'i128' }),
   ];
-  await invokeContract('token_id', addressBook, 'transfer', transferInitParams, loadedConfig.admin);
+  await invokeContract('token_id', addressBook, 'transfer', transferInitParams, gladius_admin);
   // Balances after transfering
   const balanceAdminAfter = await getTokenBalance(
     addressBook.getContractId(network, 'token_id'),
-    loadedConfig.admin.publicKey(),
-    loadedConfig.admin
+    gladius_admin.publicKey(),
+    gladius_admin
   );
   console.log('🚀 « EURC balanceAdminAfter:', balanceAdminAfter);
   const balanceTokenAdminAfter = await getTokenBalance(
     addressBook.getContractId(network, 'token_id'),
-    loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET').publicKey(),
-    loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET')
+    payment_token_admin.publicKey(),
+    payment_token_admin
   );
   console.log('🚀 « EURC balanceTokenAdminAfter:', balanceTokenAdminAfter);
   // END OF EXAMPLE

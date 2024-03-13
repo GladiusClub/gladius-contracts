@@ -83,25 +83,25 @@ echo "$GLADIUS_ADMIN_ADDRESS" > .soroban/gladius_admin_address
 
 
 # GLADIUS ADMIN
-if [[ -n "$PEGGED_TOKEN_ADMIN_SECRET" ]]; then
-  echo "  Environmental variable PEGGED_TOKEN_ADMIN_SECRET is already set"
+if [[ -n "$PAYMENT_TOKEN_ADMIN_SECRET" ]]; then
+  echo "  Environmental variable PAYMENT_TOKEN_ADMIN_SECRET is already set"
   echo "  Setting up the account with this secret key"
-  echo "secret_key = \"$PEGGED_TOKEN_ADMIN_SECRET\"" > .soroban/identity/token-admin.toml
+  echo "secret_key = \"$PAYMENT_TOKEN_ADMIN_SECRET\"" > .soroban/identity/token-admin.toml
   else
-    echo "  Environmental variable PEGGED_TOKEN_ADMIN_SECRET is not set"
+    echo "  Environmental variable PAYMENT_TOKEN_ADMIN_SECRET is not set"
     if !(soroban config identity ls | grep token-admin 2>&1 >/dev/null); then
       echo Create the token-admin identity
       soroban keys generate --no-fund --network $NETWORK token-admin
     fi
 fi
-PEGGED_TOKEN_ADMIN_SECRET="$(soroban keys show token-admin)"
+PAYMENT_TOKEN_ADMIN_SECRET="$(soroban keys show token-admin)"
 PEGGED_TOKEN_ADMIN_ADDRESS="$(soroban keys address token-admin)"
 
-echo "  PEGGED_TOKEN_ADMIN_SECRET: $PEGGED_TOKEN_ADMIN_SECRET"
+echo "  PAYMENT_TOKEN_ADMIN_SECRET: $PAYMENT_TOKEN_ADMIN_SECRET"
 echo "  PEGGED_TOKEN_ADMIN_ADDRESS: $PEGGED_TOKEN_ADMIN_ADDRESS"
 echo "   "
 
-echo "$PEGGED_TOKEN_ADMIN_SECRET" > .soroban/token_admin_secret
+echo "$PAYMENT_TOKEN_ADMIN_SECRET" > .soroban/token_admin_secret
 echo "$PEGGED_TOKEN_ADMIN_ADDRESS" > .soroban/token_admin_address
 
 
@@ -109,7 +109,7 @@ echo "$PEGGED_TOKEN_ADMIN_ADDRESS" > .soroban/token_admin_address
 # \"gladius_admin_public\": \"$GLADIUS_ADMIN_ADDRESS\", \
 # \"gladius_admin_secret\": \"$GLADIUS_ADMIN_SECRET\" \
 # \"token_admin_secret\": \"$PEGGED_TOKEN_ADMIN_ADDRESS\" \
-# \"token_admin_public\": \"$PEGGED_TOKEN_ADMIN_PUBLIC\" \
+# \"token_admin_public\": \"$payment_token_admin_public\" \
 # \}"
 # # echo "New keys object: $NEW_KEYS_OBJECT"
 

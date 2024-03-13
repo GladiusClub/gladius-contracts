@@ -13,8 +13,8 @@ export async function GladiusContracts(req: Request, res: Response): Promise<voi
   try {
       const balanceCheck = await getTokenBalance(
           addressBook.getContractId(network, 'token_id'),
-          loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET').publicKey(),
-          loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET')
+          loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET').publicKey(),
+          loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET')
       );
       console.log('🚀 « EURC balanceCheck:', balanceCheck);
 

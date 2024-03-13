@@ -2,7 +2,7 @@
   {
     "network": "standalone",
     "ids": {
-      "pegged_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
+      "payment_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
       "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
       "token_id": "CB4HDIDP3Y22JB5Z24QKDC4GZMKM5OZLWVWUWB43DHQD5PRUYUC64W6N",
       "gladius_emitter_id": "CBHRF4C4YCE3H2VC2F2IV3PDWTGU3JFJB7CXGN3Y724HQPTFSBLEW3IO",
@@ -17,7 +17,7 @@
   {
     "network": "testnet",
     "ids": {
-      "pegged_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
+      "payment_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
       "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
       "token_id": "CCMVIIRJPZFXB2HIRAQ6WKWBOHMZW6U4GXPXOWZIBJES5AT4EBVIEKMA",
       "gladius_emitter_id": "CB3DZ4RBY6JALDOFS5HWJLK6XEOWNWNSMI4EU75NYTVJQBN44LEMCMRO",
@@ -32,7 +32,7 @@
   {
     "network": "mainnet",
     "ids": {
-      "pegged_token_admin_public": "",
+      "payment_token_admin_public": "",
       "gladius_admin_public": "",
       "token_id": "",
       "gladius_emitter_id": ""
