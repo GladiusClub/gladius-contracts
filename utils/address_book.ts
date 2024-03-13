@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -96,7 +96,13 @@ export class AddressBook {
   }
 
   writeToFile() {
-    const filePath = path.join(__dirname, '../../.soroban/', this.fileName);
+    const dirPath = path.join(__dirname, '../../.soroban/');
+    const filePath = path.join(__dirname, this.fileName);
+
+    if (!existsSync(dirPath)) {
+      mkdirSync(dirPath, { recursive: true });
+    }
+    
     const fileContent = JSON.stringify(this.networks, null, 2);
     writeFileSync(filePath, fileContent);
   }
