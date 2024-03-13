@@ -180,7 +180,7 @@ export async function testGladius(addressBook: AddressBook) {
   ];
   const gotCourse = await invokeContract('gladius_subscriptions_id', addressBook, 'get_course', getCourseParams, sport_club);
   const gotCourseNative = scValToNative(gotCourse.returnValue);
-  console.log(" ~ testGladius ~ gotCourseNative.price:", gotCourseNative.price)
+  console.log(" ~ testGladius ~ gotCourseNative:", gotCourseNative)
   
 
   console.log("   ")
