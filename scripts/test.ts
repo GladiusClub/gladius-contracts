@@ -5,13 +5,63 @@ import { getTokenBalance, getIsRole, getTotalCourses, invokeContract } from '../
 import { config } from '../utils/env_config.js';
 import { mintToken } from './mint_token.js';
 
+
+
 export async function testGladius(addressBook: AddressBook) {
+
 
   let gladius_admin = loadedConfig.admin;
   let payment_token_admin = loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET');
   let sport_club = loadedConfig.getUser('SPORT_CLUB_SECRET');
   let parent = loadedConfig.getUser('PARENT_SECRET');
   let student = loadedConfig.getUser('STUDENT_SECRET');
+
+  async function getAllBalances() {
+      let balanceParent = await getTokenBalance(
+        addressBook.getContractId(network, 'token_id'),
+        parent.publicKey(),
+        parent
+      );
+      let balanceSportClub = await getTokenBalance(
+        addressBook.getContractId(network, 'token_id'),
+        sport_club.publicKey(),
+        sport_club
+      );
+      let balanceCoinEmitter = await getTokenBalance(
+        addressBook.getContractId(network, 'token_id'), // what token
+        addressBook.getContractId(network, 'gladius_emitter_id'), // balance of who?
+        sport_club
+      );
+      let balanceGladiusSubscriptions = await getTokenBalance(
+        addressBook.getContractId(network, 'token_id'), // what token
+        addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
+        sport_club
+      );
+      let balanceGLCGladiusSubscriptions = await getTokenBalance(
+        addressBook.getContractId(network, 'gladius_emitter_id'), // what token
+        addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
+        sport_club
+      );
+      let balanceGLCStudent = await getTokenBalance(
+        addressBook.getContractId(network, 'gladius_emitter_id'), // what token
+        student.publicKey(), // balance of who?
+        sport_club
+      );
+      let balanceGLCSportClub = await getTokenBalance(
+        addressBook.getContractId(network, 'gladius_emitter_id'), // what token
+        sport_club.publicKey(), // balance of who?
+        sport_club
+      );
+
+      console.log("« EURC balance GladiusSubscriptions:", balanceGladiusSubscriptions)
+      console.log("« EURC balance CoinEmitter:", balanceCoinEmitter)
+      console.log('« EURC balance Parent:', balanceParent);
+      console.log("« EURC balance SportClub:", balanceSportClub)
+      console.log("« GLC  balance GladiusSubscriptions:", balanceGLCGladiusSubscriptions)
+      console.log("« GLC  balance Student:", balanceGLCStudent)
+      console.log("« GLC  balance SportClub:", balanceGLCSportClub)
+
+  }
 
   console.log('-------------------------------------------------------');
   console.log('Testing Gladius Contracts');
@@ -26,18 +76,7 @@ export async function testGladius(addressBook: AddressBook) {
     payment_token_admin
   );
 
-  const balanceParentBefore = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'),
-    parent.publicKey(),
-    parent
-  );
-  const balanceSportClubBefore = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'),
-    sport_club.publicKey(),
-    sport_club
-  );
-  console.log('« EURC balanceParentBefore:', balanceParentBefore);
-  console.log("« EURC balanceSportClubBefore:", balanceSportClubBefore)
+  await getAllBalances();
 
   console.log("  ")
   console.log("  ")
@@ -150,28 +189,7 @@ export async function testGladius(addressBook: AddressBook) {
 
   console.log("  🎾  | Subscribing to Courses")
 
-  const balanceCoinEmitterBefore = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'), // what token
-    addressBook.getContractId(network, 'gladius_emitter_id'), // balance of who?
-    sport_club
-  );
-  const balanceGladiusSubscriptionsBefore = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'), // what token
-    addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
-    sport_club
-  );
-  const balanceGLCGladiusSubscriptionsBefore = await getTokenBalance(
-    addressBook.getContractId(network, 'gladius_emitter_id'), // what token
-    addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
-    sport_club
-  );
-
-  console.log("« EURC balanceGladiusSubscriptionsBefore:", balanceGladiusSubscriptionsBefore)
-  console.log("« EURC balanceCoinEmitterBefore:", balanceCoinEmitterBefore)
-  console.log('« EURC balanceParentBefore:', balanceParentBefore);
-  console.log("« EURC balanceSportClubBefore:", balanceSportClubBefore)
-  console.log("« GLC  balanceGladiusSubscriptionsBefore:", balanceGLCGladiusSubscriptionsBefore)
-
+  await getAllBalances();
 
   const subscribeCourseParams: xdr.ScVal[] = [
     new Address(parent.publicKey()).toScVal(), // parent
@@ -181,38 +199,55 @@ export async function testGladius(addressBook: AddressBook) {
   
   await invokeContract('gladius_subscriptions_id', addressBook, 'subscribe_course', subscribeCourseParams, parent);
   
+  await getAllBalances();
 
-  const balanceParentAfter = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'),
-    parent.publicKey(),
-    parent
-  );
-  const balanceSportClubAfter = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'),
-    sport_club.publicKey(),
-    sport_club
-  );
-  const balanceCoinEmitterAfter = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'), // what token
-    addressBook.getContractId(network, 'gladius_emitter_id'), // balance of who?
-    sport_club
-  );
-  const balanceGladiusSubscriptionsAfter = await getTokenBalance(
-    addressBook.getContractId(network, 'token_id'), // what token
-    addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
-    sport_club
-  );
-  const balanceGLCGladiusSubscriptionsAfter = await getTokenBalance(
-    addressBook.getContractId(network, 'gladius_emitter_id'), // what token
-    addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
-    sport_club
-  );
 
-  console.log("« EURC balanceGladiusSubscriptionsAfter:", balanceGladiusSubscriptionsAfter)
-  console.log("« EURC balanceCoinEmitterAfter:", balanceCoinEmitterAfter)
-  console.log('« EURC balanceParentAfter:', balanceParentAfter);
-  console.log("« EURC balanceSportClubAfter:", balanceSportClubAfter)
-  console.log("« GLC  balanceGladiusSubscriptionsAfter:", balanceGLCGladiusSubscriptionsAfter)
+  console.log("   ")
+  console.log("   ")
+
+  console.log("  🏆  | Gladius Coins Distribution")
+  console.log("      | Sport Club will distribute 1500 units of GLC to student")
+
+  const distributeParams: xdr.ScVal[] = [
+    nativeToScVal(courseIndex, { type: 'u32' }), // course_index
+    new Address(student.publicKey()).toScVal(), // student
+    nativeToScVal(1500, { type: 'i128' }), // amount
+  ];
+  await invokeContract('gladius_subscriptions_id', addressBook, 'distribute_gladius_coins', distributeParams, sport_club);
+  
+  await getAllBalances();
+
+
+
+
+  console.log("   ")
+  console.log("   ")
+
+  console.log("  ↔️   | Gladius Coins Transaction")
+  console.log("      | Student Sends 1000 GLC to Sport Club (bought NFT?)")
+
+  const transactionParams: xdr.ScVal[] = [
+    new Address(student.publicKey()).toScVal(), // from
+    new Address(sport_club.publicKey()).toScVal(), // to
+    nativeToScVal(1000, { type: 'i128' }), // amount
+  ];
+  await invokeContract('gladius_emitter_id', addressBook, 'transfer', transactionParams, student);
+  
+  await getAllBalances();
+
+  console.log("   ")
+  console.log("   ")
+
+  console.log(" 💱   | Unwrap and Burn")
+  console.log("      | SportClub unwraps 1 EURC and burn 1000 GLC ")
+
+  const unwrapParams: xdr.ScVal[] = [
+    new Address(sport_club.publicKey()).toScVal(), // from
+    nativeToScVal(1, { type: 'i128' }), // unwrap_amount
+  ];
+  await invokeContract('gladius_emitter_id', addressBook, 'unwrap_and_burn', unwrapParams, sport_club);
+
+  await getAllBalances();
 
 
 
