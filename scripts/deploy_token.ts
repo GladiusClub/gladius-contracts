@@ -39,7 +39,7 @@ export async function deployToken(
     const result = await invoke(contractOperation, source, false);
 
     if (result.status === 'SUCCESS') {
-      addressBook.setContractId(network, 'token_id', contractId!);
+      addressBook.setAddress(network, 'token_id', contractId!);
       console.log(`Token ${symbol} deployed successfully with contractId: ${contractId}!`);
     }
     addressBook.writeToFile();

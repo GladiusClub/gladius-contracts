@@ -76,7 +76,7 @@ export async function deployContract(
   );
   console.log('Deploying WASM', wasmKey, 'for', contractKey);
   const contractId = StrKey.encodeContract(hash(hashIdPreimage.toXDR()));
-  addressBook.setContractId(network, contractKey, contractId);
+  addressBook.setAddress(network, contractKey, contractId);
   const wasmHash = Buffer.from(addressBook.getWasmHash(network, wasmKey), 'hex');
 
   const deployFunction = xdr.HostFunction.hostFunctionTypeCreateContract(
@@ -295,6 +295,45 @@ export async function getTokenBalance(contractId: string, from: string, source: 
   if (parsedResult == 0) {
     return parsedResult;
   }
-  const resultNumber = parseInt(parsedResult.slice(0, -1));
+  const resultNumber = parseInt(parsedResult);
   return resultNumber;
 }
+
+
+export async function getIsRole(
+  contractId: string,
+  function_name: string,
+  user: string,
+  source: Keypair) {
+
+  const subscriptionContract = new Contract(contractId);
+  const op = subscriptionContract.call(function_name, new Address(user).toScVal());
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
+
+export async function getTotalCourses(contractId: string, source: Keypair) {
+
+  const subscriptionContract = new Contract(contractId);
+  const op = subscriptionContract.call('get_total_courses');
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
+
+
+
+
+
+

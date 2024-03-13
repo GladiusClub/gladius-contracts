@@ -86,7 +86,7 @@ soroban contract invoke \
 
 
 
-NEW_DEPLOYMENTS_OBJECT="{ \"network\": \"$NETWORK\", \"pegged_token_admin_public\": \"$PEGGED_TOKEN_ADMIN_ADDRESS\", \"gladius_admin_public\": \"$GLADIUS_ADMIN_ADDRESS\", \"token_id\": \"$TOKEN_ID\",  \"gladius_emitter_id\": \"$GLADIUS_COIN_EMITTER_ID\"}"
+NEW_DEPLOYMENTS_OBJECT="{ \"network\": \"$NETWORK\", \"payment_token_admin_public\": \"$PEGGED_TOKEN_ADMIN_ADDRESS\", \"gladius_admin_public\": \"$GLADIUS_ADMIN_ADDRESS\", \"token_id\": \"$TOKEN_ID\",  \"gladius_emitter_id\": \"$GLADIUS_COIN_EMITTER_ID\"}"
 
 DEPLOYMENTS_FILE="/workspace/.soroban/deployments.json"
 if [[ ! -f "$DEPLOYMENTS_FILE" ]]; then

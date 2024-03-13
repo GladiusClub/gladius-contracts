@@ -39,11 +39,15 @@ class EnvConfig {
     this.admin = admin;
   }
 
+  
+
   /**
    * Load the environment config from the .env file
    * @returns Environment config
    */
   static loadFromFile(network: string): EnvConfig {
+
+
     const fileContents = fs.readFileSync(path.join(__dirname, '../../config.json'), 'utf8');
     const configs: Config = JSON.parse(fileContents);
 
@@ -57,15 +61,21 @@ class EnvConfig {
     friendbot_url = networkConfig.friendbot_url;
     passphrase = networkConfig.soroban_network_passphrase;
 
-    const admin = process.env.GLADIUS_ADMIN_SECRET;
     if (
       rpc_url === undefined ||
       (network != 'mainnet' && friendbot_url === undefined) ||
       passphrase === undefined ||
-      admin === undefined
-    ) {
-      throw new Error('Error: Configuration is missing required fields, include <network>');
-    }
+      process.env.GLADIUS_ADMIN_SECRET === undefined
+      ) {
+        console.log("🚀 ~ EnvConfig ~ loadFromFile ~ (network != 'mainnet' && friendbot_url === undefined):", (network != 'mainnet' && friendbot_url === undefined))
+        console.log("🚀 ~ EnvConfig ~ loadFromFile ~ rpc_url === undefined:", rpc_url === undefined)
+        console.log("🚀 ~ EnvConfig ~ loadFromFile ~ passphrase === undefined:", passphrase === undefined)
+        console.log("🚀 ~ EnvConfig ~ loadFromFile ~ process.env.GLADIUS_ADMIN_SECRET === undefined:", process.env.GLADIUS_ADMIN_SECRET === undefined)
+        throw new Error('Error: Configuration is missing required fields, include <network>');
+      }
+      
+      const admin = process.env.GLADIUS_ADMIN_SECRET;
+      
 
     const allowHttp = network === 'standalone';
 

@@ -13,59 +13,73 @@ import { config } from '../utils/env_config.js';
 import { deployToken } from './deploy_token.js';
 
 export async function deployAndInitContracts(addressBook: AddressBook) {
+
   // Setting up public address for gladius accounts
-  addressBook.setContractId(network, 'gladius_admin_public', loadedConfig.admin.publicKey());
-  await airdropAccount(loadedConfig.admin);
+  let gladius_admin = loadedConfig.admin;
+  addressBook.setAddress(network, 'gladius_admin_public', gladius_admin.publicKey());
 
   if (network != 'mainnet') {
+
     // Gladius EURC Token
     console.log('-------------------------------------------------------');
-    console.log('Deploying and Initializing Pegged EURC token');
+    console.log('Because we are not in Mainnet.....');
+    await airdropAccount(gladius_admin);
+    await airdropAccount(loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET'));
+    await airdropAccount(loadedConfig.getUser('SPORT_CLUB_SECRET'));
+    await airdropAccount(loadedConfig.getUser('PARENT_SECRET'));
+    await airdropAccount(loadedConfig.getUser('STUDENT_SECRET'));
+    
+    console.log('Deploying and Initializing  a Payment EURC token');
     console.log('-------------------------------------------------------');
-    addressBook.setContractId(
+    addressBook.setAddress(
       network,
-      'pegged_token_admin_public',
-      loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET').publicKey()
+      'payment_token_admin_public',
+      loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET').publicKey()
     );
-    await airdropAccount(loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET'));
+    console.log('Airdropping to all accounts');
+    
     await deployToken(
       'EURC Token',
       'EURC',
       addressBook,
-      loadedConfig.getUser('PEGGED_TOKEN_ADMIN_SECRET')
+      loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET')
     );
   }
 
   console.log('-------------------------------------------------------');
-  console.log('Installing Gladius Contracts');
+  console.log('Installing Gladius Coin Emitter Contract');
   console.log('-------------------------------------------------------');
-  // Gladius Coin Emitter
-  await installContract('gladius_coin_emitter', addressBook, loadedConfig.admin);
-  await bumpContractCode('gladius_coin_emitter', addressBook, loadedConfig.admin);
-  // Gladius Subscriptions
-  console.log('-------------------------------------------------------');
-  await installContract('gladius_subscriptions', addressBook, loadedConfig.admin);
-  await bumpContractCode('gladius_subscriptions', addressBook, loadedConfig.admin);
+  await installContract('gladius_coin_emitter', addressBook, gladius_admin);
+  await bumpContractCode('gladius_coin_emitter', addressBook, gladius_admin);
 
   console.log('-------------------------------------------------------');
-  console.log('Deploying Gladius Contrats');
+  console.log('Installing Gladius Coin Subscriptions Contracts');
   console.log('-------------------------------------------------------');
-  // Gladius Coin Emitter
+  console.log('-------------------------------------------------------');
+  await installContract('gladius_subscriptions', addressBook, gladius_admin);
+  await bumpContractCode('gladius_subscriptions', addressBook, gladius_admin);
+
+  console.log('-------------------------------------------------------');
+  console.log('Deploying Gladius Coin Emitter Contract');
+  console.log('-------------------------------------------------------');
   await deployContract(
     'gladius_emitter_id',
     'gladius_coin_emitter',
     addressBook,
-    loadedConfig.admin
+    gladius_admin
   );
-  await bumpContractInstance('gladius_emitter_id', addressBook, loadedConfig.admin);
-  // Gladius Subscriptions
+  await bumpContractInstance('gladius_emitter_id', addressBook, gladius_admin);
+
+  console.log('-------------------------------------------------------');
+  console.log('Deploying Gladius Subscriptions Contract');
+  console.log('-------------------------------------------------------');
   await deployContract(
     'gladius_subscriptions_id',
     'gladius_subscriptions',
     addressBook,
-    loadedConfig.admin
+    gladius_admin
   );
-  await bumpContractInstance('gladius_subscriptions_id', addressBook, loadedConfig.admin);
+  await bumpContractInstance('gladius_subscriptions_id', addressBook, gladius_admin);
 
   console.log('-------------------------------------------------------');
   console.log('Initializing Gladius Emitter');
@@ -87,7 +101,7 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
     addressBook,
     'initialize',
     emitterInitParams,
-    loadedConfig.admin
+    gladius_admin
   );
 
   console.log('-------------------------------------------------------');
@@ -95,7 +109,7 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
   console.log('-------------------------------------------------------');
   
   // Initializing Gladius Subscriptions
-  let admin_public = loadedConfig.admin.publicKey();
+  let admin_public = gladius_admin.publicKey();
   let gladius_coin_emitter = addressBook.getContractId(network, 'gladius_emitter_id');
 
   const subscriptionsInitParams = [
@@ -112,7 +126,7 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
     addressBook,
     'initialize',
     subscriptionsInitParams,
-    loadedConfig.admin
+    gladius_admin
   );
 }
 

@@ -8,11 +8,12 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "setup": "node dist/scripts/setup.js",
-    "test": "node dist/scripts/test.js"
+    "setup": "yarn build && node dist/scripts/setup.js",
+    "test": "yarn build && node dist/scripts/test.js"
   },
   "devDependencies": {
     "@stellar/tsconfig": "^1.0.2",
+    "@types/express": "^4.17.21",
     "@types/node": "^20.11.22",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
+    "express": "^4.18.3",
     "stellar-sdk": "^11.2.2"
   }
 }
