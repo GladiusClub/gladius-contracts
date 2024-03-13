@@ -1,12 +1,11 @@
 import { Address, nativeToScVal, xdr } from 'stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
 
-import { getTokenBalance, invokeContract } from '../utils/contract.js';
+import { getTokenBalance, getIsRole, invokeContract } from '../utils/contract.js';
 import { config } from '../utils/env_config.js';
 import { mintToken } from './mint_token.js';
 
 export async function testGladius(addressBook: AddressBook) {
-
 
   let gladius_admin = loadedConfig.admin;
   let payment_token_admin = loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET');
@@ -18,7 +17,7 @@ export async function testGladius(addressBook: AddressBook) {
   console.log('Testing Gladius Contracts');
   console.log('-------------------------------------------------------');
 
-  console.log("   Minting 2500,000 EURC to parent")
+  console.log(" 💰  Minting 2500,000 EURC to parent")
   // Minting EURC tokens to the gladius admin account
   await mintToken(
     addressBook.getContractId(network, 'token_id'),
@@ -37,9 +36,57 @@ export async function testGladius(addressBook: AddressBook) {
     sport_club.publicKey(),
     sport_club
   );
-  console.log('🚀 « EURC balanceParentBefore:', balanceParentBefore);
-  console.log("🚀 « EURC balanceSportClubBefore:", balanceSportClubBefore)
+  console.log('« EURC balanceParentBefore:', balanceParentBefore);
+  console.log("« EURC balanceSportClubBefore:", balanceSportClubBefore)
 
+  console.log("  ")
+  console.log("  ")
+
+  console.log("  🕵️  | Checking and Setting Roles")
+  
+  const isSportClubBefore = await getIsRole(
+    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    'is_sport_club',
+    sport_club.publicKey(),
+    sport_club
+    );
+  const isParentBefore = await getIsRole(
+    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    'is_parent',
+    parent.publicKey(),
+    parent
+    )
+  console.log("~ testGladius ~ isParentBefore:", isParentBefore)
+  console.log("~ testGladius ~ isSportClubBefore:", isSportClubBefore)
+  console.log("   ")
+
+  const setIsSportClubParams: xdr.ScVal[] = [
+    new Address(sport_club.publicKey()).toScVal(), // sport_club
+    nativeToScVal(true, { type: 'bool' }), // is
+  ];
+  await invokeContract('gladius_subscriptions_id', addressBook, 'set_is_sport_club', setIsSportClubParams, gladius_admin);
+
+  const setIsParentParams: xdr.ScVal[] = [
+    new Address(parent.publicKey()).toScVal(), // parent
+    nativeToScVal(true, { type: 'bool' }), // is
+  ];
+  await invokeContract('gladius_subscriptions_id', addressBook, 'set_is_parent', setIsParentParams, gladius_admin);
+
+  const isSportClubAfter = await getIsRole(
+    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    'is_sport_club',
+    sport_club.publicKey(),
+    sport_club
+    );
+  const isParentAfter = await getIsRole(
+    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    'is_parent',
+    parent.publicKey(),
+    parent
+    )
+  console.log("   ")
+  console.log("~ testGladius ~ isParentAfter:", isParentAfter)
+  console.log("~ testGladius ~ isSportClubAfter:", isSportClubAfter)
 
 
 
@@ -58,6 +105,7 @@ export async function testGladius(addressBook: AddressBook) {
   // console.log('Making a transfer of EURC Token from gladius admin to pegged token admin');
   // console.log('-------------------------------------------------------');
   // const balanceTokenAdminBefore = await getTokenBalance(
+  
   //   addressBook.getContractId(network, 'token_id'),
   //   payment_token_admin.publicKey(),
   //   payment_token_admin

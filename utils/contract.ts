@@ -298,3 +298,22 @@ export async function getTokenBalance(contractId: string, from: string, source: 
   const resultNumber = parseInt(parsedResult.slice(0, -1));
   return resultNumber;
 }
+
+
+export async function getIsRole(
+  contractId: string,
+  function_name: string,
+  user: string,
+  source: Keypair) {
+
+  const subscriptionContract = new Contract(contractId);
+  const op = subscriptionContract.call(function_name, new Address(user).toScVal());
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
