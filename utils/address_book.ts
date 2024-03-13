@@ -97,9 +97,10 @@ export class AddressBook {
 
   writeToFile() {
     const dirPath = path.join(__dirname, '../../.soroban/');
-    const filePath = path.join(__dirname, this.fileName);
+    const filePath = path.join(dirPath, this.fileName);
 
     if (!existsSync(dirPath)) {
+      console.log(".soroban does not exist, will create dir")
       mkdirSync(dirPath, { recursive: true });
     }
     
