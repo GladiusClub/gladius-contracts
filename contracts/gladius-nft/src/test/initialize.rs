@@ -17,15 +17,6 @@ fn initialize_basic_info() {
     );
 
 
-    // let ratio: u32 = 1000;
-    // let decimals: u32 = 7;
-
-    // test.contract.initialize(
-    //     &test.minter,
-    //     &test.pegged_token.address,
-    //     &ratio
-    //     );
-
     // let initialize_event = test.env.events().all().last().unwrap();
 
     // let expected_initialize_event: InitializeEvent = InitializeEvent {
@@ -46,32 +37,37 @@ fn initialize_basic_info() {
     //     ]
     // );
     
-    // assert_eq!(test.contract.name(), String::from_str(&test.env, "Gladius Coin"));
-    // assert_eq!(test.contract.symbol(), String::from_str(&test.env, "GLC"));
-    // assert_eq!(test.contract.decimals(), decimals);
-    // assert_eq!(test.contract.pegged(), test.pegged_token.address);
-    // assert_eq!(test.contract.ratio(), ratio);
-    // assert_eq!(test.contract.minter(), test.minter);
+    assert_eq!(test.contract.name(), name);
+    assert_eq!(test.contract.symbol(), symbol);
+    assert_eq!(test.contract.total_supply(), 0);
 }
 
-// #[test]
-// fn initialize_twice() {
-//     let test = GladiusCoinEmitterTest::setup();
+#[test]
+#[should_panic]
+fn initialize_twice() {
+    let test = GladiusNFTTest::setup();
 
-//     let ratio: u32 = 1000;
+    let name = String::from_str(&test.env, "Cool NFT");
+    let symbol = String::from_str(&test.env, "COOL");
 
-//     test.contract.initialize(
-//         &test.minter,
-//         &test.pegged_token.address,
-//         &ratio
-//         );
+    test.contract.initialize(
+        &test.admin,
+        &name,
+        &symbol,
+    );
+
+    test.contract.initialize(
+        &test.admin,
+        &name,
+        &symbol,
+    );
     
-//     let res = test.contract.try_initialize(
-//         &test.minter,
-//         &test.pegged_token.address,
-//         &ratio
-//         );
-//     assert_eq!(res, Err(Ok(GladiusCoinEmitterError::InitializeAlreadyInitialized))); 
-// }
+    // let res = test.contract.try_initialize(
+    //     &test.minter,
+    //     &test.pegged_token.address,
+    //     &ratio
+    //     );
+    // assert_eq!(res, Err(Ok(GladiusCoinEmitterError::InitializeAlreadyInitialized))); 
+}
 
 
