@@ -1,6 +1,6 @@
 {
-    "previewHash": "20.3.0@sha256:5b01cdff8963335bbbe9c56f816895b1852954394eca10d876fdc6bfd2708f3a",
-    "quickstartHash": "latest@sha256:8d6f6520ad3842042bfe4e271f8b2324ec2f128564487abedd3876cea83af4f1",
+    "previewHash": "20.3.1@sha256:2c0a22cdfa7c7a9241adec2aac3c4b8f40cbb2decc3b796c2cb1d0994bbbcb1f",
+    "quickstartHash": "latest@sha256:1a82b17a4fae853d24189dd25d4e6b774fa7a1b6356a993e618c6e9bd2f3e04c",
     "networkConfig": [
         {
             "network": "standalone",
