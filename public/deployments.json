@@ -2,26 +2,26 @@
   {
     "network": "standalone",
     "ids": {
-      "payment_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
-      "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
-      "token_id": "CB4HDIDP3Y22JB5Z24QKDC4GZMKM5OZLWVWUWB43DHQD5PRUYUC64W6N",
-      "gladius_emitter_id": "CBHRF4C4YCE3H2VC2F2IV3PDWTGU3JFJB7CXGN3Y724HQPTFSBLEW3IO",
-      "gladius_subscriptions_id": "CA7WC5UNS5TZSKWNXDST5USYCK6OUJ532AHLPB5MHEO4RNINZBRE2I74"
+      "pegged_token_admin_public": "",
+      "gladius_admin_public": "",
+      "token_id": "",
+      "gladius_emitter_id": ""
     },
     "hashes": {
-      "gladius_coin_emitter": "c9c42bf83bb1d2bae19bdc6978399179265618648e84ffdb585fcb5f582615ac",
-      "gladius_subscriptions": "03fe14a03b95b07efc30aa71a2d880083c23a1ff7ac0b274e51b2ff4d3fb883c",
-      "token": "8d6e91977729029afff8d00fc573e74f4d2f55f5a4e0e593558b060030f762ee"
+      "gladius_coin_emitter": "",
+      "gladius_subscriptions": "",
+      "token": ""
     }
   },
   {
     "network": "testnet",
     "ids": {
-      "payment_token_admin_public": "GAOHKHJZVBMCSELFPTF3AXJMMKFJJPSJ24NXVYHYHGTOU4B3LZCDCLPV",
-      "gladius_admin_public": "GDM6TUKKJXFXYZJWICK6UHJ52F56GZDJEI7NVOKUCKV6SGSEQLVCEXSF",
-      "token_id": "CCMVIIRJPZFXB2HIRAQ6WKWBOHMZW6U4GXPXOWZIBJES5AT4EBVIEKMA",
-      "gladius_emitter_id": "CB3DZ4RBY6JALDOFS5HWJLK6XEOWNWNSMI4EU75NYTVJQBN44LEMCMRO",
-      "gladius_subscriptions_id": "CA6WJNNEGXXX347ORGGZAUB6CTP725IEATLF4UXGY4LKVMCKUFNIO4TJ"
+      "pegged_token_admin_public": "GB7FO32D4QOIC2SWJBM5ST5DGUCXEXWPNFGTONOSJMHP4L5XYXT7UKGX",
+      "gladius_admin_public": "GALT6V5AXC56AS6XY6XIKET25I3GRII2EIMSXFBVKGGSQT3AKQNLCETY",
+      "token_id": "CBN6YGCK4TOB4TVN6GUBESFTXROH7FRLU3NLR2ZCLO4DVLEZMCCBLMBX",
+      "gladius_emitter_id": "CBXZZMXMC56WCKLASH3FWQKA7IDICE6PWGJHNRUXEY6LPWFJB2ZJ5CZ4",
+      "payment_token_admin_public": "GB7FO32D4QOIC2SWJBM5ST5DGUCXEXWPNFGTONOSJMHP4L5XYXT7UKGX",
+      "gladius_subscriptions_id": "CDELODA7AXDURBZ25F3FUHWDKDN2XJCSZU6TFOEP5W4EEWCY7KRVSWAG"
     },
     "hashes": {
       "gladius_coin_emitter": "c9c42bf83bb1d2bae19bdc6978399179265618648e84ffdb585fcb5f582615ac",
@@ -32,7 +32,7 @@
   {
     "network": "mainnet",
     "ids": {
-      "payment_token_admin_public": "",
+      "pegged_token_admin_public": "",
       "gladius_admin_public": "",
       "token_id": "",
       "gladius_emitter_id": ""
