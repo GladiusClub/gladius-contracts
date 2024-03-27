@@ -15,6 +15,13 @@ fn initialize_basic_info() {
         &name,
         &symbol,
     );
+    assert_eq!(test.contract.name(), name);
+    assert_eq!(test.contract.symbol(), symbol);
+    assert_eq!(test.contract.total_supply(), 0);
+    assert_eq!(test.contract.admin(), test.admin);
+    // admin
+
+    // TODO: test emmited events
 
 
     // let initialize_event = test.env.events().all().last().unwrap();
@@ -35,15 +42,11 @@ fn initialize_basic_info() {
     //             (expected_initialize_event).into_val(&test.env)
     //         ),
     //     ]
-    // );
-    
-    assert_eq!(test.contract.name(), name);
-    assert_eq!(test.contract.symbol(), symbol);
-    assert_eq!(test.contract.total_supply(), 0);
+    // ); 
 }
 
 #[test]
-#[should_panic]
+#[should_panic] // TODO: Transform to error
 fn initialize_twice() {
     let test = GladiusNFTTest::setup();
 

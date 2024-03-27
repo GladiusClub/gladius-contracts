@@ -262,6 +262,9 @@ impl GladiusNFTContract {
         DataKeyEnumerable::TokenIndex.set(&env, &Map::<u32, u32>::new(&env));
     }
 
+    pub fn admin(env: Env) -> Address {
+        get_admin(&env)
+    }
     pub fn upgrade(env: Env, hash: BytesN<32>) {
         get_admin(&env).require_auth();
         env.deployer().update_current_contract_wasm(hash);
