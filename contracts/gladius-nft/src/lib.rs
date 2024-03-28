@@ -50,7 +50,7 @@ impl ERC721 for GladiusNFTContract {
             panic_with_error!(&env, Error::NotAuthorized);
         }
 
-        if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) {
+        if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) { 
             if addr == from {
                 if from != to {
                     // update enumerable datai
@@ -273,13 +273,20 @@ impl GladiusNFTContract {
         // TODO: Set set_admin event
     }
 
+    pub fn owner_of(env: Env, token_id: u32) -> Address {
+        if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) { 
+            addr
+        } else {
+            panic_with_error!(&env, Error::NotNFT);
+        }
+    }
+
     pub fn mint(env: Env, to: Address, token_id: u32) {
         // Authorization should be handled by the caller of the actual implementation
         // get_admin(&env).require_auth();
 
-        if !env.storage().instance().has(&DataKey::TokenOwner(token_id)) {
+        if !DataKey::TokenOwner(token_id).has(&env) {
             DataKey::TokenOwner(token_id).set(&env, &to);
-
         
             let mut owned_index: Vec<u32> = DataKeyEnumerable::IndexToken.get(&env).unwrap();
             let mut owned_token_index: Map<u32, u32> =
@@ -305,6 +312,8 @@ impl GladiusNFTContract {
             DataKeyEnumerable::OwnerTokenIndex(to.clone()).set(&env, &owner_token_index);
 
             DataKey::Balance(to.clone()).set(&env, &owner_index.len());
+        } else {
+            panic!("Token already exist")
         }
         let mut v: Vec<Val> = Vec::new(&env);
         v.push_back(to.into_val(&env));
