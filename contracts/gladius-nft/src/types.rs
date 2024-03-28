@@ -61,6 +61,10 @@ impl storage::Storage for DataKey {
     }
 
     fn extend(&self, env: &Env, min_ledger_to_live: u32) -> &Self {
+        if !self.has(env) {
+            return self;
+        }
+    
         match self {
             DataKey::Balance(_) | DataKey::TokenOwner(_) => {
                 storage::Persistent::extend(env, self, min_ledger_to_live)
