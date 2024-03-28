@@ -1,15 +1,11 @@
 {
-  "name": "gladius-contracts",
+  "name": "gladius-contracts-function",
   "version": "0.1.0",
-  "main": "scripts/setup.ts",
   "repository": "https://github.com/GladiusClub/gladius-contracts.git",
-  "author": "coderipper <hello@joaquinsoza.dev>",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "setup": "yarn build && node dist/scripts/setup.js",
-    "test": "yarn build && node dist/scripts/test.js"
+    "start": "node index.js testnet"
   },
   "devDependencies": {
     "@stellar/tsconfig": "^1.0.2",
@@ -17,11 +13,10 @@
     "@types/node": "^20.11.22",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^4.18.3",
     "stellar-sdk": "^11.2.2"
   }
 }
