@@ -1,29 +1,30 @@
-import { Request, Response } from 'express';
+import * as functions from 'firebase-functions';
+import { config } from './utils/env_config.js'; // Adjust the path as necessary
+import { getTokenBalance } from './utils/contract.js'; // Import getTokenBalance
+import { AddressBook } from './utils/address_book_api.js'; // Import AddressBook
 
-import { AddressBook } from './utils/address_book.js';
-import { getTokenBalance } from './utils/contract.js';
-import { config } from './utils/env_config.js';
-
-export async function GladiusContracts(req: Request, res: Response): Promise<void> {
-
-  const network = process.argv[2];
-  const addressBook = AddressBook.loadFromFile(network);
-  const loadedConfig = config(network);
-
+export const getStudentBalance = functions.https.onRequest(async (req, res) => {
   try {
-      const balanceCheck = await getTokenBalance(
-          addressBook.getContractId(network, 'token_id'),
-          loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET').publicKey(),
-          loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET')
-      );
-      console.log('🚀 « EURC balanceCheck:', balanceCheck);
+    // Extract 'network' and 'folder' from query parameters
+    const network = req.query.network as string || 'testnet';
+    const folder = req.query.folder as string || 'public';
 
-      // Responding with the balance check result
-      res.status(200).send(`EURC balanceCheck: ${balanceCheck}`);
+    let addressBook: AddressBook;
+    addressBook = AddressBook.loadFromFile(network, folder);
 
+    const loadedConfig = config(network);
+    let student = loadedConfig.getUser('STUDENT_SECRET');
+
+    let balanceGLCStudent = await getTokenBalance(
+      addressBook.getContractId(network, 'gladius_emitter_id'),
+      student.publicKey(),
+      student
+    );
+
+    res.status(200).send(`GLC balance Student: ${balanceGLCStudent}`);
   } catch (error) {
-      console.error('Failed to check balance:', error);
-      // Sending error response if something goes wrong
-      res.status(500).send('Failed to check balance due to an error.');
+    console.error('Failed to get student balance:', error);
+    res.status(500).send('Internal Server Error');
   }
-};
+  
+});
