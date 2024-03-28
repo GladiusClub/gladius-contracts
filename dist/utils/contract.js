@@ -12,7 +12,7 @@ const CONTRACT_REL_PATH = {
     gladius_subscriptions: '../../contracts/gladius-subscriptions/target/wasm32-unknown-unknown/release/gladius_subscriptions.optimized.wasm',
     token: '../../contracts/token/target/wasm32-unknown-unknown/release/soroban_token_contract.optimized.wasm',
 };
-const network = process.argv[2];
+const network = process.argv[2] || 'testnet';
 const loadedConfig = config(network);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

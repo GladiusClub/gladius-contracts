@@ -28,7 +28,7 @@ const CONTRACT_REL_PATH: object = {
     '../../contracts/token/target/wasm32-unknown-unknown/release/soroban_token_contract.optimized.wasm',
 };
 
-const network = process.argv[2];
+const network = process.argv[2] || 'testnet';
 const loadedConfig = config(network);
 
 const __filename = fileURLToPath(import.meta.url);
