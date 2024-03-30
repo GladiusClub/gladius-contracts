@@ -158,9 +158,10 @@ impl ERC721Metadata for GladiusNFTContract {
         DatakeyMetadata::Symbol.get(&env).unwrap()
     }
     fn token_uri(env: Env, token_id: u32) -> String {
-        DatakeyMetadata::Uri(token_id)
-            .get(&env)
-            .unwrap_or_else(|| String::from_str(&env, "no uri"))
+        // DatakeyMetadata::Uri(token_id)
+        //     .get(&env)
+        //     .unwrap_or_else(|| String::from_str(&env, "no uri"))
+        String::from_str(&env, "no uri")
     }
 }
 
@@ -282,8 +283,7 @@ impl GladiusNFTContract {
     }
 
     pub fn mint(env: Env, to: Address, token_id: u32) {
-        // Authorization should be handled by the caller of the actual implementation
-        // get_admin(&env).require_auth();
+        get_admin(&env).require_auth();
 
         if !DataKey::TokenOwner(token_id).has(&env) {
             DataKey::TokenOwner(token_id).set(&env, &to);
