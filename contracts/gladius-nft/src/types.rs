@@ -115,9 +115,9 @@ impl storage::Storage for DatakeyMetadata {
 
 #[contracttype]
 pub enum DataKeyEnumerable {
-    IndexToken,               // instance
+    OwnedTokenIndices,               // instance
     TokenIndex,               // instance
-    OwnerIndexToken(Address), // instance
+    OwnerOwnedTokenIndices(Address), // instance
     OwnerTokenIndex(Address), // instance
 }
 impl storage::Storage for DataKeyEnumerable {

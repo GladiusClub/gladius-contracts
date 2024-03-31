@@ -3,6 +3,7 @@
 mod erc721traits;
 mod types;
 mod storage;
+mod uri;
 
 pub use crate::erc721traits::burnable::ERC721Burnable;
 pub use crate::erc721traits::enumerable::ERC721Enumerable;
@@ -10,6 +11,7 @@ pub use crate::erc721traits::erc721::ERC721;
 pub use crate::erc721traits::metadata::ERC721Metadata;
 pub use crate::types::*;
 pub use crate::storage::Storage;
+pub use crate::uri::{get_token_uri};
 
 use soroban_sdk::{contract, contractimpl, panic_with_error, Address, BytesN, Env, IntoVal, Map, String, Val, Vec};
 
@@ -54,9 +56,9 @@ impl ERC721 for GladiusNFTContract {
             if addr == from {
                 if from != to {
                     // update enumerable datai
-                    let from_index_key = DataKeyEnumerable::OwnerIndexToken(from.clone());
+                    let from_index_key = DataKeyEnumerable::OwnerOwnedTokenIndices(from.clone());
                     let from_token_key = DataKeyEnumerable::OwnerTokenIndex(from.clone());
-                    let to_index_key = DataKeyEnumerable::OwnerIndexToken(to.clone());
+                    let to_index_key = DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone());
                     let to_token_key = DataKeyEnumerable::OwnerTokenIndex(to.clone());
                     let mut from_index: Vec<u32> =
                         from_index_key.get(&env).unwrap_or_else(|| Vec::new(&env));
@@ -158,83 +160,32 @@ impl ERC721Metadata for GladiusNFTContract {
         DatakeyMetadata::Symbol.get(&env).unwrap()
     }
     fn token_uri(env: Env, token_id: u32) -> String {
-        // DatakeyMetadata::Uri(token_id)
-        //     .get(&env)
-        //     .unwrap_or_else(|| String::from_str(&env, "no uri"))
-        String::from_str(&env, "no uri")
+        get_token_uri(env, token_id)
     }
 }
+
 
 #[contractimpl]
 impl ERC721Enumerable for GladiusNFTContract {
     fn total_supply(env: Env) -> u32 {
-        DataKeyEnumerable::IndexToken
+        DataKeyEnumerable::OwnedTokenIndices
             .get::<Vec<u32>>(&env)
             .unwrap()
             .len()
     }
     fn token_by_index(env: Env, index: u32) -> u32 {
-        DataKeyEnumerable::IndexToken
+        DataKeyEnumerable::OwnedTokenIndices
             .get::<Vec<u32>>(&env)
             .unwrap()
             .get(index)
             .unwrap_or_else(|| panic_with_error!(&env, Error::OutOfBounds))
     }
     fn token_of_owner_by_index(env: Env, owner: Address, index: u32) -> u32 {
-        DataKeyEnumerable::OwnerIndexToken(owner)
+        DataKeyEnumerable::OwnerOwnedTokenIndices(owner)
             .get::<Vec<u32>>(&env)
             .unwrap_or_else(|| panic_with_error!(&env, Error::OutOfBounds))
             .get(index)
             .unwrap_or_else(|| panic_with_error!(&env, Error::OutOfBounds))
-    }
-}
-
-#[contractimpl]
-impl ERC721Burnable for GladiusNFTContract {
-    fn burn(env: Env, caller: Address, token_id: u32) {
-        let owner: Address = DataKey::TokenOwner(token_id)
-            .get(&env)
-            .unwrap_or_else(|| panic_with_error!(&env, Error::NotNFT));
-        if owner == caller {
-            owner.require_auth();
-        } else if DataKey::Operator(owner.clone(), caller.clone())
-            .get::<bool>(&env)
-            .unwrap_or(false)
-        {
-            caller.require_auth();
-        } else {
-            panic_with_error!(&env, Error::NotAuthorized);
-        }
-
-        DataKey::Approved(token_id).remove(&env);
-        DataKey::TokenOwner(token_id).remove(&env);
-
-    
-        let mut owned_index: Vec<u32> = DataKeyEnumerable::IndexToken.get(&env).unwrap();
-        let mut owned_token_index: Map<u32, u32> =
-            DataKeyEnumerable::TokenIndex.get(&env).unwrap();
-        let from_index_key = DataKeyEnumerable::OwnerIndexToken(owner.clone());
-        let from_token_key = DataKeyEnumerable::OwnerTokenIndex(owner.clone());
-
-        let mut from_index: Vec<u32> =
-            from_index_key.get(&env).unwrap_or_else(|| Vec::new(&env));
-        let mut from_token: Map<u32, u32> =
-            from_token_key.get(&env).unwrap_or_else(|| Map::new(&env));
-
-        from_index.remove(from_token.get(token_id).unwrap());
-        from_token.remove(token_id);
-        owned_index.remove(owned_token_index.get(token_id).unwrap());
-        owned_token_index.remove(token_id);
-
-        from_index_key.set(&env, &from_index);
-        from_token_key.set(&env, &from_token);
-        DataKeyEnumerable::IndexToken.set(&env, &owned_index);
-        DataKeyEnumerable::TokenIndex.set(&env, &owned_token_index);
-
-        DataKey::Balance(owner).set(&env, &from_index.len());
-        
-        let v: Val = token_id.into();
-        Event::Burn.publish(&env, v);
     }
 }
 
@@ -259,7 +210,7 @@ impl GladiusNFTContract {
             .set(&DatakeyMetadata::Symbol, &symbol);
 
 
-        DataKeyEnumerable::IndexToken.set(&env, &Vec::<u32>::new(&env));
+        DataKeyEnumerable::OwnedTokenIndices.set(&env, &Vec::<u32>::new(&env));
         DataKeyEnumerable::TokenIndex.set(&env, &Map::<u32, u32>::new(&env));
         // todo: events
     }
@@ -288,27 +239,35 @@ impl GladiusNFTContract {
         if !DataKey::TokenOwner(token_id).has(&env) {
             DataKey::TokenOwner(token_id).set(&env, &to);
         
-            let mut owned_index: Vec<u32> = DataKeyEnumerable::IndexToken.get(&env).unwrap();
+            // A vector containing indices of tokens owned.
+            let mut owned_token_indices: Vec<u32> = DataKeyEnumerable::OwnedTokenIndices.get(&env).unwrap();
+
+            // A map linking token IDs to their indices
             let mut owned_token_index: Map<u32, u32> =
                 DataKeyEnumerable::TokenIndex.get(&env).unwrap();
 
-            let mut owner_index: Vec<u32> = DataKeyEnumerable::OwnerIndexToken(to.clone())
+            // Related to an especific owner:
+            // A vector containing indices of tokens owned by a specific address:
+            let mut owner_index: Vec<u32> = DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone())
                 .get(&env)
-                .unwrap_or_else(|| Vec::new(&env));
+                .unwrap_or_else(|| Vec::new(&env)); 
             let mut owner_token_index: Map<u32, u32> =
                 DataKeyEnumerable::OwnerTokenIndex(to.clone())
                     .get(&env)
                     .unwrap_or_else(|| Map::new(&env));
 
-            owned_token_index.set(token_id, owned_index.len());
-            owned_index.push_back(token_id);
+            // We set the current token_id with its corresponding index
+            owned_token_index.set(token_id, owned_token_indices.len());
+
+            // We push the current created token index to the vetor containing indices of tokens owned
+            owned_token_indices.push_back(token_id);
 
             owner_token_index.set(token_id, owner_index.len());
             owner_index.push_back(token_id);
 
-            DataKeyEnumerable::IndexToken.set(&env, &owned_index);
+            DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
             DataKeyEnumerable::TokenIndex.set(&env, &owned_token_index);
-            DataKeyEnumerable::OwnerIndexToken(to.clone()).set(&env, &owner_index);
+            DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone()).set(&env, &owner_index);
             DataKeyEnumerable::OwnerTokenIndex(to.clone()).set(&env, &owner_token_index);
 
             DataKey::Balance(to.clone()).set(&env, &owner_index.len());
@@ -329,3 +288,57 @@ pub fn get_admin(env: &Env) -> Address {
         panic_with_error!(env, Error::NotAuthorized)
     }
 }
+
+
+
+// Gladius NFT wont be burnable
+
+// #[contractimpl]
+// impl ERC721Burnable for GladiusNFTContract {
+//     fn burn(env: Env, caller: Address, token_id: u32) {
+//         let owner: Address = DataKey::TokenOwner(token_id)
+//             .get(&env)
+//             .unwrap_or_else(|| panic_with_error!(&env, Error::NotNFT));
+//         if owner == caller {
+//             owner.require_auth();
+//         } else if DataKey::Operator(owner.clone(), caller.clone())
+//             .get::<bool>(&env)
+//             .unwrap_or(false)
+//         {
+//             caller.require_auth();
+//         } else {
+//             panic_with_error!(&env, Error::NotAuthorized);
+//         }
+
+//         DataKey::Approved(token_id).remove(&env);
+//         DataKey::TokenOwner(token_id).remove(&env);
+
+    
+//         let mut owned_token_indices: Vec<u32> = DataKeyEnumerable::OwnedTokenIndices.get(&env).unwrap();
+//         let mut owned_token_index: Map<u32, u32> =
+//             DataKeyEnumerable::TokenIndex.get(&env).unwrap();
+//         let from_index_key = DataKeyEnumerable::OwnerOwnedTokenIndices(owner.clone());
+//         let from_token_key = DataKeyEnumerable::OwnerTokenIndex(owner.clone());
+
+//         let mut from_index: Vec<u32> =
+//             from_index_key.get(&env).unwrap_or_else(|| Vec::new(&env));
+//         let mut from_token: Map<u32, u32> =
+//             from_token_key.get(&env).unwrap_or_else(|| Map::new(&env));
+
+//         from_index.remove(from_token.get(token_id).unwrap());
+//         from_token.remove(token_id);
+//         owned_token_indices.remove(owned_token_index.get(token_id).unwrap());
+//         owned_token_index.remove(token_id);
+
+//         from_index_key.set(&env, &from_index);
+//         from_token_key.set(&env, &from_token);
+//         DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
+//         DataKeyEnumerable::TokenIndex.set(&env, &owned_token_index);
+
+//         DataKey::Balance(owner).set(&env, &from_index.len());
+        
+//         let v: Val = token_id.into();
+//         Event::Burn.publish(&env, v);
+//     }
+// }
+
