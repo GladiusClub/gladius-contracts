@@ -1,9 +1,10 @@
 import { Address, nativeToScVal, xdr, scValToNative } from 'stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
 
-import { getTokenBalance, getIsRole, getTotalCourses, invokeContract } from '../utils/contract.js';
+import { getTokenBalance, getIsRole, getTotalCourses, invokeContract, getURI, getTotalSupplyNFT} from '../utils/contract.js';
 import { config } from '../utils/env_config.js';
 import { mintToken } from './mint_token.js';
+import * as fs from 'fs';
 
 
 
@@ -62,6 +63,46 @@ export async function testGladius(addressBook: AddressBook) {
       console.log("« GLC  balance SportClub:", balanceGLCSportClub)
 
   }
+
+  console.log('-------------------------------------------------------');
+  console.log('Minting one Gladius NFT');
+  console.log('-------------------------------------------------------');
+  
+  // const img_uri = pinFileToIPFS('/workspace/img/gladius_club_nft.png');
+  const img_uri = fs.readFileSync('/workspace/.soroban/nft_uri', 'utf8');
+
+  const totalSupplyNFT = await getTotalSupplyNFT(
+    addressBook.getContractId(network, 'gladius_nft_id'),
+    sport_club
+    );
+  console.log("🚀 ~ testGladius ~ totalSupplyNFT:", totalSupplyNFT)
+
+  const newIndex = Number(totalSupplyNFT) +1
+  const mintNFTParams = [
+    new Address(loadedConfig.getUser('STUDENT_SECRET').publicKey()).toScVal(), // to
+    nativeToScVal(newIndex, { type: 'u32' }), // index
+    nativeToScVal(img_uri, { type: 'string' }),
+  ];
+
+    await invokeContract(
+      'gladius_nft_id',
+      addressBook,
+      'mint',
+      mintNFTParams,
+      gladius_admin
+    );
+
+  console.log('-------------------------------------------------------');
+  console.log('Getting the NFT URI');
+  console.log('-------------------------------------------------------');
+  
+
+  const uri = await getURI(
+    addressBook.getContractId(network, 'gladius_nft_id'),
+    newIndex,
+    sport_club
+    );
+  console.log("🚀 ~ testGladius ~ uri:", uri)
 
   console.log('-------------------------------------------------------');
   console.log('Testing Gladius Contracts');

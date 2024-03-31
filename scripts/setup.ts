@@ -1,5 +1,6 @@
 import { Address, nativeToScVal } from 'stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
+import * as fs from 'fs';
 
 import {
   airdropAccount,
@@ -11,9 +12,12 @@ import {
 } from '../utils/contract.js';
 import { config } from '../utils/env_config.js';
 import { deployToken } from './deploy_token.js';
+// import { pinFileToIPFS } from './image_to_pinata.js'
 
 export async function deployAndInitContracts(addressBook: AddressBook) {
 
+
+  
   // Setting up public address for gladius accounts
   let gladius_admin = loadedConfig.admin;
   addressBook.setAddress(network, 'gladius_admin_public', gladius_admin.publicKey());
@@ -28,7 +32,8 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
     await airdropAccount(loadedConfig.getUser('SPORT_CLUB_SECRET'));
     await airdropAccount(loadedConfig.getUser('PARENT_SECRET'));
     await airdropAccount(loadedConfig.getUser('STUDENT_SECRET'));
-    
+
+
     console.log('Deploying and Initializing  a Payment EURC token');
     console.log('-------------------------------------------------------');
     addressBook.setAddress(
@@ -128,6 +133,47 @@ export async function deployAndInitContracts(addressBook: AddressBook) {
     subscriptionsInitParams,
     gladius_admin
   );
+
+  console.log('-------------------------------------------------------');
+    console.log('Installing Gladius NFT Contract');
+    console.log('-------------------------------------------------------');
+    await installContract('gladius_nft', addressBook, gladius_admin);
+    await bumpContractCode('gladius_nft', addressBook, gladius_admin);
+
+    console.log('-------------------------------------------------------');
+    console.log('Deploying Gladius Coin Emitter Contract');
+    console.log('-------------------------------------------------------');
+    await deployContract(
+      'gladius_nft_id',
+      'gladius_nft',
+      addressBook,
+      gladius_admin
+    );
+    await bumpContractInstance('gladius_nft_id', addressBook, gladius_admin);
+    
+    console.log('-------------------------------------------------------');
+    console.log('Initializing Gladius NFT');
+    console.log('-------------------------------------------------------');
+    const name = "Gladius NFT";
+    const symbol = "GL"
+    const gladius_nft_id = addressBook.getContractId(network, 'gladius_nft_id');
+    let admin_public_val = gladius_admin.publicKey();
+    const NFTInitParams = [
+      new Address(admin_public_val).toScVal(), // admin
+      nativeToScVal(name, { type: 'string' }),
+      nativeToScVal(symbol, { type: 'string' }),
+    ];
+    console.log("Using NFTInitParams=[name, symbol, admin] : ", 
+    [name,symbol, admin_public_val])
+
+    await invokeContract(
+      'gladius_nft_id',
+      addressBook,
+      'initialize',
+      NFTInitParams,
+      gladius_admin
+    );
+
 }
 
 const network = process.argv[2];

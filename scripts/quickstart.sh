@@ -69,6 +69,7 @@ docker run -dti \
   -p 8002:8000 \
   --ipc=host \
   --network soroban-network \
+  --env-file .env \
   esteblock/soroban-preview:${previewHash}
 
 echo "  "

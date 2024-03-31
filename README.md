@@ -50,6 +50,16 @@ soroban config identity ls
 soroban config identity show <name of account>
 ```
 
+## Uploading image to Pinata IPFS 
+
+Upload image to pinata IPFS, to generate a JSON and finally get the URI
+
+```sh
+node scripts/image_to_pinata.sj
+```
+
+This will create the `.soroban/nft_uri` file
+
 ## Running the Contracts
 
 ### Testing and Building Contracts
