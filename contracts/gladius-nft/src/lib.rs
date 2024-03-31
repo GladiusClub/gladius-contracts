@@ -11,7 +11,7 @@ pub use crate::erc721traits::erc721::ERC721;
 pub use crate::erc721traits::metadata::ERC721Metadata;
 pub use crate::types::*;
 pub use crate::storage::Storage;
-pub use crate::uri::{get_token_uri};
+pub use crate::uri::{get_token_uri, set_token_uri};
 
 use soroban_sdk::{contract, contractimpl, panic_with_error, Address, BytesN, Env, IntoVal, Map, String, Val, Vec};
 
@@ -160,7 +160,9 @@ impl ERC721Metadata for GladiusNFTContract {
         DatakeyMetadata::Symbol.get(&env).unwrap()
     }
     fn token_uri(env: Env, token_id: u32) -> String {
-        get_token_uri(env, token_id)
+        DatakeyMetadata::Uri(token_id)
+        .get(&env)
+        .unwrap_or_else(|| String::from_str(&env, "no uri"))
     }
 }
 
@@ -233,11 +235,12 @@ impl GladiusNFTContract {
         }
     }
 
-    pub fn mint(env: Env, to: Address, token_id: u32) {
+    pub fn mint(env: Env, to: Address, token_id: u32, uri: String) {
         get_admin(&env).require_auth();
 
         if !DataKey::TokenOwner(token_id).has(&env) {
             DataKey::TokenOwner(token_id).set(&env, &to);
+            DatakeyMetadata::Uri(token_id).set(&env, &uri);
         
             // A vector containing indices of tokens owned.
             let mut owned_token_indices: Vec<u32> = DataKeyEnumerable::OwnedTokenIndices.get(&env).unwrap();
@@ -248,9 +251,11 @@ impl GladiusNFTContract {
 
             // Related to an especific owner:
             // A vector containing indices of tokens owned by a specific address:
-            let mut owner_index: Vec<u32> = DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone())
+            let mut owner_token_indices: Vec<u32> = DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone())
                 .get(&env)
                 .unwrap_or_else(|| Vec::new(&env)); 
+
+            // A map linking token IDs to their indices for a specific address.
             let mut owner_token_index: Map<u32, u32> =
                 DataKeyEnumerable::OwnerTokenIndex(to.clone())
                     .get(&env)
@@ -262,15 +267,15 @@ impl GladiusNFTContract {
             // We push the current created token index to the vetor containing indices of tokens owned
             owned_token_indices.push_back(token_id);
 
-            owner_token_index.set(token_id, owner_index.len());
-            owner_index.push_back(token_id);
+            owner_token_index.set(token_id, owner_token_indices.len());
+            owner_token_indices.push_back(token_id);
 
             DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
             DataKeyEnumerable::TokenIdToIndex.set(&env, &token_id_to_index_map);
-            DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone()).set(&env, &owner_index);
+            DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone()).set(&env, &owner_token_indices);
             DataKeyEnumerable::OwnerTokenIndex(to.clone()).set(&env, &owner_token_index);
 
-            DataKey::Balance(to.clone()).set(&env, &owner_index.len());
+            DataKey::Balance(to.clone()).set(&env, &owner_token_indices.len());
         } else {
             panic!("Token already exist")
         }

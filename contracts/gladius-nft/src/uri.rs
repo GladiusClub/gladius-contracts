@@ -9,3 +9,9 @@ pub fn get_token_uri(env: Env, token_id: u32) -> String {
         .unwrap_or_else(|| String::from_str(&env, "no uri"))
     
 }
+
+pub fn set_token_uri(env: Env, token_id: u32, uri:String) {
+    DatakeyMetadata::Uri(token_id)
+        .set(&env, &uri);
+    
+}
