@@ -1,6 +1,6 @@
 $MAKEFILES = $(shell find . -maxdepth 3 -type f -name Makefile)
 # SUBDIRS   = $(filter-out ./,$(dir $($MAKEFILES)))
-SUBDIRS = token gladius-coin-emitter gladius-subscriptions 
+SUBDIRS = token gladius-coin-emitter gladius-subscriptions gladius-nft
 default: build
 
 all: test

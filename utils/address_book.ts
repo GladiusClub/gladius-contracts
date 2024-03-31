@@ -11,11 +11,13 @@ export interface ContractNames {
   token_id: string;
   gladius_emitter_id: string;
   gladius_subscriptions_id: string;
+  gladius_nft_id: string;
 }
 
 export interface WasmKeys {
   gladius_coin_emitter: string;
   gladius_subscriptions: string;
+  gladius_nft: string;
   token: string;
 }
 
@@ -54,10 +56,12 @@ export class AddressBook {
             token_id: '',
             gladius_emitter_id: '',
             gladius_subscriptions_id: '',
+            gladius_nft_id: '',
           },
           hashes: {
             gladius_coin_emitter: '',
             gladius_subscriptions: '',
+            gladius_nft: '',
             token: '',
           },
         },
@@ -69,10 +73,12 @@ export class AddressBook {
             token_id: '',
             gladius_emitter_id: '',
             gladius_subscriptions_id: '',
+            gladius_nft_id: '',
           },
           hashes: {
             gladius_coin_emitter: '',
             gladius_subscriptions: '',
+            gladius_nft: '',
             token: '',
           },
         },
@@ -84,10 +90,12 @@ export class AddressBook {
             token_id: '',
             gladius_emitter_id: '',
             gladius_subscriptions_id: '',
+            gladius_nft_id: '',
           },
           hashes: {
             gladius_coin_emitter: '',
             gladius_subscriptions: '',
+            gladius_nft: '',
             token: '',
           },
         },
