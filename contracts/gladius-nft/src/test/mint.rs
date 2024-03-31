@@ -46,9 +46,11 @@ fn mint() {
     assert_eq!(test.contract.total_supply(), 1);
     assert_eq!(test.contract.owner_of(&0), test.user);
     assert_eq!(test.contract.token_uri(&0), uri);
+    assert_eq!(test.contract.token_of_owner_by_index(&test.user, &&0), 0);
+    assert_eq!(test.contract.token_by_index(&0), 0);
 
-    let new_index = 99;
-    let new_uri = String::from_str(&test.env, "my_new_uri");
+    let mut new_index = 99;
+    let mut new_uri = String::from_str(&test.env, "my_new_uri");
 
     test.contract
     .mock_auths(&[
@@ -69,6 +71,34 @@ fn mint() {
     assert_eq!(test.contract.total_supply(), 2);
     assert_eq!(test.contract.owner_of(&new_index), test.user);
     assert_eq!(test.contract.token_uri(&new_index), new_uri);
+    assert_eq!(test.contract.token_of_owner_by_index(&test.user, &1), new_index);
+    assert_eq!(test.contract.token_by_index(&1), new_index);
+
+    new_index = 300;
+    new_uri = String::from_str(&test.env, "uriuriuri");
+    let new_user = Address::generate(&test.env);
+
+    test.contract
+    .mock_auths(&[
+        MockAuth {
+            address: &test.admin.clone(),
+            invoke: 
+                &MockAuthInvoke {
+                    contract: &test.contract.address,
+                    fn_name: "mint",
+                    args: (new_user.clone(),new_index.clone(), new_uri.clone()).into_val(&test.env),
+                    sub_invokes: &[],
+                },
+        }
+    ])
+    .mint(&new_user, &new_index, &new_uri);
+
+    assert_eq!(test.contract.balance_of(&new_user), 1);
+    assert_eq!(test.contract.total_supply(), 3);
+    assert_eq!(test.contract.owner_of(&new_index), new_user);
+    assert_eq!(test.contract.token_uri(&new_index), new_uri);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user, &0), new_index);
+    assert_eq!(test.contract.token_by_index(&2), new_index);
 
     
 }
