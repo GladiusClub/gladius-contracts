@@ -4,9 +4,10 @@ use soroban_sdk::{
     Address, IntoVal,
     testutils::{
         MockAuth, MockAuthInvoke,
-        Events,
+        // Events,
         Address as _},
-    vec, symbol_short};
+    // vec, symbol_short
+};
 
 #[test]
 fn mint() {
@@ -167,7 +168,7 @@ fn no_owner() {
         &name,
         &symbol,
     );
-    let dummy = test.contract.owner_of(&0);
+    let _dummy = test.contract.owner_of(&0);
    
 }
 

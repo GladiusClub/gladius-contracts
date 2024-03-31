@@ -13,7 +13,7 @@ pub use crate::types::*;
 pub use crate::storage::Storage;
 pub use crate::uri::{get_token_uri, set_token_uri};
 
-use soroban_sdk::{contract, contractimpl, panic_with_error, Address, BytesN, Env, IntoVal, Map, String, Val, Vec};
+use soroban_sdk::{contract, contractimpl, panic_with_error, Address, Env, IntoVal, Map, String, Val, Vec};
 
 mod test;
 
@@ -77,7 +77,7 @@ impl ERC721 for GladiusNFTContract {
                     if let Some(index) = from_owner_token_id_to_index.get(token_id) {
                         // index is the index for an especific address in 
                         if let Some(pos) = from_owned_token_ids.iter().position(|x| x == index) {
-                            let pos_u32: u32 = pos.try_into().unwrap();                            ;
+                            let pos_u32: u32 = pos.try_into().unwrap();                            
                             from_owned_token_ids.remove(pos_u32);
                         }
                         from_owner_token_id_to_index.remove(token_id);
