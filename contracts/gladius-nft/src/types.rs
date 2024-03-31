@@ -117,8 +117,8 @@ impl storage::Storage for DatakeyMetadata {
 pub enum DataKeyEnumerable {
     OwnedTokenIndices,               // instance
     TokenIdToIndex,               // instance
-    OwnerOwnedTokenIndices(Address), // instance
-    OwnerTokenIndex(Address), // instance
+    OwnerOwnedTokenIds(Address), // instance
+    OwnerTokenIdToIndex(Address), // instance
 }
 impl storage::Storage for DataKeyEnumerable {
     fn get<V: TryFromVal<Env, Val>>(&self, env: &Env) -> Option<V> {

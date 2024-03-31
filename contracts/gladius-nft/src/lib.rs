@@ -55,27 +55,32 @@ impl ERC721 for GladiusNFTContract {
         if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) { 
             if addr == from {
                 if from != to {
-                    // update enumerable datai
-                    let from_index_key = DataKeyEnumerable::OwnerOwnedTokenIndices(from.clone());
-                    let from_token_key = DataKeyEnumerable::OwnerTokenIndex(from.clone());
-                    let to_index_key = DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone());
-                    let to_token_key = DataKeyEnumerable::OwnerTokenIndex(to.clone());
-                    let mut from_index: Vec<u32> =
-                        from_index_key.get(&env).unwrap_or_else(|| Vec::new(&env));
-                    let mut from_token: Map<u32, u32> =
-                        from_token_key.get(&env).unwrap_or_else(|| Map::new(&env));
+                    // vector containing ids of tokens owned by a specific address:
+                    let from_owned_token_ids_key = DataKeyEnumerable::OwnerOwnedTokenIds(from.clone());
+                    let to_owned_token_ids_key = DataKeyEnumerable::OwnerOwnedTokenIds(to.clone());
+                    let mut from_owned_token_ids: Vec<u32> =
+                        from_owned_token_ids_key.get(&env).unwrap_or_else(|| Vec::new(&env));
+                    
+
+                    // A map linking token IDs to their indices for a specific address.
+                    let from_owner_token_id_to_index_key = DataKeyEnumerable::OwnerTokenIdToIndex(from.clone());
+                    let to_owner_token_id_to_index_key = DataKeyEnumerable::OwnerTokenIdToIndex(to.clone());
+                    let mut from_owner_token_id_to_index: Map<u32, u32> =
+                        from_owner_token_id_to_index_key.get(&env).unwrap_or_else(|| Map::new(&env));
+
                     let mut to_index: Vec<u32> =
-                        to_index_key.get(&env).unwrap_or_else(|| Vec::new(&env));
+                        to_owned_token_ids_key.get(&env).unwrap_or_else(|| Vec::new(&env));
                     let mut to_token: Map<u32, u32> =
-                        to_token_key.get(&env).unwrap_or_else(|| Map::new(&env));
+                        to_owner_token_id_to_index_key.get(&env).unwrap_or_else(|| Map::new(&env));
 
                     // Remove token from index of from address
-                    if let Some(index) = from_token.get(token_id) {
-                        if let Some(pos) = from_index.iter().position(|x| x == index) {
+                    if let Some(index) = from_owner_token_id_to_index.get(token_id) {
+                        // index is the index for an especific address in 
+                        if let Some(pos) = from_owned_token_ids.iter().position(|x| x == index) {
                             let pos_u32: u32 = pos.try_into().unwrap();                            ;
-                            from_index.remove(pos_u32);
+                            from_owned_token_ids.remove(pos_u32);
                         }
-                        from_token.remove(token_id);
+                        from_owner_token_id_to_index.remove(token_id);
                     }
 
 
@@ -84,13 +89,13 @@ impl ERC721 for GladiusNFTContract {
                     to_index.push_back(token_id);
 
                     // Update from address vec and map
-                    from_index_key.set(&env, &from_index);
-                    from_token_key.set(&env, &from_token);
-                    DataKey::Balance(from.clone()).set(&env, &from_index.len());
+                    from_owned_token_ids_key.set(&env, &from_owned_token_ids);
+                    from_owner_token_id_to_index_key.set(&env, &from_owner_token_id_to_index);
+                    DataKey::Balance(from.clone()).set(&env, &from_owned_token_ids.len());
 
                     // Update to address vec and map
-                    to_token_key.set(&env, &to_token);
-                    to_index_key.set(&env, &to_index);
+                    to_owner_token_id_to_index_key.set(&env, &to_token);
+                    to_owned_token_ids_key.set(&env, &to_index);
                     DataKey::Balance(to.clone()).set(&env, &to_index.len());
                 }
                 DataKey::TokenOwner(token_id).set(&env, &to);
@@ -189,7 +194,7 @@ impl ERC721Enumerable for GladiusNFTContract {
             .unwrap_or_else(|| panic_with_error!(&env, Error::OutOfBounds))
     }
     fn token_of_owner_by_index(env: Env, owner: Address, index: u32) -> u32 {
-        DataKeyEnumerable::OwnerOwnedTokenIndices(owner)
+        DataKeyEnumerable::OwnerOwnedTokenIds(owner)
             .get::<Vec<u32>>(&env)
             .unwrap_or_else(|| panic_with_error!(&env, Error::OutOfBounds))
             .get(index)
@@ -256,14 +261,14 @@ impl GladiusNFTContract {
                 DataKeyEnumerable::TokenIdToIndex.get(&env).unwrap();
 
             // Related to an especific owner:
-            // A vector containing indices of tokens owned by a specific address:
-            let mut owner_token_indices: Vec<u32> = DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone())
+            // A vector containing ids of tokens owned by a specific address:
+            let mut owner_token_indices: Vec<u32> = DataKeyEnumerable::OwnerOwnedTokenIds(to.clone())
                 .get(&env)
                 .unwrap_or_else(|| Vec::new(&env)); 
 
             // A map linking token IDs to their indices for a specific address.
             let mut owner_token_index: Map<u32, u32> =
-                DataKeyEnumerable::OwnerTokenIndex(to.clone())
+                DataKeyEnumerable::OwnerTokenIdToIndex(to.clone())
                     .get(&env)
                     .unwrap_or_else(|| Map::new(&env));
 
@@ -278,8 +283,8 @@ impl GladiusNFTContract {
 
             DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
             DataKeyEnumerable::TokenIdToIndex.set(&env, &token_id_to_index_map);
-            DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone()).set(&env, &owner_token_indices);
-            DataKeyEnumerable::OwnerTokenIndex(to.clone()).set(&env, &owner_token_index);
+            DataKeyEnumerable::OwnerOwnedTokenIds(to.clone()).set(&env, &owner_token_indices);
+            DataKeyEnumerable::OwnerTokenIdToIndex(to.clone()).set(&env, &owner_token_index);
 
             DataKey::Balance(to.clone()).set(&env, &owner_token_indices.len());
         } else {
@@ -328,21 +333,21 @@ pub fn get_admin(env: &Env) -> Address {
 //         let mut owned_token_indices: Vec<u32> = DataKeyEnumerable::OwnedTokenIndices.get(&env).unwrap();
 //         let mut token_id_to_index_map: Map<u32, u32> =
 //             DataKeyEnumerable::TokenIdToIndex.get(&env).unwrap();
-//         let from_index_key = DataKeyEnumerable::OwnerOwnedTokenIndices(owner.clone());
-//         let from_token_key = DataKeyEnumerable::OwnerTokenIndex(owner.clone());
+//         let from_owned_token_ids_key = DataKeyEnumerable::OwnerOwnedTokenIds(owner.clone());
+//         let from_owner_token_id_to_index_key = DataKeyEnumerable::OwnerTokenIdToIndex(owner.clone());
 
 //         let mut from_index: Vec<u32> =
-//             from_index_key.get(&env).unwrap_or_else(|| Vec::new(&env));
+//             from_owned_token_ids_key.get(&env).unwrap_or_else(|| Vec::new(&env));
 //         let mut from_token: Map<u32, u32> =
-//             from_token_key.get(&env).unwrap_or_else(|| Map::new(&env));
+//             from_owner_token_id_to_index_key.get(&env).unwrap_or_else(|| Map::new(&env));
 
 //         from_index.remove(from_token.get(token_id).unwrap());
 //         from_token.remove(token_id);
 //         owned_token_indices.remove(token_id_to_index_map.get(token_id).unwrap());
 //         token_id_to_index_map.remove(token_id);
 
-//         from_index_key.set(&env, &from_index);
-//         from_token_key.set(&env, &from_token);
+//         from_owned_token_ids_key.set(&env, &from_index);
+//         from_owner_token_id_to_index_key.set(&env, &from_token);
 //         DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
 //         DataKeyEnumerable::TokenIdToIndex.set(&env, &token_id_to_index_map);
 
