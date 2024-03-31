@@ -70,8 +70,14 @@ impl ERC721 for GladiusNFTContract {
                         to_token_key.get(&env).unwrap_or_else(|| Map::new(&env));
 
                     // Remove token from index of from address
-                    from_index.remove(from_token.get(token_id).unwrap());
-                    from_token.remove(token_id);
+                    if let Some(index) = from_token.get(token_id) {
+                        if let Some(pos) = from_index.iter().position(|x| x == index) {
+                            let pos_u32: u32 = pos.try_into().unwrap();                            ;
+                            from_index.remove(pos_u32);
+                        }
+                        from_token.remove(token_id);
+                    }
+
 
                     // Remove token from index of to address
                     to_token.set(token_id, to_index.len());

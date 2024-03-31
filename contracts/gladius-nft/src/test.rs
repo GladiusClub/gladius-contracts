@@ -57,3 +57,4 @@ impl<'a> GladiusNFTTest<'a> {
 mod initialize;
 mod admin;
 mod mint;
+mod transfer;
