@@ -211,7 +211,7 @@ impl GladiusNFTContract {
 
 
         DataKeyEnumerable::OwnedTokenIndices.set(&env, &Vec::<u32>::new(&env));
-        DataKeyEnumerable::TokenIndex.set(&env, &Map::<u32, u32>::new(&env));
+        DataKeyEnumerable::TokenIdToIndex.set(&env, &Map::<u32, u32>::new(&env));
         // todo: events
     }
 
@@ -243,8 +243,8 @@ impl GladiusNFTContract {
             let mut owned_token_indices: Vec<u32> = DataKeyEnumerable::OwnedTokenIndices.get(&env).unwrap();
 
             // A map linking token IDs to their indices
-            let mut owned_token_index: Map<u32, u32> =
-                DataKeyEnumerable::TokenIndex.get(&env).unwrap();
+            let mut token_id_to_index_map: Map<u32, u32> =
+                DataKeyEnumerable::TokenIdToIndex.get(&env).unwrap();
 
             // Related to an especific owner:
             // A vector containing indices of tokens owned by a specific address:
@@ -257,7 +257,7 @@ impl GladiusNFTContract {
                     .unwrap_or_else(|| Map::new(&env));
 
             // We set the current token_id with its corresponding index
-            owned_token_index.set(token_id, owned_token_indices.len());
+            token_id_to_index_map.set(token_id, owned_token_indices.len());
 
             // We push the current created token index to the vetor containing indices of tokens owned
             owned_token_indices.push_back(token_id);
@@ -266,7 +266,7 @@ impl GladiusNFTContract {
             owner_index.push_back(token_id);
 
             DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
-            DataKeyEnumerable::TokenIndex.set(&env, &owned_token_index);
+            DataKeyEnumerable::TokenIdToIndex.set(&env, &token_id_to_index_map);
             DataKeyEnumerable::OwnerOwnedTokenIndices(to.clone()).set(&env, &owner_index);
             DataKeyEnumerable::OwnerTokenIndex(to.clone()).set(&env, &owner_token_index);
 
@@ -315,8 +315,8 @@ pub fn get_admin(env: &Env) -> Address {
 
     
 //         let mut owned_token_indices: Vec<u32> = DataKeyEnumerable::OwnedTokenIndices.get(&env).unwrap();
-//         let mut owned_token_index: Map<u32, u32> =
-//             DataKeyEnumerable::TokenIndex.get(&env).unwrap();
+//         let mut token_id_to_index_map: Map<u32, u32> =
+//             DataKeyEnumerable::TokenIdToIndex.get(&env).unwrap();
 //         let from_index_key = DataKeyEnumerable::OwnerOwnedTokenIndices(owner.clone());
 //         let from_token_key = DataKeyEnumerable::OwnerTokenIndex(owner.clone());
 
@@ -327,13 +327,13 @@ pub fn get_admin(env: &Env) -> Address {
 
 //         from_index.remove(from_token.get(token_id).unwrap());
 //         from_token.remove(token_id);
-//         owned_token_indices.remove(owned_token_index.get(token_id).unwrap());
-//         owned_token_index.remove(token_id);
+//         owned_token_indices.remove(token_id_to_index_map.get(token_id).unwrap());
+//         token_id_to_index_map.remove(token_id);
 
 //         from_index_key.set(&env, &from_index);
 //         from_token_key.set(&env, &from_token);
 //         DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
-//         DataKeyEnumerable::TokenIndex.set(&env, &owned_token_index);
+//         DataKeyEnumerable::TokenIdToIndex.set(&env, &token_id_to_index_map);
 
 //         DataKey::Balance(owner).set(&env, &from_index.len());
         
