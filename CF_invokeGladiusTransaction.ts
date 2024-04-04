@@ -5,20 +5,6 @@ import { AddressBook } from './utils/address_book.js';
 import { getTokenBalance, invokeContract } from './utils/contract.js';
 import { api_config } from './utils/api_config.js';
 
-// Your existing interface and headers remain unchanged
-interface Result {
-  to_address: string;
-  error?: string;
-}
-
-const headers: { [key: string]: string } = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Access-Control-Max-Age": "3600",
-};
-
-// Define the Firebase function
 export const invokeGladiusTransaction = functions.https.onRequest(async (request, response) => {
   // Set CORS headers for preflight requests
   response.set('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -42,20 +28,19 @@ export const invokeGladiusTransaction = functions.https.onRequest(async (request
   }
 
   let addressBook: AddressBook;
-  const folder = 'public'; // Assuming a directory structure for your project
+  const folder = 'public'; 
 
-  // Initialize AddressBook
   if (folder === 'public') {
     addressBook = AddressBook.loadFromFile(network, folder);
   } else {
     addressBook = AddressBook.loadFromFile(network);
   }
 
-  let results: Result[] = [];
+ 
   
  
   async function handleStudentOperations(user_stellar_secret: string, club_stellar_secret: string) {
-     const student = api_config(network, user_stellar_secret);
+    const student = api_config(network, user_stellar_secret);
     const studentPublicKey = student.publicKey(); 
 
     const sport_club = api_config(network, club_stellar_secret);
@@ -85,35 +70,53 @@ export const invokeGladiusTransaction = functions.https.onRequest(async (request
     ];
 
     if (amount < 0) {
-      results.push({ to_address: studentPublicKey, error: 'Amount should be a positive number' });
+      console.log('ERROR: Amount should be a positive number')
+      response.status(400).send({ to_address: studentPublicKey, error: 'Amount should be a positive number' });;
+      return;
+
     } else if (amount === 0) {
-      results.push({ to_address: studentPublicKey, error: 'Not allowed to send 0 coins' });
+      console.log('ERROR: Not allowed to send 0 coins')
+      response.status(400).send({ to_address: studentPublicKey, error: 'Not allowed to send 0 coins' });;
+      return;
+
     } else if (clubPublicKey === studentPublicKey) {
-      results.push({ to_address: studentPublicKey, error: 'Not allowed to send coins to yourself' });
+      console.log('ERROR: Not allowed to send coins to yourself')
+      response.status(400).send({ to_address: studentPublicKey, error: 'Not allowed to send coins to yourself' });;
+      return;
+      
     } else if (sender_balance < amount) {
-      results.push({ to_address: studentPublicKey, error: 'Transfer amount exceeds balance' });
+      console.log('ERROR: Transfer amount exceeds balance')
+      response.status(400).send({ to_address: studentPublicKey, error: 'Transfer amount exceeds balance' });
+      return;
+      
     } else {
       // If all checks passed, perform the transaction
       try {
-
+      console.log("invokeContract");
       await invokeContract('gladius_emitter_id', addressBook, 'transfer', transactionParams, student);
+      console.log("Success");
+      const sender_balance_after = await getTokenBalance(
+        addressBook.getContractId(network, 'gladius_emitter_id'), // what token
+        studentPublicKey, // balance of who?
+        sport_club
+      );
+      console.log("Sender balance after", sender_balance_after)
+
+     return response.status(200).json({ to_address: studentPublicKey, sent: amount }); // Indicating success
+      //message: `GLC sent form ${stellar_wallet} to ${club_stellar_wallet} in the amount of ${amount}`
       
     } catch (error) {
       const errorMessage = (error as Error).message;
       console.error(`Error invoking contract for address ${studentPublicKey}: ${errorMessage}`);
-      results.push({ to_address: studentPublicKey, error: `Contract invocation failed: ${errorMessage}` });
-      // Optionally return or continue depending on your error handling strategy
       
-      return { results, status: 400 }; // Indicating a client-side error
+      response.status(400).send({ to_address: studentPublicKey, error: `Contract invocation failed: ${errorMessage}` });
+      return // Indicating a client-side error
     }
+  
+  
   }
-    if (results.length > 0) {
-      return { results, status: 400 }; // Indicating a client-side error
-    } else {
-      console.log("Success");
-      return { results: [{ to_address: studentPublicKey, error: undefined }], status: 200, headers }; // Indicating success
-    }
-  }
+   
+}
 
   console.log("Connecting to firebase");
   
@@ -144,8 +147,7 @@ export const invokeGladiusTransaction = functions.https.onRequest(async (request
           await handleStudentOperations(user_stellar_secret, club_stellar_secret)
           
           response.status(200).json({
-            message: `GLC sent form ${stellar_wallet} to ${club_stellar_wallet} in the amount ${amount}`
-            ,headers
+            message: `GLC sent form ${stellar_wallet} to ${club_stellar_wallet} in the amount of ${amount}`
         })
         }
         
@@ -155,7 +157,7 @@ export const invokeGladiusTransaction = functions.https.onRequest(async (request
       
     }
   } else {
-    console.log("No document found with ID 40WiH4RtOIgtJxGjwO6vadjAOem2");
+    console.log(`No document found with ID ${UID}`);
   }
   
   
