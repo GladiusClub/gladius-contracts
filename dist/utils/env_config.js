@@ -5,7 +5,7 @@ import { Keypair, SorobanRpc } from 'stellar-sdk';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, '../.env') });
 class EnvConfig {
     rpc;
     passphrase;
@@ -22,7 +22,7 @@ class EnvConfig {
      * @returns Environment config
      */
     static loadFromFile(network) {
-        const fileContents = fs.readFileSync(path.join(__dirname, '../../config.json'), 'utf8');
+        const fileContents = fs.readFileSync(path.join(__dirname, '../config.json'), 'utf8');
         const configs = JSON.parse(fileContents);
         let rpc_url, friendbot_url, passphrase;
         const networkConfig = configs.networkConfig.find((config) => config.network === network);

@@ -1,6 +1,6 @@
 import { SorobanRpc, Transaction, TransactionBuilder, xdr } from 'stellar-sdk';
 import { config } from './env_config.js';
-const network = process.argv[2];
+const network = process.argv[2] || 'testnet';
 const loadedConfig = config(network);
 export async function signWithKeypair(txXdr, passphrase, source) {
     const tx = new Transaction(txXdr, passphrase);
