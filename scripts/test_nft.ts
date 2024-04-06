@@ -51,6 +51,8 @@ export async function testGladius(addressBook: AddressBook) {
   console.log('🚀 ~ All Token IDs:', tokenIds);
 
   let uris = [];
+  let allUriContentData = [];
+
 
   for (let tokenId of tokenIds) {
     const uri = await getURI(
@@ -62,11 +64,13 @@ export async function testGladius(addressBook: AddressBook) {
     uris.push(uri);
     const UriContent = await fetch(uri);
     const UriContentData = await UriContent.json();
-    console.log("UriContentData: ", UriContentData)
-
+    //console.log("UriContentData: ", UriContentData)
+    allUriContentData.push(UriContentData);
   }
 
   //console.log('🚀 ~ All URIs:', uris);
+  const combinedJsonObject = { nfts: allUriContentData };
+  console.log(combinedJsonObject);
 
 }
 
