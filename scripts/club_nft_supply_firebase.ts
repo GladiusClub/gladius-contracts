@@ -4,7 +4,7 @@ import { AddressBook } from '../utils/address_book.js';
 import { getURI, getTotalSupplyNFT, get_token_of_owner_by_index, getOwnerBalanceyNFT} from '../utils/contract.js';
 import { api_config } from '../utils/api_config.js';
 
-export async function testGladiusNFT(addressBook: AddressBook, user_stellar_secret: string, club_stellar_secret: string) {
+export async function fetchGladiusNFT(addressBook: AddressBook, user_stellar_secret: string, club_stellar_secret: string) {
 
   const student = api_config(network, user_stellar_secret);
   const studentPublicKey = student.publicKey(); 
@@ -37,6 +37,8 @@ export async function testGladiusNFT(addressBook: AddressBook, user_stellar_secr
     console.log('🚀 ~ All Token IDs:', tokenIds);
   
     let uris = [];
+    let allUriContentData = [];
+
   
     for (let tokenId of tokenIds) {
       const uri = await getURI(
@@ -48,9 +50,14 @@ export async function testGladiusNFT(addressBook: AddressBook, user_stellar_secr
       uris.push(uri);
       const UriContent = await fetch(uri);
       const UriContentData = await UriContent.json();
-      console.log("UriContentData: ", UriContentData)
+      //console.log("UriContentData: ", UriContentData)
+      allUriContentData.push(UriContentData);
   
     }
+    const combinedJsonObject = { nfts: allUriContentData };
+    console.log(combinedJsonObject);
+
+
   } catch (error) {
       console.error("An error occurred:", error);
 }
@@ -97,7 +104,7 @@ console.log("Connecting to firebase");
           const club_stellar_secret = clubData.club_stellar_secret
           console.log(`Club wallet ${club_stellar_wallet} `);
           
-          await testGladiusNFT(addressBook, user_stellar_secret, club_stellar_secret);
+          await fetchGladiusNFT(addressBook, user_stellar_secret, club_stellar_secret);
 
         }
         
