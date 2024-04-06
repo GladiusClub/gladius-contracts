@@ -372,6 +372,23 @@ export async function getTotalSupplyNFT(
 
 
 
+export async function getNFTbyOwner(
+  contractId: string,
+  owner: string,
+  index: number,
+  source: Keypair) {
+
+  const nftContract = new Contract(contractId);
+  const op = nftContract.call('token_of_owner_by_index', new Address(owner).toScVal(),  nativeToScVal(index, { type: 'u32' }));
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
 
 
 
