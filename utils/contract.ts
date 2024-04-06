@@ -371,6 +371,20 @@ export async function getTotalSupplyNFT(
 }
 
 
+export async function getOwnerBalanceyNFT(contractId: string, owner: string, source: Keypair) {
+  const nftContract = new Contract(contractId);
+  const op = nftContract.call('balance_of', new Address(owner).toScVal());
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
+
+
 
 export async function get_token_of_owner_by_index(
   contractId: string,
