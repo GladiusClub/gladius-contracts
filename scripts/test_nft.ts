@@ -3,16 +3,11 @@ import { AddressBook } from '../utils/address_book.js';
 
 import {
   getOwnerBalanceyNFT,
-  getTokenBalance,
-  getIsRole,
-  getTotalCourses,
-  invokeContract,
   getURI,
   getTotalSupplyNFT,
   get_token_of_owner_by_index,
 } from '../utils/contract.js';
 import { config } from '../utils/env_config.js';
-import { mintToken } from './mint_token.js';
 import * as fs from 'fs';
 
 export async function testGladius(addressBook: AddressBook) {
@@ -65,22 +60,14 @@ export async function testGladius(addressBook: AddressBook) {
     );
     console.log('🚀 ~ Token ID:', tokenId, 'URI:', uri);
     uris.push(uri);
+    const UriContent = await fetch(uri);
+    const UriContentData = await UriContent.json();
+    console.log("UriContentData: ", UriContentData)
+
   }
 
-  console.log('🚀 ~ All URIs:', uris);
+  //console.log('🚀 ~ All URIs:', uris);
 
-  /* 
-
-  try {
-    const response = await fetch(uri);
-    const responseData = await response.json();
-    //const { name, img_url } = responseData;
-    //console.log(`Name: ${name}, Image URL: ${img_url}`);
-    console.log("responseData: ", responseData)
-  } catch (error) {
-      console.error("An error occurred:", error);
-}
-*/
 }
 
 const network = process.argv[2];
