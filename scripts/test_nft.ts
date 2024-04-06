@@ -38,13 +38,13 @@ export async function testGladius(addressBook: AddressBook) {
     );
   console.log("🚀 ~ testGladius ~ uri:", uri);
 
-  const getNFTbyOwner = await getNFTbyOwner(
+  const getNFT = await getNFTbyOwner(
     addressBook.getContractId(network, 'gladius_nft_id'),
     student.publicKey(),
     0,
     sport_club
   )
-  console.log("🚀 ~ testGladius ~ NFTbyOwner:", getNFTbyOwner)
+  console.log("🚀 ~ testGladius ~ NFTbyOwner:", getNFT)
 
 }
 
