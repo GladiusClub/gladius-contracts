@@ -372,7 +372,7 @@ export async function getTotalSupplyNFT(
 
 
 
-export async function getNFTbyOwner(
+export async function get_token_of_owner_by_index(
   contractId: string,
   owner: string,
   index: number,

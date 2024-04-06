@@ -1,7 +1,7 @@
 import { Address, nativeToScVal, xdr, scValToNative } from 'stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
 
-import { getTokenBalance, getIsRole, getTotalCourses, invokeContract, getURI, getTotalSupplyNFT, getNFTbyOwner} from '../utils/contract.js';
+import { getTokenBalance, getIsRole, getTotalCourses, invokeContract, getURI, getTotalSupplyNFT, get_token_of_owner_by_index} from '../utils/contract.js';
 import { config } from '../utils/env_config.js';
 import { mintToken } from './mint_token.js';
 import * as fs from 'fs';
@@ -26,25 +26,37 @@ export async function testGladius(addressBook: AddressBook) {
     addressBook.getContractId(network, 'gladius_nft_id'),
     sport_club
     );
-  console.log("🚀 ~ testGladius ~ totalSupplyNFT:", totalSupplyNFT)
+  console.log("🚀 ~ Club ~ totalSupplyNFT:", totalSupplyNFT)
 
-  const newIndex = Number(totalSupplyNFT)
-  console.log("newIndex", newIndex)
+  //const newIndex = Number(totalSupplyNFT)
+  //console.log("newIndex", newIndex)
 
-  const uri = await getURI(
+  const token_of_owner = await get_token_of_owner_by_index(
     addressBook.getContractId(network, 'gladius_nft_id'),
-    newIndex,
-    sport_club
-    );
-  console.log("🚀 ~ testGladius ~ uri:", uri);
-
-  const getNFT = await getNFTbyOwner(
-    addressBook.getContractId(network, 'gladius_nft_id'),
-    student.publicKey(),
+    'GDKT3YL6QCPPJZ53R7PUN6VX7F2SFZNSYCGALC7DIUVNHEV5IJSNKFRM', //student.publicKey(),
     0,
     sport_club
   )
-  console.log("🚀 ~ testGladius ~ NFTbyOwner:", getNFT)
+  console.log("🚀 ~ Student ~ token_of_owner_by_index:", token_of_owner)
+
+  const StudentNftIndex = Number(token_of_owner);
+
+  const uri = await getURI(
+    addressBook.getContractId(network, 'gladius_nft_id'),
+    StudentNftIndex,
+    student
+    );
+  console.log("🚀 ~ Student ~ NFT uri by index", uri);
+
+  try {
+    const response = await fetch(uri);
+    const responseData = await response.json();
+    //const { name, img_url } = responseData;
+    //console.log(`Name: ${name}, Image URL: ${img_url}`);
+    console.log("responseData: ", responseData)
+  } catch (error) {
+      console.error("An error occurred:", error);
+}
 
 }
 
