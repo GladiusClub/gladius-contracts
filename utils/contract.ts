@@ -12,6 +12,7 @@ import {
   hash,
   scValToNative,
   xdr,
+  nativeToScVal
 } from 'stellar-sdk';
 import { fileURLToPath } from 'url';
 import { AddressBook, ContractNames, WasmKeys } from './address_book.js';
@@ -26,9 +27,11 @@ const CONTRACT_REL_PATH: object = {
     '../../contracts/gladius-subscriptions/target/wasm32-unknown-unknown/release/gladius_subscriptions.optimized.wasm',
   token:
     '../../contracts/token/target/wasm32-unknown-unknown/release/soroban_token_contract.optimized.wasm',
+  gladius_nft:
+  '../../contracts/gladius-nft/target/wasm32-unknown-unknown/release/gladius_nft.optimized.wasm',
 };
 
-const network = process.argv[2];
+const network = process.argv[2]  || 'testnet';
 const loadedConfig = config(network);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -333,7 +336,73 @@ export async function getTotalCourses(contractId: string, source: Keypair) {
 }
 
 
+export async function getURI(
+  contractId: string,
+  id: number,
+  source: Keypair) {
 
+  const nftContract = new Contract(contractId);
+  const op = nftContract.call('token_uri', nativeToScVal(id, { type: 'u32' }));
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
+
+
+export async function getTotalSupplyNFT(
+  contractId: string,
+  source: Keypair) {
+
+  const nftContract = new Contract(contractId);
+  const op = nftContract.call('total_supply');
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
+
+
+export async function getOwnerBalanceyNFT(contractId: string, owner: string, source: Keypair) {
+  const nftContract = new Contract(contractId);
+  const op = nftContract.call('balance_of', new Address(owner).toScVal());
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+} 
+
+
+
+export async function get_token_of_owner_by_index(
+  contractId: string,
+  owner: string,
+  index: number,
+  source: Keypair) {
+
+  const nftContract = new Contract(contractId);
+  const op = nftContract.call('token_of_owner_by_index', new Address(owner).toScVal(),  nativeToScVal(index, { type: 'u32' }));
+
+  const result = await invoke(op, source, true);
+  const parsedResult = scValToNative(result.result.retval).toString();
+
+  if (!parsedResult) {
+    throw new Error('The operation has no result.');
+  }
+  return parsedResult;
+}
 
 
 

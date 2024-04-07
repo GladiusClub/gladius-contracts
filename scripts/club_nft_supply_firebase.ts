@@ -1,5 +1,5 @@
 import { db } from './firebaseAdminSetup.js';
-import { AddressBook } from '../utils/address_book.js';
+import { AddressBook } from '../utils/address_book_api.js';
 
 import { getURI, getTotalSupplyNFT, get_token_of_owner_by_index, getOwnerBalanceyNFT} from '../utils/contract.js';
 import { api_config } from '../utils/api_config.js';

@@ -1,5 +1,5 @@
-gcloud functions deploy GladiusContracts --gen2 --runtime nodejs20 \
+gcloud functions deploy fetchGladiusNFT --gen2 --runtime nodejs18 \
 --trigger-http \
---entry-point=GladiusContracts \
+--entry-point=fetchGladiusNFT \
 --region=europe-west1 \
 --allow-unauthenticated 

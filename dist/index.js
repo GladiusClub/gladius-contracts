@@ -1,10 +1,9 @@
 import * as functions from 'firebase-functions';
-import { Address, nativeToScVal } from 'stellar-sdk';
 import { db } from './scripts/firebaseAdminSetup.js';
 import { AddressBook } from './utils/address_book_api.js';
-import { getTokenBalance, invokeContract } from './utils/contract.js';
+import { getURI, get_token_of_owner_by_index, getOwnerBalanceyNFT } from './utils/contract.js';
 import { api_config } from './utils/api_config.js';
-export const invokeGladiusTransaction = functions.https.onRequest(async (request, response) => {
+export const fetchGladiusNFT = functions.https.onRequest(async (request, response) => {
     // Set CORS headers for preflight requests
     response.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     response.set('Access-Control-Allow-Methods', 'GET, POST');
@@ -16,11 +15,6 @@ export const invokeGladiusTransaction = functions.https.onRequest(async (request
     }
     const network = process.argv[2] || 'testnet';
     const UID = request.body.UID; // Extract UID from the request body
-    const amount = parseInt(request.body.amount, 10); // Extract and parse the amount from the request body
-    if (!UID || isNaN(amount)) {
-        response.status(400).send('Missing or invalid parameters.');
-        return;
-    }
     let addressBook;
     const folder = 'public';
     if (folder === 'public') {
@@ -29,72 +23,42 @@ export const invokeGladiusTransaction = functions.https.onRequest(async (request
     else {
         addressBook = AddressBook.loadFromFile(network);
     }
-    async function handleStudentOperations(user_stellar_secret, club_stellar_secret) {
+    async function fetchGladiusNFT(addressBook, user_stellar_secret, club_stellar_secret) {
         const student = api_config(network, user_stellar_secret);
         const studentPublicKey = student.publicKey();
         const sport_club = api_config(network, club_stellar_secret);
         const clubPublicKey = sport_club.publicKey();
-        console.log("ContractId: ", addressBook.getContractId(network, 'gladius_emitter_id'));
-        const sender_balance = await getTokenBalance(addressBook.getContractId(network, 'gladius_emitter_id'), // what token
-        studentPublicKey, // balance of who?
-        sport_club);
-        console.log("Sender balance ", sender_balance);
-        const courseIndex = 0;
-        console.log("~ handleStudentOperations ~ courseIndex:", courseIndex);
-        console.log("  ↔️   | Gladius Coins Transaction");
-        //const min_dist = 10;
-        //const max_dist = 15;
-        //const amount = Math.floor(Math.random() * (min_dist - max_dist + 1)) + min_dist;
-        console.log("      | Student Sends GLC to Sport Club: ", amount);
-        const transactionParams = [
-            new Address(studentPublicKey).toScVal(), // from
-            new Address(clubPublicKey).toScVal(), // to
-            nativeToScVal(amount, { type: 'i128' }), // amount
-        ];
-        if (amount < 0) {
-            console.log('ERROR: Amount should be a positive number');
-            response.status(400).send({ to_address: studentPublicKey, error: 'Amount should be a positive number' });
-            ;
-            return;
-        }
-        else if (amount === 0) {
-            console.log('ERROR: Not allowed to send 0 coins');
-            response.status(400).send({ to_address: studentPublicKey, error: 'Not allowed to send 0 coins' });
-            ;
-            return;
-        }
-        else if (clubPublicKey === studentPublicKey) {
-            console.log('ERROR: Not allowed to send coins to yourself');
-            response.status(400).send({ to_address: studentPublicKey, error: 'Not allowed to send coins to yourself' });
-            ;
-            return;
-        }
-        else if (sender_balance < amount) {
-            console.log('ERROR: Transfer amount exceeds balance');
-            response.status(400).send({ to_address: studentPublicKey, error: 'Transfer amount exceeds balance' });
-            return;
-        }
-        else {
-            // If all checks passed, perform the transaction
-            try {
-                console.log("invokeContract");
-                await invokeContract('gladius_emitter_id', addressBook, 'transfer', transactionParams, student);
-                console.log("Success");
-                const sender_balance_after = await getTokenBalance(addressBook.getContractId(network, 'gladius_emitter_id'), // what token
-                studentPublicKey, // balance of who?
-                sport_club);
-                console.log("Sender balance after", sender_balance_after);
-                return response.status(200).json({ to_address: studentPublicKey, error: undefined }); // Indicating success
+        console.log('gladius nft contract id: ', addressBook.getContractId(network, 'gladius_nft_id'));
+        try {
+            const ownerBalanceyNFT = await getOwnerBalanceyNFT(addressBook.getContractId(network, 'gladius_nft_id'), studentPublicKey, sport_club);
+            console.log('🚀 ~ Student ~ balanceNFT:', ownerBalanceyNFT);
+            let tokenIds = [];
+            for (let i = 0; i < ownerBalanceyNFT; i++) {
+                const tokenId = await get_token_of_owner_by_index(addressBook.getContractId(network, 'gladius_nft_id'), studentPublicKey, i, sport_club);
+                tokenIds.push(Number(tokenId));
             }
-            catch (error) {
-                const errorMessage = error.message;
-                console.error(`Error invoking contract for address ${studentPublicKey}: ${errorMessage}`);
-                response.status(400).send({ to_address: studentPublicKey, error: `Contract invocation failed: ${errorMessage}` });
-                return; // Indicating a client-side error
+            console.log('🚀 ~ All Token IDs:', tokenIds);
+            let uris = [];
+            let allUriContentData = [];
+            for (let tokenId of tokenIds) {
+                const uri = await getURI(addressBook.getContractId(network, 'gladius_nft_id'), tokenId, student);
+                console.log('🚀 ~ Token ID:', tokenId, 'URI:', uri);
+                uris.push(uri);
+                const UriContent = await fetch(uri);
+                const UriContentData = await UriContent.json();
+                //console.log("UriContentData: ", UriContentData)
+                allUriContentData.push(UriContentData);
             }
+            const combinedJsonObject = { nfts: allUriContentData };
+            console.log(combinedJsonObject);
+            return combinedJsonObject;
+        }
+        catch (error) {
+            console.error("An error occurred:", error);
         }
     }
     console.log("Connecting to firebase");
+    // const UID = '4KKWdVfzUcUcJf9mVSVdPRXSNLI2'
     const docRef = db.collection('users').doc(UID);
     const club_id = '2';
     const clubRef = db.collection('clubs').doc(club_id);
@@ -113,10 +77,11 @@ export const invokeGladiusTransaction = functions.https.onRequest(async (request
                     console.log(`Club ID ${club_id} was found. It's ${clubData.name} `);
                     const club_stellar_wallet = clubData.club_stellar_wallet;
                     const club_stellar_secret = clubData.club_stellar_secret;
-                    console.log(`Destination wallet ${club_stellar_wallet} `);
-                    await handleStudentOperations(user_stellar_secret, club_stellar_secret);
+                    console.log(`Club wallet ${club_stellar_wallet} `);
+                    const combinedJsonObject = await fetchGladiusNFT(addressBook, user_stellar_secret, club_stellar_secret);
                     response.status(200).json({
-                        message: `GLC sent form ${stellar_wallet} to ${club_stellar_wallet} in the amount of ${amount}`
+                        message: `GLC NFTs of ${userData.email}`,
+                        data: combinedJsonObject
                     });
                 }
             }

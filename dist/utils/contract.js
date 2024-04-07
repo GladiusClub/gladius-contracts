@@ -2,7 +2,7 @@
 import { randomBytes } from 'crypto';
 import { readFileSync } from 'fs';
 import path from 'path';
-import { Address, Contract, Operation, StrKey, hash, scValToNative, xdr, } from 'stellar-sdk';
+import { Address, Contract, Operation, StrKey, hash, scValToNative, xdr, nativeToScVal } from 'stellar-sdk';
 import { fileURLToPath } from 'url';
 import { config } from './env_config.js';
 import { createTxBuilder, invoke, invokeTransaction } from './tx.js';
@@ -11,6 +11,7 @@ const CONTRACT_REL_PATH = {
     gladius_coin_emitter: '../../contracts/gladius-coin-emitter/target/wasm32-unknown-unknown/release/gladius_coin_emitter.optimized.wasm',
     gladius_subscriptions: '../../contracts/gladius-subscriptions/target/wasm32-unknown-unknown/release/gladius_subscriptions.optimized.wasm',
     token: '../../contracts/token/target/wasm32-unknown-unknown/release/soroban_token_contract.optimized.wasm',
+    gladius_nft: '../../contracts/gladius-nft/target/wasm32-unknown-unknown/release/gladius_nft.optimized.wasm',
 };
 const network = process.argv[2] || 'testnet';
 const loadedConfig = config(network);
@@ -205,6 +206,46 @@ export async function getIsRole(contractId, function_name, user, source) {
 export async function getTotalCourses(contractId, source) {
     const subscriptionContract = new Contract(contractId);
     const op = subscriptionContract.call('get_total_courses');
+    const result = await invoke(op, source, true);
+    const parsedResult = scValToNative(result.result.retval).toString();
+    if (!parsedResult) {
+        throw new Error('The operation has no result.');
+    }
+    return parsedResult;
+}
+export async function getURI(contractId, id, source) {
+    const nftContract = new Contract(contractId);
+    const op = nftContract.call('token_uri', nativeToScVal(id, { type: 'u32' }));
+    const result = await invoke(op, source, true);
+    const parsedResult = scValToNative(result.result.retval).toString();
+    if (!parsedResult) {
+        throw new Error('The operation has no result.');
+    }
+    return parsedResult;
+}
+export async function getTotalSupplyNFT(contractId, source) {
+    const nftContract = new Contract(contractId);
+    const op = nftContract.call('total_supply');
+    const result = await invoke(op, source, true);
+    const parsedResult = scValToNative(result.result.retval).toString();
+    if (!parsedResult) {
+        throw new Error('The operation has no result.');
+    }
+    return parsedResult;
+}
+export async function getOwnerBalanceyNFT(contractId, owner, source) {
+    const nftContract = new Contract(contractId);
+    const op = nftContract.call('balance_of', new Address(owner).toScVal());
+    const result = await invoke(op, source, true);
+    const parsedResult = scValToNative(result.result.retval).toString();
+    if (!parsedResult) {
+        throw new Error('The operation has no result.');
+    }
+    return parsedResult;
+}
+export async function get_token_of_owner_by_index(contractId, owner, index, source) {
+    const nftContract = new Contract(contractId);
+    const op = nftContract.call('token_of_owner_by_index', new Address(owner).toScVal(), nativeToScVal(index, { type: 'u32' }));
     const result = await invoke(op, source, true);
     const parsedResult = scValToNative(result.result.retval).toString();
     if (!parsedResult) {
