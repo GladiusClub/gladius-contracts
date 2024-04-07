@@ -31,7 +31,7 @@ const CONTRACT_REL_PATH: object = {
   '../../contracts/gladius-nft/target/wasm32-unknown-unknown/release/gladius_nft.optimized.wasm',
 };
 
-const network = process.argv[2]  || 'testnet';
+const network = process.argv[2] || 'testnet';
 const loadedConfig = config(network);
 
 const __filename = fileURLToPath(import.meta.url);
