@@ -1,5 +1,7 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusNFTTest}; 
+use crate::test::gladius_nft::GladiusNFTError;
+
 use soroban_sdk::{
     Address, IntoVal,
     testutils::{
@@ -270,4 +272,137 @@ fn transfer() {
     assert_eq!(test.contract.token_by_index(&3), 88);
 
     
+}
+
+#[test]
+fn transfer_not_owner() {
+    let test = GladiusNFTTest::setup();
+
+    let name = String::from_str(&test.env, "Cool NFT");
+    let symbol = String::from_str(&test.env, "COOL");
+    let index = 0;
+    let uri = String::from_str(&test.env, "my_uri_0");
+    let not_owner_user = Address::generate(&test.env);
+    let new_user = Address::generate(&test.env);
+
+    test.contract.initialize(
+        &test.admin,
+        &name,
+        &symbol,
+    );
+
+    test.contract
+    .mock_auths(&[
+        MockAuth {
+            address: &test.admin.clone(),
+            invoke: 
+                &MockAuthInvoke {
+                    contract: &test.contract.address,
+                    fn_name: "mint",
+                    args: (test.user.clone(),index.clone(), uri.clone()).into_val(&test.env),
+                    sub_invokes: &[],
+                },
+        }
+    ])
+    .mint(&test.user, &index, &uri);
+
+    let id_to_trasfer = 0;
+
+    let res = test.contract.try_transfer_from(
+        &not_owner_user, // spender
+        &not_owner_user,  // from
+        &new_user, //to
+        &id_to_trasfer //token_id
+    );
+
+    assert_eq!(res, Err(Ok(GladiusNFTError::NotOwner))); 
+}
+
+
+#[test]
+fn transfer_not_nft() {
+    let test = GladiusNFTTest::setup();
+
+    let name = String::from_str(&test.env, "Cool NFT");
+    let symbol = String::from_str(&test.env, "COOL");
+    let index = 0;
+    let uri = String::from_str(&test.env, "my_uri_0");
+    let new_user = Address::generate(&test.env);
+
+    test.contract.initialize(
+        &test.admin,
+        &name,
+        &symbol,
+    );
+
+    test.contract
+    .mock_auths(&[
+        MockAuth {
+            address: &test.admin.clone(),
+            invoke: 
+                &MockAuthInvoke {
+                    contract: &test.contract.address,
+                    fn_name: "mint",
+                    args: (test.user.clone(),index.clone(), uri.clone()).into_val(&test.env),
+                    sub_invokes: &[],
+                },
+        }
+    ])
+    .mint(&test.user, &index, &uri);
+
+    let id_to_trasfer = 1;
+
+    let res = test.contract.try_transfer_from(
+        &test.user, // spender
+        &test.user,  // from
+        &new_user, //to
+        &id_to_trasfer //token_id
+    );
+
+    assert_eq!(res, Err(Ok(GladiusNFTError::NotNFT))); 
+}
+
+#[test]
+fn transfer_not_authorized() {
+    let test = GladiusNFTTest::setup();
+
+    let name = String::from_str(&test.env, "Cool NFT");
+    let symbol = String::from_str(&test.env, "COOL");
+    let index = 0;
+    let uri = String::from_str(&test.env, "my_uri_0");
+    let new_user = Address::generate(&test.env);
+    let not_authorized_user = Address::generate(&test.env);
+
+
+    test.contract.initialize(
+        &test.admin,
+        &name,
+        &symbol,
+    );
+
+    test.contract
+    .mock_auths(&[
+        MockAuth {
+            address: &test.admin.clone(),
+            invoke: 
+                &MockAuthInvoke {
+                    contract: &test.contract.address,
+                    fn_name: "mint",
+                    args: (test.user.clone(),index.clone(), uri.clone()).into_val(&test.env),
+                    sub_invokes: &[],
+                },
+        }
+    ])
+    .mint(&test.user, &index, &uri);
+
+    let id_to_trasfer = 0;
+
+    let res = test.contract.try_transfer_from(
+        &not_authorized_user, // spender
+        &test.user,  // from
+        &new_user, //to
+        &id_to_trasfer //token_id
+    );
+
+    assert_eq!(res, Err(Ok(GladiusNFTError::NotAuthorized))); 
 }
