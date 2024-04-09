@@ -22,13 +22,22 @@ pub struct GladiusNFTContract;
 
 #[contractimpl]
 impl ERC721 for GladiusNFTContract {
+
+    fn owner_of(env: Env, token_id: u32) -> Address {
+        if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) { 
+            addr
+        } else {
+            panic_with_error!(&env, Error::NotNFT);
+        }
+    }
+
     fn balance_of(env: Env, owner: Address) -> u32 {
         DataKey::Balance(owner)
             .extend(&env, 1000)
             .get(&env)
             .unwrap_or(0)
     }
-
+ 
     fn transfer_from(env: Env, spender: Address, from: Address, to: Address, token_id: u32) {
         spender.require_auth();
         let is_sender_approved = if spender != from {
@@ -236,14 +245,6 @@ impl GladiusNFTContract {
         get_admin(&env).require_auth();
         Admin::User.set(&env, &addr);
         // TODO: Set set_admin event
-    }
-
-    pub fn owner_of(env: Env, token_id: u32) -> Address {
-        if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) { 
-            addr
-        } else {
-            panic_with_error!(&env, Error::NotNFT);
-        }
     }
 
     pub fn mint(env: Env, to: Address, token_id: u32, uri: String) {
