@@ -33,7 +33,6 @@ impl ERC721 for GladiusNFTContract {
             .get(&env)
             .unwrap_or(0)
     }
-  
     fn owner_of(env: Env,token_id: u32) -> Result<Address, GladiusNFTError> {
         if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) { 
             Ok(addr)

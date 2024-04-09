@@ -1,5 +1,7 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusNFTTest}; 
+use crate::test::gladius_nft::GladiusNFTError;
+
 use soroban_sdk::{
     Address, IntoVal,
     testutils::{
@@ -156,7 +158,6 @@ fn mint_double_index() {
 
 
 #[test]
-#[should_panic] // TODO: Transform to error
 fn no_owner() {
     let test = GladiusNFTTest::setup();
 
@@ -168,8 +169,9 @@ fn no_owner() {
         &name,
         &symbol,
     );
-    let _dummy = test.contract.owner_of(&0);
-   
+
+    let res = test.contract.try_owner_of(&0);
+    assert_eq!(res, Err(Ok(GladiusNFTError::NotNFT))); 
 }
 
 
