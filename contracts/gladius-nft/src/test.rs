@@ -58,3 +58,4 @@ mod initialize;
 mod admin;
 mod mint;
 mod transfer;
+mod approve;
