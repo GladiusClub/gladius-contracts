@@ -10,21 +10,25 @@ const PINATA_API_SECRET: string | undefined = process.env.PINATA_API_SECRET;
 console.log("🚀 ~ PINATA_API_SECRET:", PINATA_API_SECRET);
 console.log("🚀 ~ PINATA_API_KEY:", PINATA_API_KEY);
 
-const filePath: string = '/workspace/img/golden_badge.jpg';
-const filename: string = path.basename(filePath);
-const baseName: string = path.parse(filename).name;
+export async function pinFileToIPFS(filePath: string, NftName:string ): Promise<string> {
+  //const filePath: string = '/workspace/img/golden_badge.jpg';
+  
+  const filename: string = path.basename(filePath);
+  const baseName: string = path.parse(filename).name;
+  const fileExt = path.extname(filePath);
+  console.log(`upload to IPFS ${NftName} from `,  filePath);
 
-export async function pinFileToIPFS(): Promise<void> {
+
     if (!PINATA_API_KEY || !PINATA_API_SECRET) {
         console.error("Pinata API Key or Secret is undefined.");
-        return;
+        return "Pinata API Key or Secret is undefined";
     }
   
     const pinata = new pinataSDK(PINATA_API_KEY, PINATA_API_SECRET);
     const stream = fs.createReadStream(filePath);
     const options = {
         pinataMetadata: {
-            name: `${baseName}.jpg`,
+            name: `${baseName}${fileExt}`,
         },
     };
 
@@ -40,7 +44,7 @@ export async function pinFileToIPFS(): Promise<void> {
     };
 
     const jsonContent = {
-        name: "gladius golden nft",
+        name: NftName,
         img_url: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`
     };
 
@@ -54,15 +58,5 @@ export async function pinFileToIPFS(): Promise<void> {
     // Write the NFT URI to a file
     await fs.promises.writeFile(nftUriFilePath, nft_uri);
     console.log('NFT URI has been written to the file successfully.');
-    // return nft_uri;
+    return nft_uri;
 }
-
-(async () => {
-    try {
-      const nftUri = await pinFileToIPFS();
-      console.log('NFT URI:', nftUri);
-    } catch (error) {
-      console.error('Error pinning file to IPFS:', error);
-    }
-  })();
-  

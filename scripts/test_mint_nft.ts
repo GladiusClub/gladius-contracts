@@ -2,6 +2,7 @@ import { Address, nativeToScVal, xdr, scValToNative } from 'stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
 import { invokeContract, getURI, getTotalSupplyNFT} from '../utils/contract.js';
 import { config } from '../utils/env_config.js';
+import {pinFileToIPFS} from './image_to_pinata.js'
 import * as fs from 'fs';
 
 
@@ -17,9 +18,14 @@ export async function testGladius(addressBook: AddressBook) {
   console.log('-------------------------------------------------------');
   console.log('Minting one Gladius NFT');
   console.log('-------------------------------------------------------');
-  
-  // const img_uri = pinFileToIPFS('/workspace/img/gladius_club_nft.png');
-  const img_uri = fs.readFileSync('/workspace/.soroban/nft_uri', 'utf8');
+  const img_url = '/workspace/img/nft_cup.jpg'
+  const NftName = 'Gladius Cup'
+
+  const img_uri = await pinFileToIPFS(img_url, NftName);
+  //console.log("pinFileToIPFS: " , img_url );
+  //console.log("IPFS URI:" , img_uri);
+
+  //const img_uri = fs.readFileSync('/workspace/.soroban/nft_uri', 'utf8');
 
   const totalSupplyNFT = await getTotalSupplyNFT(
     addressBook.getContractId(network, 'gladius_nft_id'),
@@ -29,7 +35,8 @@ export async function testGladius(addressBook: AddressBook) {
 
   const newIndex = Number(totalSupplyNFT) +1
   const mintNFTParams = [
-    new Address('GDKT3YL6QCPPJZ53R7PUN6VX7F2SFZNSYCGALC7DIUVNHEV5IJSNKFRM').toScVal(), // to
+    new Address('GAHY73P3VMI7GUJAD377JWXCZ6KKUOLJBAOTK5VJ4RKYYP23N75DR7AN').toScVal(), // to Andrei
+    //new Address('GDKT3YL6QCPPJZ53R7PUN6VX7F2SFZNSYCGALC7DIUVNHEV5IJSNKFRM').toScVal(), // to
     nativeToScVal(newIndex, { type: 'u32' }), // index
     nativeToScVal(img_uri, { type: 'string' }),
   ];
