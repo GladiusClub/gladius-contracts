@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import pinataSDK from '@pinata/sdk';
+// import pinataSDK from '@pinata/sdk';
+
+const pinataSDK = require('@pinata/sdk');
 
 const PINATA_API_KEY: string | undefined = process.env.PINATA_API_KEY;
 const PINATA_API_SECRET: string | undefined = process.env.PINATA_API_SECRET;
@@ -52,7 +54,7 @@ export async function pinFileToIPFS(): Promise<void> {
     // Write the NFT URI to a file
     await fs.promises.writeFile(nftUriFilePath, nft_uri);
     console.log('NFT URI has been written to the file successfully.');
-    return nft_uri;
+    // return nft_uri;
 }
 
 (async () => {
