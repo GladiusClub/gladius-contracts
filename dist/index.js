@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
 import { db } from './scripts/firebaseAdminSetup.js';
 import { AddressBook } from './utils/address_book_api.js';
-import { getURI, get_token_of_owner_by_index, getOwnerBalanceyNFT } from './utils/contract.js';
+import { getTokenBalance } from './utils/contract.js';
 import { api_config } from './utils/api_config.js';
-export const fetchGladiusNFT = functions.https.onRequest(async (request, response) => {
+export const getStudentBalanceByID = functions.https.onRequest(async (request, response) => {
     // Set CORS headers for preflight requests
     response.set('Access-Control-Allow-Origin', 'http://localhost:3000');
     response.set('Access-Control-Allow-Methods', 'GET, POST');
@@ -22,40 +22,6 @@ export const fetchGladiusNFT = functions.https.onRequest(async (request, respons
     }
     else {
         addressBook = AddressBook.loadFromFile(network);
-    }
-    async function fetchGladiusNFT(addressBook, user_stellar_secret, club_stellar_secret) {
-        const student = api_config(network, user_stellar_secret);
-        const studentPublicKey = student.publicKey();
-        const sport_club = api_config(network, club_stellar_secret);
-        const clubPublicKey = sport_club.publicKey();
-        console.log('gladius nft contract id: ', addressBook.getContractId(network, 'gladius_nft_id'));
-        try {
-            const ownerBalanceyNFT = await getOwnerBalanceyNFT(addressBook.getContractId(network, 'gladius_nft_id'), studentPublicKey, sport_club);
-            console.log('🚀 ~ Student ~ balanceNFT:', ownerBalanceyNFT);
-            let tokenIds = [];
-            for (let i = 0; i < ownerBalanceyNFT; i++) {
-                const tokenId = await get_token_of_owner_by_index(addressBook.getContractId(network, 'gladius_nft_id'), studentPublicKey, i, sport_club);
-                tokenIds.push(Number(tokenId));
-            }
-            console.log('🚀 ~ All Token IDs:', tokenIds);
-            let uris = [];
-            let allUriContentData = [];
-            for (let tokenId of tokenIds) {
-                const uri = await getURI(addressBook.getContractId(network, 'gladius_nft_id'), tokenId, student);
-                console.log('🚀 ~ Token ID:', tokenId, 'URI:', uri);
-                uris.push(uri);
-                const UriContent = await fetch(uri);
-                const UriContentData = await UriContent.json();
-                //console.log("UriContentData: ", UriContentData)
-                allUriContentData.push(UriContentData);
-            }
-            const combinedJsonObject = { nfts: allUriContentData };
-            console.log(combinedJsonObject);
-            return combinedJsonObject;
-        }
-        catch (error) {
-            console.error("An error occurred:", error);
-        }
     }
     console.log("Connecting to firebase");
     // const UID = '4KKWdVfzUcUcJf9mVSVdPRXSNLI2'
@@ -78,10 +44,14 @@ export const fetchGladiusNFT = functions.https.onRequest(async (request, respons
                     const club_stellar_wallet = clubData.club_stellar_wallet;
                     const club_stellar_secret = clubData.club_stellar_secret;
                     console.log(`Club wallet ${club_stellar_wallet} `);
-                    const combinedJsonObject = await fetchGladiusNFT(addressBook, user_stellar_secret, club_stellar_secret);
+                    const student = api_config(network, user_stellar_secret);
+                    const studentPublicKey = student.publicKey();
+                    const sport_club = api_config(network, club_stellar_secret);
+                    const clubPublicKey = sport_club.publicKey();
+                    let balanceGLCStudent = await getTokenBalance(addressBook.getContractId(network, 'gladius_emitter_id'), studentPublicKey, student);
                     response.status(200).json({
-                        message: `GLC NFTs of ${userData.email}`,
-                        data: combinedJsonObject
+                        message: `GLC Balance of ${userData.email}`,
+                        data: balanceGLCStudent
                     });
                 }
             }

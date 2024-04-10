@@ -1,5 +1,5 @@
-gcloud functions deploy fetchGladiusNFT --gen2 --runtime nodejs18 \
+gcloud functions deploy getStudentBalanceByID --gen2 --runtime nodejs18 \
 --trigger-http \
---entry-point=fetchGladiusNFT \
+--entry-point=getStudentBalanceByID \
 --region=europe-west1 \
 --allow-unauthenticated 
