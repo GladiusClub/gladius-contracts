@@ -38,7 +38,8 @@ export class AddressBook {
 
   static loadFromFile(network: string, folder: string = '.soroban') {
     const fileName = `deployments.json`;
-    const filePath = path.join(__dirname, `../../${folder}/`, fileName);
+    const filePath = path.join(__dirname, `../${folder}/`, fileName);
+    console.log('reading ', filePath);
     console.log("🚀 ~ AddressBook ~ loadFromFile ~ filePath:", filePath)
     let networks: NetworkContracts[];
 
@@ -106,7 +107,7 @@ export class AddressBook {
   }
 
   writeToFile() {
-    const dirPath = path.join(__dirname, '../../.soroban/');
+    const dirPath = path.join(__dirname, '../.soroban/');
     const filePath = path.join(dirPath, this.fileName);
 
     if (!existsSync(dirPath)) {
