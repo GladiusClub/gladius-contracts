@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions';
 import { db } from './scripts/firebaseAdminSetup.js';
 import { Address, nativeToScVal, xdr, scValToNative } from 'stellar-sdk';
 import { AddressBook } from './utils/address_book.js';
@@ -6,31 +5,11 @@ import { getTokenBalance, getIsRole, getTotalCourses, invokeContract } from './u
 import { api_config } from './utils/api_config.js';
 import { config } from './utils/env_config.js';
 import { mintToken } from './scripts/mint_token.js';
+import { group } from 'console';
 
-
-export const SignupGladiusParent = functions.https.onRequest(async (request, response) => {
-  // Set CORS headers for preflight requests
-  response.set('Access-Control-Allow-Origin', 'http://localhost:3000');
-  response.set('Access-Control-Allow-Methods', 'GET, POST');
-  response.set('Access-Control-Allow-Headers', 'Content-Type');
-  response.set('Access-Control-Max-Age', '3600');
-
-  if (request.method === 'OPTIONS') {
-    response.status(204).send('');
-    return;
-}
 
 const network = process.argv[2] || 'testnet';     
 const folder = 'public'; 
-
-const StudentUID: string = request.body.StudentUID; // Extract StudentUID from the request body
-const ParentUID: string = request.body.ParentUID; // Extract ParentUID from the request body
-
-if (!StudentUID || !StudentUID) {
-  response.status(400).send('Missing or invalid parameters.');
-  return;
-}
-
 
 let addressBook: AddressBook;
 const loadedConfig = config(network);
@@ -41,16 +20,19 @@ if (folder == 'public') {
     addressBook = AddressBook.loadFromFile(network);
 }
 
-async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret: string, student_stellar_secret: string, club_stellar_secret: string) {
+export async function SignupGladius(
+  addressBook: AddressBook, 
+  parent_stellar_secret: string, 
+  student_stellar_secret: string, 
+  club_stellar_secret: string, 
+  gladius_subscriptions_id: string, 
+  gladius_course_index: string) {
 
-  // load from .env file
   let gladius_admin = loadedConfig.admin;
   let payment_token_admin = loadedConfig.getUser('PAYMENT_TOKEN_ADMIN_SECRET');
-
+ 
   const sport_club = api_config(network, club_stellar_secret);
-
   const parent = api_config(network, parent_stellar_secret);
-
   const student = api_config(network, student_stellar_secret);
 
   async function getAllBalances() {
@@ -75,7 +57,7 @@ async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret:
 
     let balanceGladiusSubscriptions = await getTokenBalance(
       addressBook.getContractId(network, 'token_id'), // what token
-      addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
+      gladius_subscriptions_id, //addressBook.getContractId(network, 'gladius_subscriptions_id'), // balance of who?
       sport_club
     );
 
@@ -101,7 +83,7 @@ async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret:
 
   }
 
-  //await getAllBalances();
+  await getAllBalances();
 
   console.log('-------------------------------------------------------');
   console.log('Testing Gladius Contracts');
@@ -116,20 +98,20 @@ async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret:
     payment_token_admin
   );
 
-  //await getAllBalances();
+  await getAllBalances();
 
 
   console.log("  🕵️  | Checking and Setting Roles")
   
 
   const isParentBefore = await getIsRole(
-    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    gladius_subscriptions_id, //addressBook.getContractId(network, 'gladius_subscriptions_id'),
     'is_parent',
     parent.publicKey(),
     parent
     )
   const isStudentBefore = await getIsRole(
-    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    gladius_subscriptions_id, //addressBook.getContractId(network, 'gladius_subscriptions_id'),
     'is_student',
     student.publicKey(),
     student
@@ -153,13 +135,13 @@ async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret:
 
   
   const isParentAfter = await getIsRole(
-    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    gladius_subscriptions_id,// addressBook.getContractId(network, 'gladius_subscriptions_id'),
     'is_parent',
     parent.publicKey(),
     parent
     )
   const isStudentAfter = await getIsRole(
-    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    gladius_subscriptions_id, // addressBook.getContractId(network, 'gladius_subscriptions_id'),
     'is_student',
     student.publicKey(),
     student
@@ -175,12 +157,12 @@ async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret:
 
 //  const courseReponse = await invokeContract('gladius_subscriptions_id', addressBook, 'create_course', createCourseParams, sport_club);
   //const courseIndex = scValToNative(courseReponse.returnValue);
-  const courseIndex = 0;
+  const courseIndex = Number(gladius_course_index);
 
   console.log("~ testGladius ~ courseIndex:", courseIndex)
   
   const totalCourses = await getTotalCourses(
-    addressBook.getContractId(network, 'gladius_subscriptions_id'),
+    gladius_subscriptions_id, //addressBook.getContractId(network, 'gladius_subscriptions_id'),
     gladius_admin
     );
   console.log(" ~ testGladius ~ totalCoursesAfter:", totalCourses)
@@ -200,7 +182,7 @@ async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret:
 
   console.log("  🎾  | Subscribing to Courses")
 
-  //await getAllBalances();
+  await getAllBalances();
 
   const subscribeCourseParams: xdr.ScVal[] = [
     new Address(parent.publicKey()).toScVal(), // parent
@@ -215,14 +197,16 @@ async function SetGladiusParent(addressBook: AddressBook, parent_stellar_secret:
 }
 
 console.log("Connecting to firebase");
-  //const StudentUID = 'tM0GGkeYMleGh4CDdtt3FJVqMxt1'; //example UID
-  //const ParentUID = 'XzlO95KCz3bM1Xg46vRomWwGQjG3'; //example UID
+  const ParentUID = 'gLdqODKRsxc2AznOyzw13WxzJPD2';
+  const StudentUID = 'mf3fRzXNCJOqW4ltGQ5YMo6MLvu2';
+  const ClubUID = '2';
+  //const GroupUID = 'VnFvQxDpTL9LuvhiOSTt';
+  const GroupUID = 'BH4gTmMRgOUYZLcTQupu';
   
   const StudentdocRef = db.collection('users').doc(StudentUID);
   const ParentdocRef = db.collection('users').doc(ParentUID);
 
-  const club_id = '2';
-  const clubRef = db.collection('clubs').doc(club_id);
+  const clubRef = db.collection('clubs').doc(ClubUID);
   
   const StudentdocSnap = await StudentdocRef.get();
   const ParentdocSnap = await ParentdocRef.get();
@@ -239,7 +223,8 @@ console.log("Connecting to firebase");
 
   if (StudentdocSnap.exists) { 
     const StudentData = StudentdocSnap.data();
-    if (StudentData && StudentData.stellar_wallet && StudentData.email) { // Check if userData is truthy before accessing its properties
+    if (StudentData && StudentData.stellar_wallet && StudentData.email) 
+      { // Check if userData is truthy before accessing its properties
       console.log(`Student doc with ID ${StudentUID} was found. User email: `, StudentData.email);
       
       const student_stellar_wallet = StudentData.stellar_wallet
@@ -248,40 +233,51 @@ console.log("Connecting to firebase");
 
       if (clubSnap.exists) {
         const clubData = clubSnap.data();
-        if (clubData && clubData.name && clubData.club_stellar_secret && clubData.club_stellar_wallet) {
-          console.log(`Club ID ${club_id} was found. It's ${clubData.name} `);
+        if (clubData && clubData.name && clubData.club_stellar_secret && clubData.club_stellar_wallet) 
+          {
+          console.log(`Club ID ${ClubUID} was found. It's ${clubData.name} `);
           
-          const club_stellar_wallet = clubData.club_stellar_wallet
-          const club_stellar_secret = clubData.club_stellar_secret
+          const club_stellar_wallet = clubData.club_stellar_wallet;
+          const club_stellar_secret = clubData.club_stellar_secret;
           console.log(`Club wallet ${club_stellar_wallet} `);
+
+          const groupRef = clubRef.collection('groups').doc(GroupUID);
+          const groupSnap = await groupRef.get();
           
-          await SetGladiusParent(addressBook,  parent_stellar_secret ,student_stellar_secret, club_stellar_secret);
-          response.status(200).json({
-            message: `Student ${StudentData.email} was added to club ${clubData.name} by ${ParentData.email}`,
-            parent_public_key: parent_stellar_wallet,
-            student_public_key: student_stellar_wallet,
-            club_public_key: club_stellar_wallet
-        });
-        
+          if (groupSnap.exists) 
+            {
+            const groupData = groupSnap.data();
+            if (groupData ) {
+              console.log(`Club ID ${ClubUID}. Group name is ${groupData.name}. Course title is ${groupData.gladius_course_title}`);
+              if (groupData.gladius_subscriptions_id && groupData.gladius_course_index) {
+                const gladius_subscriptions_id = groupData.gladius_subscriptions_id;
+                const gladius_course_index = groupData.gladius_course_index;
+                console.log('gladius_subscriptions_id: ', gladius_subscriptions_id);
+                console.log('gladius_course_index: ', gladius_course_index); //default 0
+
+                await SignupGladius(addressBook,  parent_stellar_secret ,student_stellar_secret, club_stellar_secret, gladius_subscriptions_id, gladius_course_index);
+
+              } else {
+                console.log(`Gladius smart contract data for ID ${GroupUID} is undefined`);
+              }
+            } else {
+                console.log(`Group data for ID ${GroupUID} is undefined`);
+            }
+          }
         
         }
-        
-
-      }
-      else {
-        console.log(`club with ID ${club_id} not found `);
-      }
-      
+        else {
+          console.log(`club with ID ${ClubUID} not found `);
+        } 
     }
   } else {
     console.log(`No Student document with id ${StudentUID} `);  
   }
   
-   }
+ }
   
   } else {
     console.log(`No Parent document with id ${StudentUID} `);  
   }
 
-
-});
+}
