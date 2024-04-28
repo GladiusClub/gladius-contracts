@@ -27,7 +27,7 @@ fn transfer() {
     assert_eq!(test.contract.admin(), test.admin);
     assert_eq!(test.contract.balance_of(&test.user), 0);
 
-    let mut index = 0;
+    let mut id = 0;
     let mut uri = String::from_str(&test.env, "my_uri_0");
 
     test.contract
@@ -38,21 +38,21 @@ fn transfer() {
                 &MockAuthInvoke {
                     contract: &test.contract.address,
                     fn_name: "mint",
-                    args: (test.user.clone(),index.clone(), uri.clone()).into_val(&test.env),
+                    args: (test.user.clone(),id.clone(), uri.clone()).into_val(&test.env),
                     sub_invokes: &[],
                 },
         }
     ])
-    .mint(&test.user, &index, &uri);
+    .mint(&test.user, &id, &uri);
 
     assert_eq!(test.contract.balance_of(&test.user), 1);
     assert_eq!(test.contract.total_supply(), 1);
-    assert_eq!(test.contract.owner_of(&0), test.user);
-    assert_eq!(test.contract.token_uri(&0), uri);
-    assert_eq!(test.contract.token_of_owner_by_index(&test.user, &&0), 0);
-    assert_eq!(test.contract.token_by_index(&0), 0);
+    assert_eq!(test.contract.owner_of(&id), test.user);
+    assert_eq!(test.contract.token_uri(&id), uri);
+    assert_eq!(test.contract.token_of_owner_by_index(&test.user, &&0), id.clone());
+    assert_eq!(test.contract.token_by_index(&0), id.clone());
 
-    index = 1;
+    id = 1;
     uri = String::from_str(&test.env, "my_uri_1");
 
     test.contract
@@ -63,20 +63,20 @@ fn transfer() {
                 &MockAuthInvoke {
                     contract: &test.contract.address,
                     fn_name: "mint",
-                    args: (test.user.clone(),index.clone(), uri.clone()).into_val(&test.env),
+                    args: (test.user.clone(),id.clone(), uri.clone()).into_val(&test.env),
                     sub_invokes: &[],
                 },
         }
     ])
-    .mint(&test.user, &index, &uri);
+    .mint(&test.user, &id, &uri);
 
     assert_eq!(test.contract.balance_of(&test.user), 2);
     assert_eq!(test.contract.total_supply(), 2);
-    assert_eq!(test.contract.owner_of(&index), test.user);
-    assert_eq!(test.contract.token_of_owner_by_index(&test.user, &1), index);
-    assert_eq!(test.contract.token_by_index(&1), index);
+    assert_eq!(test.contract.owner_of(&id), test.user);
+    assert_eq!(test.contract.token_of_owner_by_index(&test.user, &1), id);
+    assert_eq!(test.contract.token_by_index(&1), id);
 
-    index = 2;
+    id = 2;
     uri = String::from_str(&test.env, "my_uri_2");
     let new_user = Address::generate(&test.env);
 
@@ -88,12 +88,12 @@ fn transfer() {
                 &MockAuthInvoke {
                     contract: &test.contract.address,
                     fn_name: "mint",
-                    args: (new_user.clone(),index.clone(), uri.clone()).into_val(&test.env),
+                    args: (new_user.clone(),id.clone(), uri.clone()).into_val(&test.env),
                     sub_invokes: &[],
                 },
         }
     ])
-    .mint(&new_user, &index, &uri);
+    .mint(&new_user, &id, &uri);
 
     assert_eq!(test.contract.balance_of(&test.user), 2);
     assert_eq!(test.contract.balance_of(&new_user), 1);
@@ -190,7 +190,7 @@ fn transfer() {
     assert_eq!(test.contract.token_by_index(&1), 1);
     assert_eq!(test.contract.token_by_index(&2), 2);
 
-    index = 88;
+    id = 88;
     uri = String::from_str(&test.env, "my_uri_88");
     let new_user_88 = Address::generate(&test.env);
 
@@ -202,12 +202,12 @@ fn transfer() {
                 &MockAuthInvoke {
                     contract: &test.contract.address,
                     fn_name: "mint",
-                    args: (new_user_88.clone(),index.clone(), uri.clone()).into_val(&test.env),
+                    args: (new_user_88.clone(),id.clone(), uri.clone()).into_val(&test.env),
                     sub_invokes: &[],
                 },
         }
     ])
-    .mint(&new_user_88, &index, &uri);
+    .mint(&new_user_88, &id, &uri);
 
     assert_eq!(test.contract.balance_of(&test.user), 0);
     assert_eq!(test.contract.balance_of(&new_user), 3);
@@ -225,7 +225,7 @@ fn transfer() {
     assert_eq!(test.contract.token_by_index(&1), 1);
     assert_eq!(test.contract.token_by_index(&2), 2);
     assert_eq!(test.contract.token_by_index(&3), 88);
-
+ 
 
     id_to_trasfer = 88;
     test.contract
