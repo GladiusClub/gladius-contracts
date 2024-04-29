@@ -5,6 +5,7 @@ Formulate a sustainable economic model wherein parents contribute payments to cl
 
 **Status**: Done
 
+
 # D2: Token Distribution Smart Contract
 Develop a contract that handles monthly parental payments, divides the payment between clubs and the Gladius Coin (points) Pool, and enables Clubs to mint  the Club Coins and NFT prizes for students. This deliverable encompasses coding, along with the creation of unit and integration tests. Contract Specifications:
 - [x] Linked to a specific coin, defaulting to the Gladius Coin
@@ -17,6 +18,7 @@ Develop a contract that handles monthly parental payments, divides the payment b
 
 **Status**: Done
 
+
 # D3: NFT smart contract and Pinata implementation
 - [x] Creation of the Gladius Prizes NFT Smart Contract in Soroban 
 - [x] implement Pinata for IPFS descentralize image storage. 
@@ -25,6 +27,7 @@ Develop a contract that handles monthly parental payments, divides the payment b
 **Reviewer Instructions**:  Code will be available in Gladius GitHub as OpenSource
 
 **Status**: In Progress
+
 
 # D4: Token Distribution Factory Contract
 The Factory Contract facilitates Clubs in generating personalized Token Distribution Smart Contracts, enabling them to issue branded coins and NFTs to students, receiving premium payments and deploying both a Premium Branded Coin and Token Distribution Smart Contract.
@@ -55,7 +58,8 @@ Cloud functions for communicating with the frontend have already been developed,
 
 **Status**: Done
 
-D7: Frontend 
+
+# D7: Frontend
 The club user Frontend has largely been built and deployed in a PoC design. We need to adjust the Club frontend, making it to work with Soroban, updating APIs. We also need to deploy the Student frontend to code, and attach it to the backend APIs.
 - [x] User-friendly frontend 
 - [x] allows clubs to Login and automatically create a waller
