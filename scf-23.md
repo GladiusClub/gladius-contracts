@@ -1,16 +1,15 @@
 # D1: Gladius and Clubs Coins Tokenomics Model: 
 Formulate a sustainable economic model wherein parents contribute payments to clubs for student fees, with a portion allocated to a pool. Clubs can mint ClubCoins and NFT’s to students. Students can subsequently trade their NFTs or Coins for physical goods or for other valuable NFT’s. This deliverable includes the technical description of every smart contract that will be developed.
-How to measure: The Tokenomics Model and Techincal report will be shared on the Gladius GitHub repository and on the Stellar Discord Channel.
-Budget: $5K
-Estimated Completion Date: Mid February 2024.
+**Reviewer Instructions**: The Tokenomics Model and Techincal report will be shared on the Gladius GitHub repository and on the Stellar Discord Channel.
+**Statud**: Done
 
 # D2: Token Distribution Smart Contract
 Develop a contract that handles monthly parental payments, divides the payment between clubs and the Gladius Coin (points) Pool, and enables Clubs to mint  the Club Coins and NFT prizes for students. This deliverable encompasses coding, along with the creation of unit and integration tests. Contract Specifications:
-[x] Linked to a specific coin, defaulting to the Gladius Coin
-[x] Facilitates monthly parental payments
-[x] Allocates payments to Clubs and the Gladius Coin pool
-[x] Enables the minting of Gladius Coins for students
-[x] Facilitates the minting of NFTs
+- [x] Linked to a specific coin, defaulting to the Gladius Coin
+- [x] Facilitates monthly parental payments
+- [x] Allocates payments to Clubs and the Gladius Coin pool
+- [x] Enables the minting of Gladius Coins for students
+- [x] Facilitates the minting of NFTs
 **Reviewer Instructions**:  Code will be available in Gladius GitHub as OpenSource.
 **Statud**: Done
 
