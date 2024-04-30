@@ -68,31 +68,31 @@ The club user Frontend has largely been built and deployed in a PoC design. We n
 
 **Reviewer Instructions**:  Students will be able to login, see their rewards, and transfer their tokens to receive physical awards at the club
 1. Club signup in Soroban contract 
-- go to  https://gladius-club.web.app/
-- create new club
-- create new course (set course fee and incentive)
-go to https://gladius-frontend.web.app/
-- sign up as guardian
-- Enroll student to your new club and new course
-- click Simulate payment
-- click Expand to see created wallets
-  - verify transactions on Club wallet
-  - verify transactions on Parent  wallet
-- IMPORTANT: write down student login and password, logout and login to https://gladius-frontend.web.app/ with Student account
+  - go to  https://gladius-club.web.app/
+  - create new club
+  - create new course (set course fee and incentive)
+Go to https://gladius-frontend.web.app/
+  - sign up as guardian
+  - Enroll student to your new club and new course
+  - click Simulate payment
+  - click Expand to see created wallets
+    - verify transactions on Club wallet
+    - verify transactions on Parent  wallet
+IMPORTANT: write down student login and password, logout and login to https://gladius-frontend.web.app/ with Student account
 -----
-- Go back to Club Admin and refresh the page
-- Verify that new student has been added
-- Verify that Club received EURC according to course fee 
+  - Go back to Club Admin and refresh the page
+  - Verify that new student has been added
+  - Verify that Club received EURC according to course fee 
 2. Club rewards distribution
-- go to calendar page and click any event
-- select an event, assign a reward to a student, make a transfer
-go back to the main page and under Club Summary click "All transactions" (review rewards distribution)
+  - go to calendar page and click any event
+  - select an event, assign a reward to a student, make a transfer
+Go back to the main page and under Club Summary click "All transactions" (review rewards distribution)
 3. Student app
-- login to https://gladius-frontend.web.app/ with Student account (password was generated during Parent singup)
-- Go to Profile and check the Student balance (it should match with distributed GLC from the club admin calendar)
-- Click Send, select Club name and click Send (wait a bit )
-- Click Receive to view the Wallet address and link to Explorer
-go back to Club admin and verify (refresh) that GLC payment from Student was received (use case: student bought some equipment)
+  - login to https://gladius-frontend.web.app/ with Student account (password was generated during Parent singup)
+  - Go to Profile and check the Student balance (it should match with distributed GLC from the club admin calendar)
+  - Click Send, select Club name and click Send (wait a bit )
+  - Click Receive to view the Wallet address and link to Explorer
+Go back to Club admin and verify (refresh) that GLC payment from Student was received (use case: student bought some equipment)
 
 
 **Status**: In Progress
