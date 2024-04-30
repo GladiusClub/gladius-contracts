@@ -64,7 +64,7 @@ The club user Frontend has largely been built and deployed in a PoC design. We n
 - [x] User-friendly frontend 
 - [x] allows clubs to Login and automatically create a waller
 - [x]  Transfer Gladius Coins to students
-- [x]  Mint and transfer NFTs as rewards.
+- [ ]  Mint and transfer NFTs as rewards.
 
 **Reviewer Instructions**:  Students will be able to login, see their rewards, and transfer their tokens to receive physical awards at the club
 1. Club signup in Soroban contract 
