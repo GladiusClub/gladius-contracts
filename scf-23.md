@@ -54,7 +54,7 @@ Cloud functions for communicating with the frontend have already been developed,
 - [x] Successful integration with cloud functions
 - [x] back-end can create wallets, inistate transactions on wallets and general interaction with the smart contracts.
 
-**Reviewer Instructions**:
+**Reviewer Instructions**: Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) are executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
 
 **Status**: Done
 
