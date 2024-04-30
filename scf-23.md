@@ -67,7 +67,7 @@ The club user Frontend has largely been built and deployed in a PoC design. We n
 - [x]  Mint and transfer NFTs as rewards.
 
 **Reviewer Instructions**:  Students will be able to login, see their rewards, and transfer their tokens to receive physical awards at the club
-1. Club Admin 
+1. Club signup in Soroban contract 
 - go to  https://gladius-club.web.app/
 - create new club
 - create new course (set course fee and incentive)
@@ -83,6 +83,16 @@ go to https://gladius-frontend.web.app/
 - Go back to Club Admin and refresh the page
 - Verify that new student has been added
 - Verify that Club received EURC according to course fee 
+2. Club rewards distribution
+- go to calendar page and click any event
+- select an event, assign a reward to a student, make a transfer
+go back to the main page and under Club Summary click "All transactions" (review rewards distribution)
+3. Student app
+- login to https://gladius-frontend.web.app/ with Student account (password was generated during Parent singup)
+- Go to Profile and check the Student balance (it should match with distributed GLC from the club admin calendar)
+- Click Send, select Club name and click Send (wait a bit )
+- Click Receive to view the Wallet address and link to Explorer
+go back to Club admin and verify (refresh) that GLC payment from Student was received (use case: student bought some equipment)
 
 
 **Status**: In Progress
