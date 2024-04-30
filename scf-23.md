@@ -22,7 +22,7 @@ Develop a contract that handles monthly parental payments, divides the payment b
 # D3: NFT smart contract and Pinata implementation
 - [x] Creation of the Gladius Prizes NFT Smart Contract in Soroban 
 - [x] implement Pinata for IPFS descentralize image storage. 
-- [] Implementation of a lazy minting technique in Soroban
+- [ ] Implementation of a lazy minting technique in Soroban
 
 **Reviewer Instructions**:  Code will be available in Gladius GitHub as OpenSource
 
