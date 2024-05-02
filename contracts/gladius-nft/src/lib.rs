@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, panic_with_error, Address, Env, IntoVal, Map, String, Val, Vec};
+use soroban_sdk::{contract, contractimpl, panic_with_error, Address, Env, Map, String, Vec};
 
 mod erc721traits;
 mod types;
@@ -509,10 +509,6 @@ impl GladiusNFTContract {
         } else {
             panic!("Token already exists")
         }
-        let mut v: Vec<Val> = Vec::new(&env);
-        v.push_back(to.into_val(&env));
-        v.push_back(token_id.into());
-        Event::Mint.publish(&env, v);
         event::mint(&env, to, token_id, uri);
     }
 }
