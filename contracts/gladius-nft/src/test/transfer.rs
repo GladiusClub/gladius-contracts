@@ -27,6 +27,7 @@ fn transfer() {
     assert_eq!(test.contract.admin(), test.admin);
     assert_eq!(test.contract.balance_of(&test.user), 0);
 
+    // MINT ID 0, INDEX 0, TO TEST USER
     let mut id = 0;
     let mut uri = String::from_str(&test.env, "my_uri_0");
 
@@ -52,6 +53,7 @@ fn transfer() {
     assert_eq!(test.contract.token_of_owner_by_index(&test.user, &&0), id.clone());
     assert_eq!(test.contract.token_by_index(&0), id.clone());
 
+    // MINT ID 1, INDEX 1, TO TEST USER
     id = 1;
     uri = String::from_str(&test.env, "my_uri_1");
 
@@ -76,6 +78,7 @@ fn transfer() {
     assert_eq!(test.contract.token_of_owner_by_index(&test.user, &1), id);
     assert_eq!(test.contract.token_by_index(&1), id);
 
+    // MINT ID 2, GLOBAL INDEX 2, TO NEW_USER (NEW USER INDEX 0)
     id = 2;
     uri = String::from_str(&test.env, "my_uri_2");
     let new_user = Address::generate(&test.env);
@@ -151,7 +154,8 @@ fn transfer() {
     assert_eq!(test.contract.token_by_index(&1), 1);
     assert_eq!(test.contract.token_by_index(&2), 2);
 
-    let mut id_to_trasfer = 1;
+    // TRANSFER ID 1 TO NEW_USER AS WELL
+    let id_to_trasfer = 1;
     test.contract
     .mock_auths(&[
         MockAuth {
@@ -190,6 +194,9 @@ fn transfer() {
     assert_eq!(test.contract.token_by_index(&1), 1);
     assert_eq!(test.contract.token_by_index(&2), 2);
 
+    // LETS MINT A NEW TOKEN
+    // MINT ID 3 TO USER_88 (NEW USER)
+
     id = 88;
     uri = String::from_str(&test.env, "my_uri_88");
     let new_user_88 = Address::generate(&test.env);
@@ -209,25 +216,49 @@ fn transfer() {
     ])
     .mint(&new_user_88, &id, &uri);
 
-    assert_eq!(test.contract.balance_of(&test.user), 0);
+
+    id = 4;
+    uri = String::from_str(&test.env, "my_uri_88");
+//    let new_user_88 = Address::generate(&test.env);
+
+    test.contract
+    .mock_auths(&[
+        MockAuth {
+            address: &test.admin.clone(),
+            invoke: 
+                &MockAuthInvoke {
+                    contract: &test.contract.address,
+                    fn_name: "mint",
+                    args: (new_user_88.clone(),id.clone(), uri.clone()).into_val(&test.env),
+                    sub_invokes: &[],
+                },
+        }
+    ])
+    .mint(&new_user_88, &id, &uri);
+
     assert_eq!(test.contract.balance_of(&new_user), 3);
-    assert_eq!(test.contract.balance_of(&new_user_88), 1);
-    assert_eq!(test.contract.total_supply(), 4);
+    assert_eq!(test.contract.balance_of(&new_user_88), 2);
+    assert_eq!(test.contract.total_supply(), 5);
     assert_eq!(test.contract.owner_of(&0), new_user);
     assert_eq!(test.contract.owner_of(&1), new_user);
     assert_eq!(test.contract.owner_of(&2), new_user);
-    assert_eq!(test.contract.owner_of(&88), new_user_88);
+    assert_eq!(test.contract.owner_of(&88), new_user_88); // owner of id
+    assert_eq!(test.contract.owner_of(&4), new_user_88); // owner of id
     assert_eq!(test.contract.token_of_owner_by_index(&new_user, &0), 2);
     assert_eq!(test.contract.token_of_owner_by_index(&new_user, &1), 0);
     assert_eq!(test.contract.token_of_owner_by_index(&new_user, &2), 1);
     assert_eq!(test.contract.token_of_owner_by_index(&new_user_88, &0), 88);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user_88, &1), 4);
     assert_eq!(test.contract.token_by_index(&0), 0);
     assert_eq!(test.contract.token_by_index(&1), 1);
     assert_eq!(test.contract.token_by_index(&2), 2);
     assert_eq!(test.contract.token_by_index(&3), 88);
- 
+    assert_eq!(test.contract.token_by_index(&4), 4);
 
-    id_to_trasfer = 88;
+
+    let new_id_to_trasfer = 88;
+    let new_receiver = Address::generate(&test.env);
+
     test.contract
     .mock_auths(&[
         MockAuth {
@@ -239,8 +270,8 @@ fn transfer() {
                     args: (
                         new_user_88.clone(), // spender
                         new_user_88.clone(),  // from
-                        test.user.clone(), //to
-                        id_to_trasfer.clone() //token_id
+                        new_receiver.clone(), //to
+                        new_id_to_trasfer.clone() //token_id
                     ).into_val(&test.env),
                     sub_invokes: &[],
                 },
@@ -249,27 +280,85 @@ fn transfer() {
     .transfer_from(
         &new_user_88, // spender
         &new_user_88,  // from
-        &test.user, //to
-        &id_to_trasfer //token_id
+        &new_receiver, //to
+        &new_id_to_trasfer //token_id
     );
 
-    assert_eq!(test.contract.balance_of(&test.user), 1);
-    assert_eq!(test.contract.balance_of(&new_user), 3);
-    // TODO: fix Enumerable indexes
-    // assert_eq!(test.contract.balance_of(&new_user_88), 0);
-    assert_eq!(test.contract.total_supply(), 4);
-    assert_eq!(test.contract.owner_of(&0), new_user);
-    assert_eq!(test.contract.owner_of(&1), new_user);
-    assert_eq!(test.contract.owner_of(&2), new_user);
-    assert_eq!(test.contract.owner_of(&88), test.user);
+
     assert_eq!(test.contract.token_of_owner_by_index(&new_user, &0), 2);
     assert_eq!(test.contract.token_of_owner_by_index(&new_user, &1), 0);
     assert_eq!(test.contract.token_of_owner_by_index(&new_user, &2), 1);
-    assert_eq!(test.contract.token_of_owner_by_index(&test.user, &0), 88);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_receiver, &0), 88);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user_88, &0), 4);
+
+    assert_eq!(test.contract.total_supply(), 5);
+    assert_eq!(test.contract.owner_of(&0), new_user);
+    assert_eq!(test.contract.owner_of(&1), new_user);
+    assert_eq!(test.contract.owner_of(&2), new_user);
+    assert_eq!(test.contract.owner_of(&4), new_user_88);
+    assert_eq!(test.contract.owner_of(&88), new_receiver);
+
+    assert_eq!(test.contract.balance_of(&test.user), 0);
+    assert_eq!(test.contract.balance_of(&new_receiver), 1);
+    assert_eq!(test.contract.balance_of(&new_user), 3);
+    assert_eq!(test.contract.balance_of(&new_user_88), 1);
+
     assert_eq!(test.contract.token_by_index(&0), 0);
     assert_eq!(test.contract.token_by_index(&1), 1);
     assert_eq!(test.contract.token_by_index(&2), 2);
     assert_eq!(test.contract.token_by_index(&3), 88);
+    assert_eq!(test.contract.token_by_index(&4), 4);
+
+    test.contract
+    .mock_auths(&[
+        MockAuth {
+            address: &new_receiver.clone(),
+            invoke: 
+                &MockAuthInvoke {
+                    contract: &test.contract.address,
+                    fn_name: "transfer_from",
+                    args: (
+                        new_receiver.clone(), //spender
+                        new_receiver.clone(), //from
+                        new_user_88.clone(),  // to
+                        new_id_to_trasfer.clone() //token_id
+                    ).into_val(&test.env),
+                    sub_invokes: &[],
+                },
+        }
+    ])
+    .transfer_from(
+        &new_receiver, //spender
+        &new_receiver, //from
+        &new_user_88,  // to
+        &new_id_to_trasfer //token_id
+    );
+
+   
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user, &0), 2);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user, &1), 0);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user, &2), 1);
+    // assert_eq!(test.contract.token_of_owner_by_index(&new_receiver, &0), 88);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user_88, &0), 4);
+    assert_eq!(test.contract.token_of_owner_by_index(&new_user_88, &1), 88);
+
+    assert_eq!(test.contract.total_supply(), 5);
+    assert_eq!(test.contract.owner_of(&0), new_user);
+    assert_eq!(test.contract.owner_of(&1), new_user);
+    assert_eq!(test.contract.owner_of(&2), new_user);
+    assert_eq!(test.contract.owner_of(&4), new_user_88);
+    assert_eq!(test.contract.owner_of(&88), new_user_88);
+
+    assert_eq!(test.contract.balance_of(&test.user), 0);
+    assert_eq!(test.contract.balance_of(&new_receiver), 0);
+    assert_eq!(test.contract.balance_of(&new_user), 3);
+    assert_eq!(test.contract.balance_of(&new_user_88), 2);
+
+    assert_eq!(test.contract.token_by_index(&0), 0);
+    assert_eq!(test.contract.token_by_index(&1), 1);
+    assert_eq!(test.contract.token_by_index(&2), 2);
+    assert_eq!(test.contract.token_by_index(&3), 88);
+    assert_eq!(test.contract.token_by_index(&4), 4);
 
     
 }

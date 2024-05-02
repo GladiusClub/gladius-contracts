@@ -41,14 +41,37 @@ impl ERC721 for GladiusNFTContract {
         }
     }
 
+    // Transfer a non-fungible token (NFT) from one address to another, with optional approval mechanism.
+    // 
+    // This function facilitates the transfer of a specific non-fungible token (NFT) from one address (`from`) to another address (`to`). 
+    // The transfer can only be initiated by an authorized spender. If the sender (`from`) is not the spender (`spender`), 
+    // the sender must be either approved to transfer the token or must have operator privileges. If the sender is the spender, 
+    // they are assumed to be authorized. Upon successful transfer, the token's ownership is updated, and its balance is adjusted 
+    // accordingly for both the sender and the receiver. If the token is not owned by the sender or does not exist, an error is returned.
+    // 
+    // Arguments:
+    // - `env`: The environment containing the contract's state and functionality.
+    // - `spender`: The address initiating the transfer, who must be authorized to transfer the token.
+    // - `from`: The address currently owning the token to be transferred.
+    // - `to`: The address to which the token will be transferred.
+    // - `token_id`: The identifier of the specific token to be transferred.
+    // 
+    // Returns:
+    // - `Ok(())`: If the transfer is successful.
+    // - `Err(GladiusNFTError)`: If the transfer fails due to authorization issues, ownership issues, or if the token does not exist.
+
+
     fn transfer_from(
         env: Env, 
         spender: Address, 
         from: Address, 
         to: Address, 
         token_id: u32) -> Result<(), GladiusNFTError> {
-
+    
+        // Ensure spender is authorized to transfer
         spender.require_auth();
+    
+        // Check if sender is approved to transfer token
         let is_sender_approved = if spender != from {
             let has_approved =
                 if let Some(approved) = DataKey::Approved(token_id).get::<Address>(&env) {
@@ -66,56 +89,39 @@ impl ERC721 for GladiusNFTContract {
         } else {
             true
         };
+    
+        // If sender is not approved, return error
         if !is_sender_approved {
             return Err(GladiusNFTError::NotAuthorized);
         }
-
+    
+        // Check if token exists and sender is owner
         if let Some(addr) = DataKey::TokenOwner(token_id).get::<Address>(&env) { 
             if addr == from {
                 if from != to {
-                    // vector containing ids of tokens owned by a specific address:
+                    // Fetch token IDs owned by 'from' and 'to'
                     let from_owned_token_ids_key = DataKeyEnumerable::OwnerOwnedTokenIds(from.clone());
                     let to_owned_token_ids_key = DataKeyEnumerable::OwnerOwnedTokenIds(to.clone());
+    
+                    // Get owned token IDs or initialize empty Vec if none
                     let mut from_owned_token_ids: Vec<u32> =
                         from_owned_token_ids_key.get(&env).unwrap_or_else(|| Vec::new(&env));
-                    
-
-                    // A map linking token IDs to their indices for a specific address.
-                    let from_owner_token_id_to_index_key = DataKeyEnumerable::OwnerTokenIdToIndex(from.clone());
-                    let to_owner_token_id_to_index_key = DataKeyEnumerable::OwnerTokenIdToIndex(to.clone());
-                    let mut from_owner_token_id_to_index: Map<u32, u32> =
-                        from_owner_token_id_to_index_key.get(&env).unwrap_or_else(|| Map::new(&env));
-
-                    let mut to_index: Vec<u32> =
+                    let mut to_owned_token_ids: Vec<u32> =
                         to_owned_token_ids_key.get(&env).unwrap_or_else(|| Vec::new(&env));
-                    let mut to_token: Map<u32, u32> =
-                        to_owner_token_id_to_index_key.get(&env).unwrap_or_else(|| Map::new(&env));
-
-                    // Remove token from index of from address
-                    if let Some(index) = from_owner_token_id_to_index.get(token_id) {
-                        // index is the index for an especific address in 
-                        if let Some(pos) = from_owned_token_ids.iter().position(|x| x == index) {
-                            let pos_u32: u32 = pos.try_into().unwrap();                            
-                            from_owned_token_ids.remove(pos_u32);
-                        }
-                        from_owner_token_id_to_index.remove(token_id);
+    
+                    // Remove token ID from 'from' and add to 'to'
+                    if let Some(index) = from_owned_token_ids.iter().position(|x| x == token_id) {
+                        from_owned_token_ids.remove(index.try_into().unwrap());
                     }
-
-
-                    // Remove token from index of to address
-                    to_token.set(token_id, to_index.len());
-                    to_index.push_back(token_id);
-
-                    // Update from address vec and map
+                    to_owned_token_ids.push_back(token_id); 
+    
+                    // Update storage with new token IDs and balances
                     from_owned_token_ids_key.set(&env, &from_owned_token_ids);
-                    from_owner_token_id_to_index_key.set(&env, &from_owner_token_id_to_index);
-                    DataKey::Balance(from.clone()).set(&env, &from_owned_token_ids.len());
-
-                    // Update to address vec and map
-                    to_owner_token_id_to_index_key.set(&env, &to_token);
-                    to_owned_token_ids_key.set(&env, &to_index);
-                    DataKey::Balance(to.clone()).set(&env, &to_index.len());
+                    to_owned_token_ids_key.set(&env, &to_owned_token_ids);
+                    DataKey::Balance(from.clone()).set(&env, &from_owned_token_ids.len());                    
+                    DataKey::Balance(to.clone()).set(&env, &to_owned_token_ids.len());
                 }
+                // Update token owner
                 DataKey::TokenOwner(token_id).set(&env, &to);
                 Ok(())
             } else {
@@ -125,6 +131,7 @@ impl ERC721 for GladiusNFTContract {
             return Err(GladiusNFTError::NotNFT);
         }
     }
+    
     fn approve(
         env: Env,
         caller: Address,
@@ -287,25 +294,17 @@ impl GladiusNFTContract {
                 .get(&env)
                 .unwrap_or_else(|| Vec::new(&env)); 
 
-            // A map linking token IDs to their indices for a specific address.
-            let mut owner_token_index: Map<u32, u32> =
-                DataKeyEnumerable::OwnerTokenIdToIndex(to.clone())
-                    .get(&env)
-                    .unwrap_or_else(|| Map::new(&env));
-
             // We set the current token_id with its corresponding index
             token_id_to_index_map.set(token_id, owned_token_indices.len());
 
             // We push the current created token index to the vetor containing indices of tokens owned
             owned_token_indices.push_back(token_id);
 
-            owner_token_index.set(token_id, owner_token_indices.len());
             owner_token_indices.push_back(token_id);
 
             DataKeyEnumerable::OwnedTokenIndices.set(&env, &owned_token_indices);
             DataKeyEnumerable::TokenIdToIndex.set(&env, &token_id_to_index_map);
             DataKeyEnumerable::OwnerOwnedTokenIds(to.clone()).set(&env, &owner_token_indices);
-            DataKeyEnumerable::OwnerTokenIdToIndex(to.clone()).set(&env, &owner_token_index);
 
             DataKey::Balance(to.clone()).set(&env, &owner_token_indices.len());
         } else {

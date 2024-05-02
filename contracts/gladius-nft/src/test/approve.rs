@@ -1,6 +1,6 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusNFTTest}; 
-use crate::test::gladius_nft::GladiusNFTError;
+// use crate::test::gladius_nft::GladiusNFTError;
 
 use soroban_sdk::{
     Address, IntoVal,

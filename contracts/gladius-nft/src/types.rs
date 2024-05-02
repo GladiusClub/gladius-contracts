@@ -118,7 +118,6 @@ pub enum DataKeyEnumerable {
     OwnedTokenIndices,               // instance
     TokenIdToIndex,               // instance
     OwnerOwnedTokenIds(Address), // instance
-    OwnerTokenIdToIndex(Address), // instance
 }
 impl storage::Storage for DataKeyEnumerable {
     fn get<V: TryFromVal<Env, Val>>(&self, env: &Env) -> Option<V> {
