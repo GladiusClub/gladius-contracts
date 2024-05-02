@@ -45,7 +45,25 @@ fn admin_can_change() {
     .set_admin(&new_admin);
 
     assert_eq!(test.contract.admin(), new_admin);
-    // TODO: test events
+    
+    let set_admin_event = test.env.events().all().last().unwrap();
+
+    let expected_set_admin_event: SetAdminEvent = SetAdminEvent {
+        new_admin: new_admin.clone(),
+    };
+
+    assert_eq!(
+        vec![&test.env, set_admin_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusNFT", symbol_short!("set_admin")).into_val(&test.env),
+                (expected_set_admin_event).into_val(&test.env)
+            ),
+        ]
+    );
+
 
 }
 
