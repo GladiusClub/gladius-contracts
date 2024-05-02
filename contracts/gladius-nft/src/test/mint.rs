@@ -1,14 +1,15 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusNFTTest}; 
 use crate::test::gladius_nft::GladiusNFTError;
+use crate::event::{MintEvent};
 
 use soroban_sdk::{
     Address, IntoVal,
     testutils::{
         MockAuth, MockAuthInvoke,
-        // Events,
+        Events,
         Address as _},
-    // vec, symbol_short
+    vec, symbol_short
 };
 
 #[test]
