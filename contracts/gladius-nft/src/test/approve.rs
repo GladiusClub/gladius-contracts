@@ -83,6 +83,27 @@ fn approve() {
         &ttl //ttl
     );
 
+    let approve_event = test.env.events().all().last().unwrap();
+
+    let expected_approve_event: ApprovalEvent = ApprovalEvent {
+        caller: test.user.clone(),
+        token_id: id_to_approve.clone(),
+        ttl: ttl.clone(),
+    };
+
+    assert_eq!(
+        vec![&test.env, approve_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusNFT", symbol_short!("approval")).into_val(&test.env),
+                (expected_approve_event).into_val(&test.env)
+            ),
+        ]
+    );
+
+
     assert_eq!(test.contract.get_approved(&0), Some(operator.clone()));
 
     let new_user = Address::generate(&test.env);
