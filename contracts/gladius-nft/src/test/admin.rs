@@ -62,7 +62,6 @@ fn user_cannot_set_admin() {
     );
 
     let new_admin = Address::generate(&test.env);
-    // TODO: test require_auth
 
     test.contract
     .mock_auths(&[

@@ -6,6 +6,7 @@ mod types;
 mod storage;
 mod uri;
 mod error;
+mod event;
 
 pub use crate::erc721traits::burnable::ERC721Burnable;
 pub use crate::erc721traits::enumerable::ERC721Enumerable;
@@ -112,7 +113,7 @@ impl ERC721 for GladiusNFTContract {
                     false
                 };
             if !has_approved {
-                DataKey::Operator(from.clone(), spender).has(&env)
+                DataKey::Operator(from.clone(), spender.clone()).has(&env)
             } else {
                 true
             }
@@ -153,6 +154,7 @@ impl ERC721 for GladiusNFTContract {
                 }
                 // Update token owner
                 DataKey::TokenOwner(token_id).set(&env, &to);
+                event::transfer_from(&env, spender, from, to, token_id);
                 Ok(())
             } else {
                 return Err(GladiusNFTError::NotOwner);
@@ -201,6 +203,8 @@ impl ERC721 for GladiusNFTContract {
             return Err(GladiusNFTError::NotNFT);
         }
         
+        event::approve(&env, caller, token_id, ttl);
+
         // Perform approval or revoke based on operator presence
         if let Some(to_approve) = operator {
             DataKey::Approved(token_id).set(&env, &to_approve);
@@ -251,7 +255,8 @@ impl ERC721 for GladiusNFTContract {
         }
         
         // Set or revoke approval status for all tokens
-        let key = DataKey::Operator(owner, operator);
+        let key = DataKey::Operator(owner.clone(), operator.clone());
+        event::set_approval_for_all(&env, caller, owner, operator, approved, ttl);
         if approved {
             key.set(&env, &true);
             key.extend(&env, ttl);
@@ -437,7 +442,8 @@ impl GladiusNFTContract {
 
         DataKeyEnumerable::OwnedTokenIndices.set(&env, &Vec::<u32>::new(&env));
         DataKeyEnumerable::TokenIdToIndex.set(&env, &Map::<u32, u32>::new(&env));
-        // todo: events
+        
+        event::initialize(&env, admin, name, symbol);
     }
 
     // Get the address of the contract's administrator.
@@ -463,7 +469,7 @@ impl GladiusNFTContract {
     pub fn set_admin(env: Env, addr: Address) {
         get_admin(&env).require_auth();
         Admin::User.set(&env, &addr);
-        // TODO: Set set_admin event
+        event::set_admin(&env, addr);
     }
 
     // Mint a new non-fungible token (NFT) and assign it to an owner.
@@ -507,5 +513,6 @@ impl GladiusNFTContract {
         v.push_back(to.into_val(&env));
         v.push_back(token_id.into());
         Event::Mint.publish(&env, v);
+        event::mint(&env, to, token_id, uri);
     }
 }
