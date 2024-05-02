@@ -1,2 +1,2 @@
 # Gladius NFT Contract
-This contract is a fork https://github.com/candela-network/millionlumenhomepage.art developed by https://github.com/vinamogit
+This contract was modified by https://github.com/esteblock/ based on a fork fro https://github.com/candela-network/millionlumenhomepage.art originally developed by https://github.com/vinamogit

@@ -1,6 +1,8 @@
 use soroban_sdk::{String};
-use crate::test::{GladiusNFTTest}; 
-// use soroban_sdk::{testutils::{Events}, vec, IntoVal, symbol_short};
+use crate::test::{GladiusNFTTest};
+use crate::event::{InitializeEvent};
+
+use soroban_sdk::{testutils::{Events}, vec, IntoVal, symbol_short};
 
 
 #[test]
@@ -19,30 +21,26 @@ fn initialize_basic_info() {
     assert_eq!(test.contract.symbol(), symbol);
     assert_eq!(test.contract.total_supply(), 0);
     assert_eq!(test.contract.admin(), test.admin);
-    // admin
+    let initialize_event = test.env.events().all().last().unwrap();
 
-    // TODO: test emmited events
+    let expected_initialize_event: InitializeEvent = InitializeEvent {
+        admin: test.admin.clone(),
+        name: name.clone(),
+        symbol: symbol.clone(),
+    };
 
+    assert_eq!(
+        vec![&test.env, initialize_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusNFT", symbol_short!("init")).into_val(&test.env),
+                (expected_initialize_event).into_val(&test.env)
+            ),
+        ]
+    );
 
-    // let initialize_event = test.env.events().all().last().unwrap();
-
-    // let expected_initialize_event: InitializeEvent = InitializeEvent {
-    //     minter: test.minter.clone(),
-    //     pegged: test.pegged_token.address.clone(),
-    //     ratio: ratio.clone(),
-    // };
-
-    // assert_eq!(
-    //     vec![&test.env, initialize_event.clone()],
-    //     vec![
-    //         &test.env,
-    //         (
-    //             test.contract.address.clone(),
-    //             ("GladiusCoinEmitter", symbol_short!("init")).into_val(&test.env),
-    //             (expected_initialize_event).into_val(&test.env)
-    //         ),
-    //     ]
-    // ); 
 }
 
 #[test]

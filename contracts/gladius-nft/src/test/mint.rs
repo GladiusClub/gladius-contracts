@@ -1,12 +1,15 @@
 use soroban_sdk::{String};
 use crate::test::{GladiusNFTTest}; 
+use crate::test::gladius_nft::GladiusNFTError;
+use crate::event::{MintEvent};
+
 use soroban_sdk::{
     Address, IntoVal,
     testutils::{
         MockAuth, MockAuthInvoke,
-        // Events,
+        Events,
         Address as _},
-    // vec, symbol_short
+    vec, symbol_short
 };
 
 #[test]
@@ -42,6 +45,27 @@ fn mint() {
         }
     ])
     .mint(&test.user, &index, &uri);
+
+    let mint_event = test.env.events().all().last().unwrap();
+
+    let expected_mint_event: MintEvent = MintEvent {
+        to: test.user.clone(),
+        token_id: index.clone(),
+        uri: uri.clone(),
+    };
+
+    assert_eq!(
+        vec![&test.env, mint_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusNFT", symbol_short!("mint")).into_val(&test.env),
+                (expected_mint_event).into_val(&test.env)
+            ),
+        ]
+    );
+
 
     assert_eq!(test.contract.balance_of(&test.user), 1);
     assert_eq!(test.contract.total_supply(), 1);
@@ -156,7 +180,6 @@ fn mint_double_index() {
 
 
 #[test]
-#[should_panic] // TODO: Transform to error
 fn no_owner() {
     let test = GladiusNFTTest::setup();
 
@@ -168,8 +191,9 @@ fn no_owner() {
         &name,
         &symbol,
     );
-    let _dummy = test.contract.owner_of(&0);
-   
+
+    let res = test.contract.try_owner_of(&0);
+    assert_eq!(res, Err(Ok(GladiusNFTError::NotNFT))); 
 }
 
 
