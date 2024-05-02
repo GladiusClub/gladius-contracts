@@ -142,6 +142,28 @@ fn transfer() {
         &id_to_trasfer //token_id
     );
 
+    let transfer_from_event = test.env.events().all().last().unwrap();
+
+    let expected_transfer_from_event: TransferFromEvent = TransferFromEvent {
+        spender: test.user.clone(),
+        from: test.user.clone(),
+        to: new_user.clone(),
+        token_id: id_to_trasfer.clone(),
+    };
+
+    assert_eq!(
+        vec![&test.env, transfer_from_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusNFT", symbol_short!("transf")).into_val(&test.env),
+                (expected_transfer_from_event).into_val(&test.env)
+            ),
+        ]
+    );
+
+
     assert_eq!(test.contract.balance_of(&test.user), 1);
     assert_eq!(test.contract.balance_of(&new_user), 2);
     assert_eq!(test.contract.total_supply(), 3);
