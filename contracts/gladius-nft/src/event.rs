@@ -1,6 +1,6 @@
 //! Definition of the Events used in the contract
 use soroban_sdk::{contracttype, symbol_short, Env, Address, String};
-
+ 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InitializeEvent {

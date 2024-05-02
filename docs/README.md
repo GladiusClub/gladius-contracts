@@ -23,8 +23,12 @@ In summary, Gladius Club incentivizes student participation in physical sports b
 ## Index
 [1. General Concepts](./1_GeneralConcepts.md)
 
-[2. Smart Contracts](./2_SmartContracts.md)
+[2. Gladius Coin Emitter Contract](./2_GladiusCoinEmitterContract.md)
 
-[3. Stellar Anchors and Payments](./3_StellarAnchorsAndPayments.md)
+[3. Gladius Subscriptions Contract](./3_GladiusSubscriptionsContract.md)
 
-[4. Future Work](./4_FutureWork.md)
+[4. Gladius NFT Contract](./4_GladiusNFTContract.md)
+
+[5. Stellar Anchors and Payments](./5_StellarAnchorsAndPayments.md)
+
+[6. Future Work](./6_FutureWork.md)
