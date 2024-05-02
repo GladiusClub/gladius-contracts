@@ -46,6 +46,27 @@ fn mint() {
     ])
     .mint(&test.user, &index, &uri);
 
+    let mint_event = test.env.events().all().last().unwrap();
+
+    let expected_mint_event: MintEvent = MintEvent {
+        to: test.user.clone(),
+        token_id: index.clone(),
+        uri: uri.clone(),
+    };
+
+    assert_eq!(
+        vec![&test.env, mint_event.clone()],
+        vec![
+            &test.env,
+            (
+                test.contract.address.clone(),
+                ("GladiusNFT", symbol_short!("mint")).into_val(&test.env),
+                (expected_mint_event).into_val(&test.env)
+            ),
+        ]
+    );
+
+
     assert_eq!(test.contract.balance_of(&test.user), 1);
     assert_eq!(test.contract.total_supply(), 1);
     assert_eq!(test.contract.owner_of(&0), test.user);
