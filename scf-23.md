@@ -38,16 +38,19 @@ The Factory Contract facilitates Clubs in generating personalized Token Distribu
 
 # D5:  User Wallets creations
 - [x] Development of the automatization of the Parents,Clubs and Students  
-- [x] wallet creation and secure private key storage when they log in into our platform. 
+- [x] wallet creation and secure private key storage when they log in into our platform.
 
-Cloud functions creating users for Parents, Clubs and Students in Stellar/Soroban
+**Creating Stellar wallets** for every new user in Firebase
+- [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
+
+Cloud functions **creating users for Parents, Clubs and Students** in Stellar/Soroban
 - [SignupGladiusClub](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClub/index.ts)
 - [Signup Gladius Parent](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusParent/index.ts)
 
-Assigning special roles to new users in **Soroban contract**
+Assigning **special roles** to new users in Soroban contract
 - [Signup Gladius Club Course](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClubCourse/index.ts)
 
-Display GLC token balance in user wallet 
+Display GLC token **balance** in user wallet 
 - [get balance](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/getStudentBalanceByID/index.ts)
 
 **Reviewer Instructions**: Reviewer will be able to login to our platform and see his/hers wallet address, Gladius Tokens, NFT gallery, but won’t be able to extract the private key.
@@ -61,9 +64,6 @@ Adapting the already existing Firebase backend, creating cloud functions that in
 Cloud functions for communicating with the frontend have already been developed, but may need some adjustment to accommodate Soroban.
 - [x] Adding Soroban to [existing Web3 elements](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 - [x] Successful integration or Soroban with cloud functions on Gladius back-end (all Gladius cloud functions were developed open-source and convered by MIT licenced
-
-**Creating Stellar wallets** for every new user in Firebase
-- [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 
 **Soroban token transfer**
 - [transfer GLC tokens](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/transferGLCauth/index.ts)
