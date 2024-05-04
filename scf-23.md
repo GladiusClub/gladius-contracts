@@ -106,7 +106,9 @@ Go to https://gladius-frontend.web.app/
   - click Expand to see created wallets
     - verify transactions on Club wallet
     - verify transactions on Parent  wallet
-IMPORTANT: write down student login and password, logout and login to https://gladius-frontend.web.app/ with Student account
+      
+**IMPORTANT**: write down student login and password, logout and login to https://gladius-frontend.web.app/ with Student account
+
   - Go back to Club Admin and refresh the page
   - Verify that new student has been added
   - Verify that Club received EURC according to course fee 
