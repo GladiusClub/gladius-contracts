@@ -52,7 +52,7 @@ Adapting the already existing backend
 Cloud functions for communicating with the frontend have already been developed, but may need some adjustment to accommodate Soroban.
 - [x] Successful integration with Soroban
 - [x] back-end can create wallets, inistate transactions on wallets and general interaction with the smart contracts.
-MIT licenced open-source (create new user cloud function)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py]
+MIT licenced open-source [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 - [x] Successful integration with cloud functions
 
 Cloud functions were develop open-source (MIT licenced) 
