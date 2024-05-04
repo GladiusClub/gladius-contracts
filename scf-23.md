@@ -50,6 +50,7 @@ Adapting the already existing Firebase backend, creating cloud functions that in
 Cloud functions for communicating with the frontend have already been developed, but may need some adjustment to accommodate Soroban.
 - [x] Adding Soroban to [existing Web3 elements](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 - [x] Successful integration or Soroban with cloud functions on Gladius back-end (all Gladius cloud functions were developed open-source and convered by MIT licenced
+
 **Creating Stellar wallets** for every new user in Firebase
 [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 
