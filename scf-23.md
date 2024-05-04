@@ -37,11 +37,14 @@ The Factory Contract facilitates Clubs in generating personalized Token Distribu
 **Status**: In Progress
 
 # D5:  User Wallets creations
-- [x] Development of the automatization of the Parents,Clubs and Students  
 - [x] wallet creation and secure private key storage when they log in into our platform.
+
+*All private keys are encrypted with encryption key stored in GCP Cloud KMS*
 
 **Creating Stellar wallets** for every new user in Firebase
 - [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
+
+- [x] Development of the automatization of the Parents,Clubs and Students  
 
 Cloud functions **creating users for Parents, Clubs and Students** in Stellar/Soroban
 - [SignupGladiusClub](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClub/index.ts)
