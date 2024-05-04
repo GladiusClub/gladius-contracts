@@ -46,20 +46,16 @@ The Factory Contract facilitates Clubs in generating personalized Token Distribu
 
 
 # D6: Backend
-Adapting the already existing backend
-- [x] converting Web3 elements to Soroban
+Adapting the already existing Firebase backend
+- [x] adding Soroban to [existing Web3 elements](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 - [x] creating cloud functions that interact with Soroban RPC, and setting up new wallets
 Cloud functions for communicating with the frontend have already been developed, but may need some adjustment to accommodate Soroban.
 - [x] Successful integration with Soroban
-- [x] back-end can create wallets, inistate transactions on wallets and general interaction with the smart contracts.
-MIT licenced open-source [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
-- [x] Successful integration with cloud functions
+- [x] Successful integration with cloud functions (all Gladius cloud functions were developed open-source and convered by MIT licenced
+- [x] back-end cloud functions
+**Creating Stellar wallets** for every new user in Firebase
+[create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 
-Cloud functions were develop open-source (MIT licenced) 
-**NFT**
-- [mint Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/mintGladiusNFT/index.ts)
-- [fetch minted Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/fetchGladiusNFT/index.ts)
-  
 **Soroban token transfer**
 - [transfer GLC tokens](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/transferGLCauth/index.ts)
 - [get balance](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/getStudentBalanceByID/index.ts)
@@ -69,6 +65,11 @@ Cloud functions were develop open-source (MIT licenced)
 - [SignupGladiusClub](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClub/index.ts)
 - [Signup Gladius Parent](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusParent/index.ts)
 - [Signup Gladius Club Course](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClubCourse/index.ts)
+
+**Gladius NFT contract powered by Soroban**
+- [mint Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/mintGladiusNFT/index.ts)
+- [fetch minted Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/fetchGladiusNFT/index.ts)
+  
   
 **Reviewer Instructions**: 
 - Review backend cloud functions logic describe in [Gladius Knowledge Base](https://gladiusclub.gitbook.io/docs/v/backend)
