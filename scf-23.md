@@ -120,11 +120,13 @@ Go back to the main page and under Club Summary click "All transactions" (review
   - Click Send, select Club name and click Send (wait a bit )
   - Click Receive to view the Wallet address and link to Explorer
 Go back to Club admin and verify (refresh) that GLC payment from Student was received (use case: student bought some equipment)
-4. NFT
+4. Gladius NFT
+
 Go to https://gladius-club.web.app/
 - Find Marketshare page (NFT Rewards)
 - Click Send and select a user that will receive the NFT
 - CLick confirm
+
 Go to https://gladius-frontend.web.app/
 - Click Profile
 - Go to badges and verify that NFT badge was received by a user
