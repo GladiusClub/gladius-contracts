@@ -51,10 +51,27 @@ Adapting the already existing backend
 - [x] creating cloud functions that interact with Soroban RPC, and setting up new wallets
 Cloud functions for communicating with the frontend have already been developed, but may need some adjustment to accommodate Soroban.
 - [x] Successful integration with Soroban
-- [x] Successful integration with cloud functions
 - [x] back-end can create wallets, inistate transactions on wallets and general interaction with the smart contracts.
+MIT licenced open-source (create new user cloud function)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py]
+- [x] Successful integration with cloud functions
 
-**Reviewer Instructions**: Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) were executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
+Cloud functions were develop open-source (MIT licenced) 
+**NFT**
+- (mint Gladius NFT)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/mintGladiusNFT/index.ts]
+- (fetch minted Gladius NFT)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/fetchGladiusNFT/index.ts]
+**Soroban token transfer**
+- (transfer GLC tokens)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/transferGLCauth/index.ts]
+- (get balance)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/getStudentBalanceByID/index.ts]
+- (burn Gladius tokens)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/burnGLC/index.ts]-
+**Soroban contract functions**
+- (SignupGladiusClub)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClub/index.ts]
+- (Signup Gladius Parent)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusParent/index.ts]
+- (Signup Gladius Club Course)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClubCourse/index.ts]
+- 
+**Reviewer Instructions**: 
+Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) were executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
+
+
 
 **Status**: Done
 
