@@ -57,19 +57,22 @@ MIT licenced open-source (create new user cloud function)[https://github.com/Gla
 
 Cloud functions were develop open-source (MIT licenced) 
 **NFT**
-- (mint Gladius NFT)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/mintGladiusNFT/index.ts]
-- (fetch minted Gladius NFT)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/fetchGladiusNFT/index.ts]
+- [mint Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/mintGladiusNFT/index.ts)
+- [fetch minted Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/fetchGladiusNFT/index.ts)
+  
 **Soroban token transfer**
-- (transfer GLC tokens)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/transferGLCauth/index.ts]
-- (get balance)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/getStudentBalanceByID/index.ts]
-- (burn Gladius tokens)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/burnGLC/index.ts]-
+- [transfer GLC tokens](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/transferGLCauth/index.ts)
+- [get balance](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/getStudentBalanceByID/index.ts)
+- [burn Gladius tokens](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/burnGLC/index.ts)
+
 **Soroban contract functions**
-- (SignupGladiusClub)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClub/index.ts]
-- (Signup Gladius Parent)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusParent/index.ts]
-- (Signup Gladius Club Course)[https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClubCourse/index.ts]
-- 
+- [SignupGladiusClub](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClub/index.ts)
+- [Signup Gladius Parent](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusParent/index.ts)
+- [Signup Gladius Club Course](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClubCourse/index.ts)
+  
 **Reviewer Instructions**: 
-Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) were executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
+- Review backend cloud functions logic describe in [Gladius Knowledge Base](https://gladiusclub.gitbook.io/docs/v/backend)
+- Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) were executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
 
 
 
