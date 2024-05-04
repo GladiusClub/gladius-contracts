@@ -46,13 +46,10 @@ The Factory Contract facilitates Clubs in generating personalized Token Distribu
 
 
 # D6: Backend
-Adapting the already existing Firebase backend
-- [x] adding Soroban to [existing Web3 elements](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
-- [x] creating cloud functions that interact with Soroban RPC, and setting up new wallets
+Adapting the already existing Firebase backend, creating cloud functions that interact with Soroban RPC, and setting up new wallets. 
 Cloud functions for communicating with the frontend have already been developed, but may need some adjustment to accommodate Soroban.
-- [x] Successful integration with Soroban
-- [x] Successful integration with cloud functions (all Gladius cloud functions were developed open-source and convered by MIT licenced
-- [x] back-end cloud functions
+- [x] Adding Soroban to [existing Web3 elements](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
+- [x] Successful integration or Soroban with cloud functions on Gladius back-end (all Gladius cloud functions were developed open-source and convered by MIT licenced
 **Creating Stellar wallets** for every new user in Firebase
 [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 
@@ -72,7 +69,7 @@ Cloud functions for communicating with the frontend have already been developed,
   
   
 **Reviewer Instructions**: 
-- Review backend cloud functions logic describe in [Gladius Knowledge Base](https://gladiusclub.gitbook.io/docs/v/backend)
+- Review backend cloud functions logic described in [Gladius Knowledge Base](https://gladiusclub.gitbook.io/docs/v/backend)
 - Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) were executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
 
 
@@ -100,7 +97,6 @@ Go to https://gladius-frontend.web.app/
     - verify transactions on Club wallet
     - verify transactions on Parent  wallet
 IMPORTANT: write down student login and password, logout and login to https://gladius-frontend.web.app/ with Student account
------
   - Go back to Club Admin and refresh the page
   - Verify that new student has been added
   - Verify that Club received EURC according to course fee 
@@ -114,6 +110,13 @@ Go back to the main page and under Club Summary click "All transactions" (review
   - Click Send, select Club name and click Send (wait a bit )
   - Click Receive to view the Wallet address and link to Explorer
 Go back to Club admin and verify (refresh) that GLC payment from Student was received (use case: student bought some equipment)
+4. NFT
+Go to https://gladius-club.web.app/
+- Find Marketshare page (NFT Rewards)
+- Click Send and select a user that will receive the NFT
+- CLick confirm
+Go to https://gladius-frontend.web.app/
+- Click Profile
+- Go to badges and verify that NFT badge was received by a user
 
-
-**Status**: In Progress
+**Status**: Ready
