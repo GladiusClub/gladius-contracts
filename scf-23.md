@@ -81,7 +81,8 @@ Cloud functions for communicating with the frontend have already been developed,
 **Gladius NFT contract powered by Soroban** (implementation of D3 in Gladius back-end)
 - [mint Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/mintGladiusNFT/index.ts)
 - [fetch minted Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/fetchGladiusNFT/index.ts)
-  
+
+Other cloud functions can be found in in our [back-end Github repository](https://github.com/GladiusClub/gladius-backend) and re-used following MIT licence. 
 
 
 **Status**: Done
