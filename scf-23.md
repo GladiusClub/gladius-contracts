@@ -42,9 +42,11 @@ The Factory Contract facilitates Clubs in generating personalized Token Distribu
 *All private keys are encrypted with encryption key stored in GCP Cloud KMS*
 
 **Creating Stellar wallets** for every new user in Firebase
-- [create new user cloud function](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
+- [x] Development of the automatization of wallet creation for the Parents, Clubs and Students
 
-- [x] Development of the automatization of the Parents,Clubs and Students  
+**Reviewer Instructions**: Reviewer will be able to login to our platform and see his/hers wallet address, Gladius Tokens, NFT gallery, but won’t be able to extract the private key.
+- Review User Wallets creation process in our [back-end Github repository](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
+- Review developed cloud functions
 
 Cloud functions **creating users for Parents, Clubs and Students** in Stellar/Soroban
 - [SignupGladiusClub](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/SignupGladiusClub/index.ts)
@@ -56,8 +58,6 @@ Assigning **special roles** to new users in Soroban contract
 Display GLC token **balance** in user wallet 
 - [get balance](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/getStudentBalanceByID/index.ts)
 
-**Reviewer Instructions**: Reviewer will be able to login to our platform and see his/hers wallet address, Gladius Tokens, NFT gallery, but won’t be able to extract the private key.
-- Follow instructions described in D7: Frontend
 
 **Status**: Done
 
@@ -68,6 +68,11 @@ Cloud functions for communicating with the frontend have already been developed,
 - [x] Adding Soroban to [existing Web3 elements](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/singup_function/main.py)
 - [x] Successful integration or Soroban with cloud functions on Gladius back-end (all Gladius cloud functions were developed open-source and convered by MIT licenced
 
+**Reviewer Instructions**: 
+- Review backend cloud functions logic described in [Gladius Knowledge Base](https://gladiusclub.gitbook.io/docs/v/backend)
+- Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) were executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
+- Review cloud functions
+
 **Soroban token transfer**
 - [transfer GLC tokens](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/transferGLCauth/index.ts)
 - [burn Gladius tokens](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/burnGLC/index.ts)
@@ -77,11 +82,6 @@ Cloud functions for communicating with the frontend have already been developed,
 - [mint Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/mintGladiusNFT/index.ts)
 - [fetch minted Gladius NFT](https://github.com/GladiusClub/gladius-backend/blob/main/gcp_cloud_functions/fetchGladiusNFT/index.ts)
   
-  
-**Reviewer Instructions**: 
-- Review backend cloud functions logic described in [Gladius Knowledge Base](https://gladiusclub.gitbook.io/docs/v/backend)
-- Review in Explorer that all transactions intiated in Frontend (see D7 review instructions) were executed and succeeded in Soroban network (Stellar.expert link will be provided in Frontend)
-
 
 
 **Status**: Done
@@ -92,9 +92,11 @@ The club user Frontend has largely been built and deployed in a PoC design. We n
 - [x] User-friendly frontend 
 - [x] allows clubs to Login and automatically create a waller
 - [x]  Transfer Gladius Coins to students
-- [ ]  Mint and transfer NFTs as rewards.
+- [x]  Mint and transfer NFTs as rewards.
 
-**Reviewer Instructions**:  Students will be able to login, see their rewards, and transfer their tokens to receive physical awards at the club
+**Reviewer Instructions**:  
+- Review front-end code in our [front-end Github repository](https://github.com/GladiusClub/gladius-frontend)
+- Students will be able to login, see their rewards, and transfer their tokens to receive physical awards at the club
 1. Club signup in Soroban contract 
   - go to  https://gladius-club.web.app/
   - create new club
