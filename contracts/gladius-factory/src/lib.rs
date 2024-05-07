@@ -7,6 +7,7 @@ use soroban_sdk::token::Client as TokenClient;
 
 // Import modules
 mod create_contract;
+mod premium_club;
 mod storage;
 mod error;
 mod coin_emitter;
@@ -14,15 +15,20 @@ mod subscriptions;
 mod nft;
 
 use storage::*;
-use create_contract::create_contract;
+use premium_club::{create_contract, PremiumClub};
+use error::GladiusFactoryError;
+// use create_contract::create_contract;
 
 pub trait GladiusFactoryTrait {
+
+    fn all_premium_clubs_length(e: Env) -> Result<u32, GladiusFactoryError>;
+
     fn initialize(
         e:                          Env,
         coin_emitter_hash:  BytesN<32>,
         nft_hash:           BytesN<32>,
         subscriptions_hash: BytesN<32>
-    );
+    ) -> Result<(), GladiusFactoryError> ;
 
     fn create_premium_club(
         e: Env,
@@ -32,7 +38,7 @@ pub trait GladiusFactoryTrait {
         ratio: u32,
         nft_token_name: String,
         nft_symbol: String,
-    ) -> (Address, Address, Address) ;
+    ) -> Result<(Address, Address, Address), GladiusFactoryError> ;
 
 }
 
@@ -42,36 +48,16 @@ struct GladiusFactory;
 #[contractimpl]
 impl GladiusFactoryTrait for GladiusFactory {
 
-// /// Returns the total number of pairs created through the factory so far.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized.
-// fn all_pairs_length(e: Env) -> Result<u32, FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-//     extend_instance_ttl(&e);
-//     Ok(get_total_pairs(&e))
-// }
+fn all_premium_clubs_length(e: Env) -> Result<u32, GladiusFactoryError> {
+    if !has_total_premium_clubs(&e) {
+        return Err(GladiusFactoryError::NotInitialized);
+    }
+    extend_instance_ttl(&e);
+    Ok(get_total_premium_clubs(&e))
+}
 
-// /// Returns the address of the pair for `token_a` and `token_b`, if it has been created.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// * `token_a` - The address of the first token in the pair.
-// /// * `token_b` - The address of the second token in the pair.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized or if the pair does not exist
 // fn get_pair(e: Env, token_a: Address, token_b: Address) -> Result<Address, FactoryError> {
-//     if !has_total_pairs(&e) {
+//     if !has_total_premium_clubs(&e) {
 //         return Err(FactoryError::NotInitialized);
 //     }
 //     extend_instance_ttl(&e);
@@ -90,7 +76,7 @@ impl GladiusFactoryTrait for GladiusFactory {
 // /// 
 // /// Returns an error if the Factory is not yet initialized or if index `n` does not exist.
 // fn all_pairs(e: Env, n: u32) -> Result<Address, FactoryError> {
-//     if !has_total_pairs(&e) {
+//     if !has_total_premium_clubs(&e) {
 //         return Err(FactoryError::NotInitialized);
 //     }
 //     extend_instance_ttl(&e);
@@ -109,7 +95,7 @@ impl GladiusFactoryTrait for GladiusFactory {
 // /// 
 // /// Returns an error if the Factory is not yet initialized.
 // fn pair_exists(e: Env, token_a: Address, token_b: Address) -> Result<bool, FactoryError> {
-//     if !has_total_pairs(&e) {
+//     if !has_total_premium_clubs(&e) {
 //         return Err(FactoryError::NotInitialized);
 //     }
 //     extend_instance_ttl(&e);
@@ -128,18 +114,18 @@ fn initialize(
     coin_emitter_wasm_hash:  BytesN<32>,
     nft_wasm_hash:           BytesN<32>,
     subscriptions_wasm_hash: BytesN<32>
-)  {
+)  -> Result<(), GladiusFactoryError> {
 
-    // if has_total_pairs(&e) {
-    //     return Err(FactoryError::InitializeAlreadyInitialized);
-    // }
+    if has_total_premium_clubs(&e) {
+        return Err(GladiusFactoryError::InitializeAlreadyInitialized);
+    }
     put_coin_emitter_wasm_hash(&e, coin_emitter_wasm_hash);
     put_nft_wasm_hash(&e, nft_wasm_hash);
     put_subscriptions_wasm_hash(&e, subscriptions_wasm_hash);
-    // put_total_pairs(&e, 0);
+    put_total_premium_clubs(&e, 0);
     // event::initialized(&e, setter);
     extend_instance_ttl(&e);
-    // Ok(())
+    Ok(())
 }
 
 fn create_premium_club(
@@ -151,35 +137,35 @@ fn create_premium_club(
     nft_token_name: String,
     nft_symbol: String,
 // ) -> Result<Address, FactoryError> {
-) -> (Address, Address, Address) {
-    // if !has_total_pairs(&e) {
-    //     return Err(FactoryError::NotInitialized);
-    // }
+) -> Result<(Address, Address, Address), GladiusFactoryError>  {
+    if !has_total_premium_clubs(&e) {
+        return Err(GladiusFactoryError::NotInitialized);
+    }
 
     extend_instance_ttl(&e);
+    
+    let premium_club: PremiumClub = PremiumClub(admin.clone(), sport_club_name.clone());
 
     // Install and Deploy Contracts
     let coin_emitter_address = create_contract(
         &e,
         get_coin_emitter_wasm_hash(&e).unwrap(),
-        &admin,
-        &sport_club_name    
+        &premium_club   
     );
 
     let subscriptions_address = create_contract(
         &e,
         get_subscriptions_wasm_hash(&e).unwrap(),
-        &admin,
-        &sport_club_name    
+        &premium_club   
     );
 
     let nft_address = create_contract(
         &e,
         get_nft_wasm_hash(&e).unwrap(),
-        &admin,
-        &sport_club_name    
+        &premium_club   
     );
 
+    // Initialize Contracts
     coin_emitter::Client::new(&e, &coin_emitter_address).initialize(
         &admin, // Address, 
         &pegged, // Address,
@@ -203,9 +189,9 @@ fn create_premium_club(
     // event::new_pair(&e, token_pair.token_0().clone(), token_pair.token_1().clone(), pair_address.clone(), get_total_pairs(&e));
 
     // Ok(pair_address)
-    (   coin_emitter_address,
+    Ok((coin_emitter_address,
         nft_address,
-        subscriptions_address)
+        subscriptions_address))
 }
 
 

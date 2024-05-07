@@ -22,7 +22,7 @@ pub enum DataKey {
     // FeeTo,      // Address. Instance storage
     // FeeToSetter, // Address. Instance storage
     // FeesEnabled, // Bool. Instance storage
-    // TotalPairs, // Total pairs created by the Factory. u32, Instance storage
+    TotalPairs, // Total pairs created by the Factory. u32, Instance storage
     // PairAddressesNIndexed(u32), // Addresses of pairs created by the Factory. Persistent Storage
     // PairAddressesByTokens(Pair)
 }
@@ -104,17 +104,17 @@ pub fn get_subscriptions_wasm_hash(e: &Env) -> Result<BytesN<32>, GladiusFactory
 
 // //// --- Storage helper functions ---
 
-// // // TotalPairs
-// // pub fn put_total_pairs(e: &Env, n: u32) {
-// //     e.storage().instance().set(&DataKey::TotalPairs, &n);
-// // }
-// // pub fn get_total_pairs(e: &Env) -> u32 {
-// //     e.storage().instance().get(&DataKey::TotalPairs).unwrap_or(0)
-// // }
-// // // Helper function in order to know if the contract has been initialized or not
-// // pub fn has_total_pairs(e: &Env) -> bool {
-// //     e.storage().instance().has(&DataKey::TotalPairs)
-// // }
+// Total Premuim Clubs
+pub fn put_total_premium_clubs(e: &Env, n: u32) {
+    e.storage().instance().set(&DataKey::TotalPairs, &n);
+}
+pub fn get_total_premium_clubs(e: &Env) -> u32 {
+    e.storage().instance().get(&DataKey::TotalPairs).unwrap_or(0)
+}
+// Helper function in order to know if the contract has been initialized or not
+pub fn has_total_premium_clubs(e: &Env) -> bool {
+    e.storage().instance().has(&DataKey::TotalPairs)
+}
 
 
 // // PairAddressesByTokens(Address, Address)
