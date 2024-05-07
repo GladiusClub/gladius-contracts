@@ -6,10 +6,11 @@ use soroban_sdk::{
 use soroban_sdk::token::Client as TokenClient;
 
 // Import modules
-mod coin_emitter;
+mod create_contract;
 mod storage;
 
 use storage::*;
+use create_contract::create_contract;
 
 pub trait GladiusFactoryTrait {
     fn initialize(
@@ -26,48 +27,6 @@ struct GladiusFactory;
 
 #[contractimpl]
 impl GladiusFactoryTrait for GladiusFactory {
-
-// fn fee_to(e: Env) -> Result<Address, FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-//     extend_instance_ttl(&e);
-//     Ok(get_fee_to(&e))
-// }
-
-// /// Returns the address allowed to change the fee recipient.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized.
-// fn fee_to_setter(e: Env) -> Result<Address, FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-//     extend_instance_ttl(&e);
-//     Ok(get_fee_to_setter(&e))
-// }
-
-// /// Checks if fees are enabled.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized.
-// fn fees_enabled(e: Env) -> Result<bool, FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-//     extend_instance_ttl(&e);
-//     Ok(get_fees_enabled(&e))
-// }
 
 // /// Returns the total number of pairs created through the factory so far.
 // /// 
@@ -169,117 +128,38 @@ fn initialize(
     // Ok(())
 }
 
-// /// Sets the `fee_to` address.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// * `to` - The address to set as the `fee_to`.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized or if the caller is not the current `fee_to_setter`.
-// fn set_fee_to(e: Env, to: Address) -> Result<(), FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-    
-//     extend_instance_ttl(&e);
-//     let setter = get_fee_to_setter(&e);
-//     setter.require_auth();
-
-//     let old = get_fee_to(&e);
-//     put_fee_to(&e, to.clone());
-//     event::new_fee_to(&e, setter, old, to);
-//     Ok(())
-// }
-
-// /// Sets the `fee_to_setter` address.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// * `new_setter` - The address to set as the new `fee_to_setter`.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized or if the caller is not the existing `fee_to_setter`.
-// fn set_fee_to_setter(e: Env, new_setter: Address) -> Result<(), FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
+// fn create_premium_club(
+//     e: Env,
+//     sport_club_address: Address,
+//     sport_club_name: String
+// // ) -> Result<Address, FactoryError> {
+// ) {
+//     // if !has_total_pairs(&e) {
+//     //     return Err(FactoryError::NotInitialized);
+//     // }
 
 //     extend_instance_ttl(&e);
-//     let setter = get_fee_to_setter(&e);
-//     setter.require_auth();
+//     let coin_emitter = CoinEmitter::new(sport_club_address, sport_club_name)?;
 
-//     put_fee_to_setter(&e, &new_setter);
-//     event::new_setter(&e, setter, new_setter);
-//     Ok(())
-// }
+//     // if get_pair_exists(&e, token_pair.clone()) {
+//     //     return Err(FactoryError::CreatePairAlreadyExists);
+//     // }
 
-// /// Sets whether fees are enabled or disabled.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// * `is_enabled` - A boolean indicating whether fees are enabled or disabled.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized or if the caller is not the current `fee_to_setter`.
-// fn set_fees_enabled(e: Env, is_enabled: bool) -> Result<(), FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
+//     // let pair_wasm_hash = get_pair_wasm_hash(&e)?;
+//     // let pair_address = create_contract(&e, pair_wasm_hash, &token_pair);
 
-//     extend_instance_ttl(&e);
-//     let setter = get_fee_to_setter(&e);
-//     setter.require_auth();
+//     // pair::Client::new(&e, &pair_address).initialize(
+//     //     &e.current_contract_address(),
+//     //     &token_pair.token_0(), 
+//     //     &token_pair.token_1()
+//     // );
 
-//     put_fees_enabled(&e, &is_enabled);
-//     event::new_fees_enabled(&e, is_enabled);
-//     Ok(())
-// }
+//     // put_pair_address_by_token_pair(&e, token_pair.clone(), &pair_address);
+//     // add_pair_to_all_pairs(&e, &pair_address);
 
-// /// Creates a pair for `token_a` and `token_b` if one doesn't exist already.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// * `token_a` - The address of the first token in the pair.
-// /// * `token_b` - The address of the second token in the pair.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the pair is not yet initialized, if `token_a` and `token_b` have identical addresses, or if the pair already exists between `token_a` and `token_b`.
-// fn create_pair(e: Env, token_a: Address, token_b: Address) -> Result<Address, FactoryError> {
-//     if !has_total_pairs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
+//     // event::new_pair(&e, token_pair.token_0().clone(), token_pair.token_1().clone(), pair_address.clone(), get_total_pairs(&e));
 
-//     extend_instance_ttl(&e);
-//     let token_pair = Pair::new(token_a, token_b)?;
-
-//     if get_pair_exists(&e, token_pair.clone()) {
-//         return Err(FactoryError::CreatePairAlreadyExists);
-//     }
-
-//     let pair_wasm_hash = get_pair_wasm_hash(&e)?;
-//     let pair_address = create_contract(&e, pair_wasm_hash, &token_pair);
-
-//     pair::Client::new(&e, &pair_address).initialize(
-//         &e.current_contract_address(),
-//         &token_pair.token_0(), 
-//         &token_pair.token_1()
-//     );
-
-//     put_pair_address_by_token_pair(&e, token_pair.clone(), &pair_address);
-//     add_pair_to_all_pairs(&e, &pair_address);
-
-//     event::new_pair(&e, token_pair.token_0().clone(), token_pair.token_1().clone(), pair_address.clone(), get_total_pairs(&e));
-
-//     Ok(pair_address)
+//     // Ok(pair_address)
 // }
 
 
