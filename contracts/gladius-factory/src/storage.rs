@@ -1,8 +1,9 @@
 use soroban_sdk::{
     contracttype, Address, BytesN, Env, Val, TryFromVal
 };
+
 // use soroswap_factory_interface::{FactoryError};
-// use crate::coin_emitter::{Club};
+use crate::error::{GladiusFactoryError};
 
 
 const DAY_IN_LEDGERS: u32 = 17280;
@@ -32,6 +33,22 @@ pub fn extend_instance_ttl(e: &Env) {
         .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
 }
 
+/// Fetch an entry in persistent storage that has a default value if it doesn't exist
+fn get_instance_extend_or_error<V: TryFromVal<Env, Val>>(
+    e: &Env,
+    key: &DataKey,
+    error: GladiusFactoryError
+) -> Result<V, GladiusFactoryError> {
+    if let Some(result) = e.storage().instance().get(key) {
+        extend_instance_ttl(&e);
+        result
+    } else {
+        return Err(error);
+    }
+}
+
+// PUT FUNCTIONS
+
 pub fn put_coin_emitter_wasm_hash(e: &Env, coin_emitter_wasm_hash: BytesN<32>) {
     let key = DataKey::CoinEmitterWasmHash;
     e.storage().instance().set(&key, &coin_emitter_wasm_hash);
@@ -48,6 +65,23 @@ pub fn put_subscriptions_wasm_hash(e: &Env, subscriptions_wasm_hash: BytesN<32>)
     let key = DataKey::CoinEmitterWasmHash;
     e.storage().instance().set(&key, &subscriptions_wasm_hash);
     extend_instance_ttl(&e);
+}
+
+// GET FUNCTIONS
+
+pub fn get_coin_emitter_wasm_hash(e: &Env) -> Result<BytesN<32>, GladiusFactoryError>{
+    let key = DataKey::CoinEmitterWasmHash;
+    get_instance_extend_or_error(&e, &key, GladiusFactoryError::NotInitialized)
+}
+
+pub fn get_nft_wasm_hash(e: &Env) -> Result<BytesN<32>, GladiusFactoryError>{
+    let key = DataKey::NFTWasmHash;
+    get_instance_extend_or_error(&e, &key, GladiusFactoryError::NotInitialized)
+}
+
+pub fn get_subscriptions_wasm_hash(e: &Env) -> Result<BytesN<32>, GladiusFactoryError>{
+    let key = DataKey::SubscriptionsWasmHash;
+    get_instance_extend_or_error(&e, &key, GladiusFactoryError::NotInitialized)
 }
 
 
