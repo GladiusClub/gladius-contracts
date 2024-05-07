@@ -10,6 +10,8 @@ mod create_contract;
 mod storage;
 mod error;
 mod coin_emitter;
+mod subscriptions;
+mod nft;
 
 use storage::*;
 use create_contract::create_contract;
@@ -27,7 +29,9 @@ pub trait GladiusFactoryTrait {
         admin: Address, 
         sport_club_name: String,
         pegged: Address,
-        ratio: u32
+        ratio: u32,
+        nft_token_name: String,
+        nft_symbol: String,
     ) -> (Address, Address, Address) ;
 
 }
@@ -143,7 +147,9 @@ fn create_premium_club(
     admin: Address, 
     sport_club_name: String,
     pegged: Address,
-    ratio: u32
+    ratio: u32,
+    nft_token_name: String,
+    nft_symbol: String,
 // ) -> Result<Address, FactoryError> {
 ) -> (Address, Address, Address) {
     // if !has_total_pairs(&e) {
@@ -160,13 +166,6 @@ fn create_premium_club(
         &sport_club_name    
     );
 
-    let nft_address = create_contract(
-        &e,
-        get_nft_wasm_hash(&e).unwrap(),
-        &admin,
-        &sport_club_name    
-    );
-
     let subscriptions_address = create_contract(
         &e,
         get_subscriptions_wasm_hash(&e).unwrap(),
@@ -174,12 +173,30 @@ fn create_premium_club(
         &sport_club_name    
     );
 
-    coin_emitter::Client::new(&e, &coin_emitter_address).initialize(
+    let nft_address = create_contract(
+        &e,
+        get_nft_wasm_hash(&e).unwrap(),
         &admin,
-        &pegged, 
-        &ratio
+        &sport_club_name    
     );
 
+    coin_emitter::Client::new(&e, &coin_emitter_address).initialize(
+        &admin, // Address, 
+        &pegged, // Address,
+        &ratio // u32
+    );
+
+    subscriptions::Client::new(&e, &subscriptions_address).initialize(
+        &admin, // admin: Address,
+        &pegged, // token: Address,
+        &coin_emitter_address, //gladius_coin_emitter: Address
+    );
+
+    nft::Client::new(&e, &nft_address).initialize(
+        &admin, // admin: Address,
+        &nft_token_name, //     name: String
+        &nft_symbol, //     symbol: String
+    );
     // put_pair_address_by_token_pair(&e, token_pair.clone(), &pair_address);
     // add_pair_to_all_pairs(&e, &pair_address);
 
