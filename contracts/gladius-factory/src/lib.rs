@@ -23,6 +23,12 @@ pub trait GladiusFactoryTrait {
 
     fn all_premium_clubs_length(e: Env) -> Result<u32, GladiusFactoryError>;
 
+    fn get_premium_club_addresses(
+        e: Env, 
+        admin: Address, 
+        sport_club_name: String
+    )-> Result<PremiumClubAddresses, GladiusFactoryError>;
+
     fn initialize(
         e:                          Env,
         coin_emitter_hash:  BytesN<32>,
@@ -56,25 +62,25 @@ fn all_premium_clubs_length(e: Env) -> Result<u32, GladiusFactoryError> {
     Ok(get_total_premium_clubs(&e))
 }
 
-// fn get_pair(e: Env, token_a: Address, token_b: Address) -> Result<Address, FactoryError> {
-//     if !has_total_premium_clubs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-//     extend_instance_ttl(&e);
-//     let token_pair = Pair::new(token_a, token_b)?;
-//     get_pair_address_by_token_pair(&e, token_pair)
-// }
+fn get_premium_club_addresses(
+    e: Env, 
+    admin: Address, 
+    sport_club_name: String
+) -> Result<PremiumClubAddresses, GladiusFactoryError> {
+    if !has_total_premium_clubs(&e) {
+        return Err(GladiusFactoryError::NotInitialized);
+    }
+    extend_instance_ttl(&e);
+    let premium_club: PremiumClub = PremiumClub::new(admin, sport_club_name);
+    let (coin_emitter,
+        subscriptions,
+        nft): (Address, Address, Address) = get_contracts_addresses_by_premium_club(&e, premium_club)?;
+    
+    Ok(PremiumClubAddresses::new(coin_emitter,
+        subscriptions,
+        nft))
+}
 
-// /// Returns the address of the nth pair (0-indexed) created through the factory, or address(0) if not enough pairs have been created yet.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// * `n` - The index of the pair to retrieve.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized or if index `n` does not exist.
 // fn all_pairs(e: Env, n: u32) -> Result<Address, FactoryError> {
 //     if !has_total_premium_clubs(&e) {
 //         return Err(FactoryError::NotInitialized);

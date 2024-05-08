@@ -48,6 +48,23 @@ fn get_instance_extend_or_error<V: TryFromVal<Env, Val>>(
     }
 }
 
+/// Fetch an entry in persistent storage that has a default value if it doesn't exist
+fn get_persistent_extend_or_error<V: TryFromVal<Env, Val>>(
+    e: &Env,
+    key: &DataKey,
+    error: GladiusFactoryError
+) -> Result<V, GladiusFactoryError> {
+    if let Some(result) = e.storage().persistent().get(key) {
+        e.storage()
+            .persistent()
+            .extend_ttl(key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT);
+        result
+    } else {
+        return Err(error);
+    }
+}
+
+
 // PUT FUNCTIONS
 
 pub fn put_coin_emitter_wasm_hash(e: &Env, coin_emitter_wasm_hash: BytesN<32>) {
@@ -86,23 +103,6 @@ pub fn get_subscriptions_wasm_hash(e: &Env) -> Result<BytesN<32>, GladiusFactory
 }
 
 
-
-// /// Fetch an entry in persistent storage that has a default value if it doesn't exist
-// fn get_persistent_extend_or_error<V: TryFromVal<Env, Val>>(
-//     e: &Env,
-//     key: &DataKey,
-//     error: FactoryError
-// ) -> Result<V, FactoryError> {
-//     if let Some(result) = e.storage().persistent().get(key) {
-//         e.storage()
-//             .persistent()
-//             .extend_ttl(key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT);
-//         result
-//     } else {
-//         return Err(error);
-//     }
-// }
-
 // //// --- Storage helper functions ---
 
 // Total Premuim Clubs
@@ -133,13 +133,13 @@ pub fn put_contracts_addresses_by_premium_club(
         .persistent()
         .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT)
 }
-// pub fn get_contracts_address_by_premium_club(
-//     e: &Env,
-//     premium_club: PremiumClub
-// ) -> Result<Address, PremiumClubAddresses> {
-//     let key = DataKey::ContractsAddressesByPremiumClub(premium_club);
-//     get_persistent_extend_or_error(&e, &key, FactoryError::PairDoesNotExist)
-// }
+pub fn get_contracts_addresses_by_premium_club(
+    e: &Env,
+    premium_club: PremiumClub
+) -> Result<(Address, Address, Address), GladiusFactoryError> {
+    let key = DataKey::ContractsAddressesByPremiumClub(premium_club);
+    get_persistent_extend_or_error(&e, &key, GladiusFactoryError::PremiumClubDoesNotExist)
+}
 
 // pub fn get_pair_exists(e: &Env, token_pair: Pair) -> bool {
 //     let key:DataKey = DataKey::ContractsAddressesByPremiumClub(token_pair);
