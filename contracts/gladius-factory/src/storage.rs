@@ -141,18 +141,17 @@ pub fn get_contracts_addresses_by_premium_club(
     get_persistent_extend_or_error(&e, &key, GladiusFactoryError::PremiumClubDoesNotExist)
 }
 
-// pub fn get_pair_exists(e: &Env, token_pair: Pair) -> bool {
-//     let key:DataKey = DataKey::ContractsAddressesByPremiumClub(token_pair);
-//     if e.storage().persistent().has(&key) {
-//         e.storage()
-//             .persistent()
-//             .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT);
-//         true
-//     } else {
-//         false
-//     }
-    
-// }
+pub fn get_premium_club_exists(e: &Env, premium_club: PremiumClub) -> bool {
+    let key:DataKey = DataKey::ContractsAddressesByPremiumClub(premium_club);
+    if e.storage().persistent().has(&key) {
+        e.storage()
+            .persistent()
+            .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT);
+        true
+    } else {
+        false
+    } 
+}
 
 
 // pub fn get_fee_to(e: &Env) -> Address {

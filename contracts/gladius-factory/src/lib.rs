@@ -29,6 +29,12 @@ pub trait GladiusFactoryTrait {
         sport_club_name: String
     )-> Result<PremiumClubAddresses, GladiusFactoryError>;
 
+    fn premium_club_exist(
+        e: Env,
+        admin: Address, 
+        sport_club_name: String
+    ) -> Result<bool, GladiusFactoryError>;
+    
     fn initialize(
         e:                          Env,
         coin_emitter_hash:  BytesN<32>,
@@ -89,28 +95,22 @@ fn get_premium_club_addresses(
 //     get_all_pairs(e,n)
 // }
 
-// /// Checks if a pair exists for the given `token_a` and `token_b`.
-// /// 
-// /// # Arguments
-// /// 
-// /// * `e` - An instance of the `Env` struct.
-// /// * `token_a` - The address of the first token in the pair.
-// /// * `token_b` - The address of the second token in the pair.
-// /// 
-// /// # Errors
-// /// 
-// /// Returns an error if the Factory is not yet initialized.
-// fn pair_exists(e: Env, token_a: Address, token_b: Address) -> Result<bool, FactoryError> {
-//     if !has_total_premium_clubs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-//     extend_instance_ttl(&e);
 
-//     let token_pair = Pair::new(token_a, token_b)?;
+fn premium_club_exist(
+    e: Env,
+    admin: Address, 
+    sport_club_name: String
+) -> Result<bool, GladiusFactoryError> {
+    if !has_total_premium_clubs(&e) {
+        return Err(GladiusFactoryError::NotInitialized);
+    }
+    extend_instance_ttl(&e);
+
+    let premium_club: PremiumClub = PremiumClub::new(admin, sport_club_name);
     
-//     // Proceed with the existence check
-//     Ok(get_pair_exists(&e, token_pair))
-// }
+    // Proceed with the existence check
+    Ok(get_premium_club_exists(&e, premium_club))
+}
 
 
 /* *** State-Changing Functions: *** */
