@@ -15,7 +15,7 @@ mod subscriptions;
 mod nft;
 
 use storage::*;
-use premium_club::{create_contract, PremiumClub};
+use premium_club::{create_contract, PremiumClub, PremiumClubAddresses};
 use error::GladiusFactoryError;
 // use create_contract::create_contract;
 
@@ -165,6 +165,12 @@ fn create_premium_club(
         &premium_club   
     );
 
+    let premium_club_addresses: PremiumClubAddresses = PremiumClubAddresses (
+        coin_emitter_address.clone(),
+        subscriptions_address.clone(),
+        nft_address.clone()
+    );
+
     // Initialize Contracts
     coin_emitter::Client::new(&e, &coin_emitter_address).initialize(
         &admin, // Address, 
@@ -183,7 +189,13 @@ fn create_premium_club(
         &nft_token_name, //     name: String
         &nft_symbol, //     symbol: String
     );
-    // put_pair_address_by_token_pair(&e, token_pair.clone(), &pair_address);
+    put_contracts_addresses_by_premium_club(
+        &e,
+        premium_club,
+        (&coin_emitter_address,
+            &subscriptions_address,
+            &nft_address)
+    );
     // add_pair_to_all_pairs(&e, &pair_address);
 
     // event::new_pair(&e, token_pair.token_0().clone(), token_pair.token_1().clone(), pair_address.clone(), get_total_pairs(&e));

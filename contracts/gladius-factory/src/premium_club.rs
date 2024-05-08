@@ -51,3 +51,29 @@ pub fn create_contract(
         .with_current_contract(premium_club.salt(&e)) // Use the salt as a unique identifier for the new contract instance
         .deploy(contract_wasm_hash) // Deploy the new contract instance using the given wasm hash value
 }
+
+
+#[contracttype]
+#[derive(Clone)]
+pub struct PremiumClubAddresses(
+    pub Address,
+    pub Address,
+    pub Address
+);
+impl PremiumClubAddresses {
+    pub fn new(a: Address, b: Address, c: Address)  -> Self {
+        PremiumClubAddresses(a, b, c)
+    }
+    pub fn coin_emitter(&self) -> &Address {
+        &self.0
+    }
+
+    pub fn subscriptions(&self) -> &Address {
+        &self.1
+    }
+
+    pub fn nft(&self) -> &Address {
+        &self.2
+    }
+
+}

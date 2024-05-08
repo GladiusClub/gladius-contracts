@@ -4,6 +4,7 @@ use soroban_sdk::{
 
 // use soroswap_factory_interface::{FactoryError};
 use crate::error::{GladiusFactoryError};
+use crate::premium_club::{PremiumClub, PremiumClubAddresses};
 
 
 const DAY_IN_LEDGERS: u32 = 17280;
@@ -23,8 +24,8 @@ pub enum DataKey {
     // FeeToSetter, // Address. Instance storage
     // FeesEnabled, // Bool. Instance storage
     TotalPairs, // Total pairs created by the Factory. u32, Instance storage
-    // PairAddressesNIndexed(u32), // Addresses of pairs created by the Factory. Persistent Storage
-    // PairAddressesByTokens(Pair)
+    ContractsAddressesNIndexed(u32), // Addresses of contracts created by the Factory. Persistent Storage
+    ContractsAddressesByPremiumClub(PremiumClub)
 }
 
 pub fn extend_instance_ttl(e: &Env) {
@@ -117,23 +118,31 @@ pub fn has_total_premium_clubs(e: &Env) -> bool {
 }
 
 
-// // PairAddressesByTokens(Address, Address)
-// pub fn put_pair_address_by_token_pair(e: &Env, token_pair: Pair, pair_address: &Address) {
-//     let key = DataKey::PairAddressesByTokens(token_pair); 
-//     e.storage()
-//         .persistent()
-//         .set(&key, &pair_address);
-//     e.storage()
-//         .persistent()
-//         .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT)
-// }
-// pub fn get_pair_address_by_token_pair(e: &Env, token_pair: Pair) -> Result<Address, FactoryError> {
-//     let key = DataKey::PairAddressesByTokens(token_pair);
+// // ContractsAddressesByPremiumClub(Address, Address)
+pub fn put_contracts_addresses_by_premium_club(
+    e: &Env,
+    premium_club: PremiumClub,
+    addresses: (&Address, &Address, &Address)) {
+    let key = DataKey::ContractsAddressesByPremiumClub(premium_club); 
+
+    e.storage()
+        .persistent()
+        .set(&key, &addresses);
+
+    e.storage()
+        .persistent()
+        .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT)
+}
+// pub fn get_contracts_address_by_premium_club(
+//     e: &Env,
+//     premium_club: PremiumClub
+// ) -> Result<Address, PremiumClubAddresses> {
+//     let key = DataKey::ContractsAddressesByPremiumClub(premium_club);
 //     get_persistent_extend_or_error(&e, &key, FactoryError::PairDoesNotExist)
 // }
 
 // pub fn get_pair_exists(e: &Env, token_pair: Pair) -> bool {
-//     let key:DataKey = DataKey::PairAddressesByTokens(token_pair);
+//     let key:DataKey = DataKey::ContractsAddressesByPremiumClub(token_pair);
 //     if e.storage().persistent().has(&key) {
 //         e.storage()
 //             .persistent()
@@ -190,21 +199,23 @@ pub fn has_total_premium_clubs(e: &Env) -> bool {
 //             .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT)
 // }
 
-// pub fn add_pair_to_all_pairs(e: &Env, pair_address: &Address) {
-//     // total_pairs is the total amount of pairs created by the Factory
-//     let mut total_pairs = get_total_pairs(e);
-//     // Because PairAddressesNIndexed is 0-indexed, we start with 0, default value of total_pairs
+pub fn add_addresses_to_all_addresses(
+    e: &Env,
+    pair_address: &Address) {
+    // total_premium_clubs is the total amount of pairs created by the Factory
+    let mut total_premium_clubs = get_total_premium_clubs(e);
+    // Because ContractsAddressesNIndexed is 0-indexed, we start with 0, default value of total_premium_clubs
 
-//     let key = DataKey::PairAddressesNIndexed(total_pairs);
-//     e.storage().persistent().set(&key, &pair_address);
+    let key = DataKey::ContractsAddressesNIndexed(total_premium_clubs);
+    e.storage().persistent().set(&key, &pair_address);
     
-//     e.storage()
-//             .persistent()
-//             .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT);
+    e.storage()
+            .persistent()
+            .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT);
 
-//     total_pairs = total_pairs.checked_add(1).unwrap();
-//     put_total_pairs(&e, total_pairs);
-// }
+    total_premium_clubs = total_premium_clubs.checked_add(1).unwrap();
+    put_total_premium_clubs(&e, total_premium_clubs);
+}
 
 // pub fn get_all_pairs(e: Env, n: u32) -> Result<Address, FactoryError> {
 //     let key = DataKey::PairAddressesNIndexed(n);
