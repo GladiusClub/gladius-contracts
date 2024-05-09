@@ -12,6 +12,7 @@ mod coin_emitter;
 mod subscriptions;
 mod nft;
 mod event;
+// mod test;
 
 use storage::*;
 use premium_club::{create_contract, PremiumClub, PremiumClubAddresses};
@@ -138,8 +139,8 @@ impl GladiusFactoryTrait for GladiusFactory {
         put_nft_wasm_hash(&e, nft_wasm_hash);
         put_subscriptions_wasm_hash(&e, subscriptions_wasm_hash);
         put_total_premium_clubs(&e, 0);
-
-        event::initialized(&e);
+ 
+        event::initialized(&e, e.ledger().timestamp());
 
         extend_instance_ttl(&e);
         Ok(())

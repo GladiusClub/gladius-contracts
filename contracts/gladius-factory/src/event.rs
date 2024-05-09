@@ -4,11 +4,15 @@ use soroban_sdk::{contracttype, symbol_short, Env, Address, String};
 // INITIALIZED
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct InitializedEvent {}
+pub struct InitializedEvent {
+    pub ledger_timestamp: u64
+}
 
-pub(crate) fn initialized(e: &Env) {
+pub(crate) fn initialized(e: &Env, ledger_timestamp: u64) {
     
-    let event: InitializedEvent = InitializedEvent {};
+    let event: InitializedEvent = InitializedEvent {
+        ledger_timestamp: ledger_timestamp
+    };
 
     e.events().publish(("GladiusFactory", symbol_short!("init")), event);
 }
