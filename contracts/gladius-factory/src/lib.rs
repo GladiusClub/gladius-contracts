@@ -202,11 +202,14 @@ fn create_premium_club(
             &subscriptions_address,
             &nft_address)
     );
-    // add_pair_to_all_pairs(&e, &pair_address);
+    add_addresses_to_all_addresses(
+        &e, 
+        (&coin_emitter_address,
+        &subscriptions_address,
+        &nft_address));
 
     // event::new_pair(&e, token_pair.token_0().clone(), token_pair.token_1().clone(), pair_address.clone(), get_total_pairs(&e));
 
-    // Ok(pair_address)
     Ok((coin_emitter_address,
         nft_address,
         subscriptions_address))

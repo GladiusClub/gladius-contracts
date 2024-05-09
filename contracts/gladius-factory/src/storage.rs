@@ -153,60 +153,15 @@ pub fn get_premium_club_exists(e: &Env, premium_club: PremiumClub) -> bool {
     } 
 }
 
-
-// pub fn get_fee_to(e: &Env) -> Address {
-//     e.storage().instance().get(&DataKey::FeeTo).unwrap()
-// }
-
-
-// pub fn get_fees_enabled(e: &Env) -> bool {
-//     let key = DataKey::FeesEnabled;
-//     if let Some(state) = e.storage().instance().get(&key) {
-//         state
-//     } else {
-//         false // By default fees are not enabled
-//     }
-// }
-
-// pub fn get_fee_to_setter(e: &Env) -> Address {
-//     e.storage().instance().get(&DataKey::FeeToSetter).unwrap()
-// }
-
-
-// pub fn get_pair_wasm_hash(e: &Env) -> Result<BytesN<32>, FactoryError>{
-//     let key = DataKey::PairWasmHash;
-//     get_persistent_extend_or_error(&e, &key, FactoryError::NotInitialized)
-// }
-
-// pub fn put_fee_to(e: &Env, to: Address) {
-//     e.storage().instance().set(&DataKey::FeeTo, &to);
-// }
-
-// pub fn put_fee_to_setter(e: &Env, setter: &Address) {
-//     e.storage().instance().set(&DataKey::FeeToSetter, setter);
-// }
-
-// pub fn put_fees_enabled(e: &Env, is_enabled: &bool) {
-//     e.storage().instance().set(&DataKey::FeesEnabled, is_enabled);
-// }
-
-// pub fn put_pair_wasm_hash(e: &Env, pair_wasm_hash: BytesN<32>) {
-//     let key = DataKey::PairWasmHash;
-//     e.storage().persistent().set(&key, &pair_wasm_hash);
-//     e.storage()
-//             .persistent()
-//             .extend_ttl(&key, PERSISTENT_LIFETIME_THRESHOLD, PERSISTENT_BUMP_AMOUNT)
-// }
-
 pub fn add_addresses_to_all_addresses(
     e: &Env,
-    pair_address: &Address) {
+    addresses: (&Address, &Address, &Address)) {
     // total_premium_clubs is the total amount of pairs created by the Factory
     let mut total_premium_clubs = get_total_premium_clubs(e);
     // Because ContractsAddressesNIndexed is 0-indexed, we start with 0, default value of total_premium_clubs
 
     let key = DataKey::ContractsAddressesNIndexed(total_premium_clubs);
-    e.storage().persistent().set(&key, &pair_address);
+    e.storage().persistent().set(&key, &addresses);
     
     e.storage()
             .persistent()
