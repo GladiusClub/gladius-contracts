@@ -171,7 +171,7 @@ pub fn add_addresses_to_all_addresses(
     put_total_premium_clubs(&e, total_premium_clubs);
 }
 
-// pub fn get_all_pairs(e: Env, n: u32) -> Result<Address, FactoryError> {
-//     let key = DataKey::PairAddressesNIndexed(n);
-//     get_persistent_extend_or_error(&e, &key, FactoryError::IndexDoesNotExist)
-// }
+pub fn get_all_addresses(e: Env, n: u32) -> Result<(Address, Address, Address), GladiusFactoryError> {
+    let key = DataKey::ContractsAddressesNIndexed(n);
+    get_persistent_extend_or_error(&e, &key, GladiusFactoryError::IndexDoesNotExist)
+}

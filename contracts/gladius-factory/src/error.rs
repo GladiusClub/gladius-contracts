@@ -9,6 +9,7 @@ pub enum GladiusFactoryError {
     WrapNegativesNotSupported = 103,
     UnWrapNegativesNotSupported = 104,
     PremiumClubDoesNotExist = 105,
+    IndexDoesNotExist = 106,
 }
 
 

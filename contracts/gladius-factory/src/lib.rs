@@ -34,6 +34,11 @@ pub trait GladiusFactoryTrait {
         admin: Address, 
         sport_club_name: String
     ) -> Result<bool, GladiusFactoryError>;
+
+    fn all_addresses(
+        e: Env, 
+        n: u32
+    ) -> Result<PremiumClubAddresses, GladiusFactoryError>;
     
     fn initialize(
         e:                          Env,
@@ -87,13 +92,19 @@ fn get_premium_club_addresses(
         nft))
 }
 
-// fn all_pairs(e: Env, n: u32) -> Result<Address, FactoryError> {
-//     if !has_total_premium_clubs(&e) {
-//         return Err(FactoryError::NotInitialized);
-//     }
-//     extend_instance_ttl(&e);
-//     get_all_pairs(e,n)
-// }
+fn all_addresses(e: Env, n: u32) -> Result<PremiumClubAddresses, GladiusFactoryError> {
+    if !has_total_premium_clubs(&e) {
+        return Err(GladiusFactoryError::NotInitialized);
+    }
+    extend_instance_ttl(&e);
+    let (coin_emitter,
+        subscriptions,
+        nft): (Address, Address, Address) = get_all_addresses(e,n)?;
+    
+    Ok(PremiumClubAddresses::new(coin_emitter,
+        subscriptions,
+        nft))    
+}
 
 
 fn premium_club_exist(
