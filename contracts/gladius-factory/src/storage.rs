@@ -2,9 +2,8 @@ use soroban_sdk::{
     contracttype, Address, BytesN, Env, Val, TryFromVal
 };
 
-// use soroswap_factory_interface::{FactoryError};
 use crate::error::{GladiusFactoryError};
-use crate::premium_club::{PremiumClub, PremiumClubAddresses};
+use crate::premium_club::{PremiumClub};
 
 
 const DAY_IN_LEDGERS: u32 = 17280;
