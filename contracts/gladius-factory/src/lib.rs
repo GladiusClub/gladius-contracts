@@ -11,11 +11,11 @@ mod error;
 mod coin_emitter;
 mod subscriptions;
 mod nft;
+mod event;
 
 use storage::*;
 use premium_club::{create_contract, PremiumClub, PremiumClubAddresses};
 use error::GladiusFactoryError;
-// use create_contract::create_contract;
 
 pub trait GladiusFactoryTrait {
 
@@ -138,7 +138,9 @@ impl GladiusFactoryTrait for GladiusFactory {
         put_nft_wasm_hash(&e, nft_wasm_hash);
         put_subscriptions_wasm_hash(&e, subscriptions_wasm_hash);
         put_total_premium_clubs(&e, 0);
-        // event::initialized(&e, setter);
+
+        event::initialized(&e);
+
         extend_instance_ttl(&e);
         Ok(())
     }
@@ -216,7 +218,18 @@ impl GladiusFactoryTrait for GladiusFactory {
             &subscriptions_address,
             &nft_address));
 
-        // event::new_pair(&e, token_pair.token_0().clone(), token_pair.token_1().clone(), pair_address.clone(), get_total_pairs(&e));
+        event::new_club(
+            &e,
+            admin, 
+            sport_club_name,
+            pegged,
+            ratio,
+            nft_token_name,
+            nft_symbol,
+            coin_emitter_address,
+            subscriptions_address,
+            nft_address,
+            get_total_premium_clubs(&e));
 
         Ok(premium_club_addresses)
     }
