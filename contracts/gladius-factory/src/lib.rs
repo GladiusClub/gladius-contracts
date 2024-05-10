@@ -12,7 +12,7 @@ mod coin_emitter;
 mod subscriptions;
 mod nft;
 mod event;
-// mod test;
+mod test;
 
 use storage::*;
 use premium_club::{create_contract, PremiumClub, PremiumClubAddresses};
