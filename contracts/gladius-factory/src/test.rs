@@ -110,7 +110,7 @@ impl<'a> GladiusFactoryTest<'a> {
     }
 }
 
-// mod initialize;
+mod initialize;
 // mod fee_to_setter;
 // mod pairs;
 // mod events;

@@ -54,7 +54,7 @@ pub fn create_contract(
 
 
 #[contracttype]
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct PremiumClubAddresses(
     pub Address,
     pub Address,
