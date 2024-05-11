@@ -1,5 +1,4 @@
 use soroban_sdk::{testutils::{Events, Ledger}, vec, IntoVal, symbol_short, String};
-use soroban_sdk::{xdr::{ToXdr}, Bytes}; // For determinisitic address
 use crate::test::{GladiusFactoryTest};
 use crate::event::{
     InitializedEvent,

@@ -1,12 +1,6 @@
 extern crate std;
 use crate::test::{GladiusFactoryTest};
 use soroban_sdk::{
-    IntoVal,
-    testutils::{
-        AuthorizedInvocation,
-        AuthorizedFunction
-    },
-    Symbol,
     String
 };
 use crate::error::{GladiusFactoryError};

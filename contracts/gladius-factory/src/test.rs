@@ -26,11 +26,6 @@ fn coin_emitter_wasm(e: &Env) -> BytesN<32> {
     );
     e.deployer().upload_contract_wasm(WASM)
 }
-mod coin_emitter {
-    soroban_sdk::contractimport!(file = "../gladius-coin-emitter/target/wasm32-unknown-unknown/release/gladius_coin_emitter.wasm");
-    pub type GladiusCoinEmitterClient<'a> = Client<'a>;
-}
-use coin_emitter::GladiusCoinEmitterClient;
 
 
 //  **** SUBSCRIPTIONS ****
@@ -40,11 +35,6 @@ fn subscriptions_wasm(e: &Env) -> BytesN<32> {
     );
     e.deployer().upload_contract_wasm(WASM)
 }
-mod subscriptions {
-    soroban_sdk::contractimport!(file = "../gladius-subscriptions/target/wasm32-unknown-unknown/release/gladius_subscriptions.wasm");
-    pub type GladiusSubscriptionsClient<'a> = Client<'a>;
-}
-use subscriptions::GladiusSubscriptionsClient;
 
 
 //  **** NFT ****
@@ -54,11 +44,6 @@ fn nft_wasm(e: &Env) -> BytesN<32> {
     );
     e.deployer().upload_contract_wasm(WASM)
 }
-mod nft {
-    soroban_sdk::contractimport!(file = "../gladius-nft/target/wasm32-unknown-unknown/release/gladius_nft.wasm");
-    pub type GladiusNFTClient<'a> = Client<'a>;
-}
-use nft::GladiusNFTClient;
 
 //  **** FACTORY CONTRACT (TO BE TESTED) **** 
 fn create_factory_contract<'a>(e: & Env) -> GladiusFactoryClient<'a> {
