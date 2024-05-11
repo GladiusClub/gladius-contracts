@@ -4,7 +4,6 @@ use soroban_sdk::{
     Address, Env, String, BytesN};
 
 // Import modules
-mod create_contract;
 mod premium_club;
 mod storage;
 mod error;
@@ -42,8 +41,8 @@ pub trait GladiusFactoryTrait {
     fn initialize(
         e:                          Env,
         coin_emitter_hash:  BytesN<32>,
-        nft_hash:           BytesN<32>,
-        subscriptions_hash: BytesN<32>
+        subscriptions_hash: BytesN<32>,
+        nft_hash:           BytesN<32>
     ) -> Result<(), GladiusFactoryError> ;
 
     fn create_premium_club(
@@ -128,8 +127,8 @@ impl GladiusFactoryTrait for GladiusFactory {
     fn initialize(
         e:                          Env,
         coin_emitter_wasm_hash:  BytesN<32>,
-        nft_wasm_hash:           BytesN<32>,
-        subscriptions_wasm_hash: BytesN<32>
+        subscriptions_wasm_hash: BytesN<32>,
+        nft_wasm_hash:           BytesN<32>
     )  -> Result<(), GladiusFactoryError> {
 
         if has_total_premium_clubs(&e) {
@@ -167,19 +166,22 @@ impl GladiusFactoryTrait for GladiusFactory {
         let coin_emitter_address = create_contract(
             &e,
             get_coin_emitter_wasm_hash(&e).unwrap(),
-            &premium_club   
+            &premium_club,
+            &String::from_str(&e, "CoinEmitter")  // ContractType
         );
 
         let subscriptions_address = create_contract(
             &e,
             get_subscriptions_wasm_hash(&e).unwrap(),
-            &premium_club   
+            &premium_club,
+            &String::from_str(&e, "Subscriptions")  // ContractType   
         );
 
         let nft_address = create_contract(
             &e,
             get_nft_wasm_hash(&e).unwrap(),
-            &premium_club   
+            &premium_club,
+            &String::from_str(&e, "NFT")  // ContractType      
         );
 
         let premium_club_addresses: PremiumClubAddresses = PremiumClubAddresses (
@@ -206,6 +208,7 @@ impl GladiusFactoryTrait for GladiusFactory {
             &nft_token_name, //     name: String
             &nft_symbol, //     symbol: String
         );
+        
         put_contracts_addresses_by_premium_club(
             &e,
             premium_club,

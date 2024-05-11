@@ -73,13 +73,13 @@ pub fn put_coin_emitter_wasm_hash(e: &Env, coin_emitter_wasm_hash: BytesN<32>) {
 }
 
 pub fn put_nft_wasm_hash(e: &Env, nft_wasm_hash: BytesN<32>) {
-    let key = DataKey::CoinEmitterWasmHash;
+    let key = DataKey::NFTWasmHash;
     e.storage().instance().set(&key, &nft_wasm_hash);
     extend_instance_ttl(&e);
 }
 
 pub fn put_subscriptions_wasm_hash(e: &Env, subscriptions_wasm_hash: BytesN<32>) {
-    let key = DataKey::CoinEmitterWasmHash;
+    let key = DataKey::SubscriptionsWasmHash;
     e.storage().instance().set(&key, &subscriptions_wasm_hash);
     extend_instance_ttl(&e);
 }
