@@ -42,9 +42,13 @@ fn create_premium_club() {
     let nft_token_name = &String::from_str(&test.env, "NFTName");// nft_token_name: String,
     let nft_symbol = &String::from_str(&test.env, "NFTSymbol");// nft_symbol: String,
 
-    assert_eq!(test.contract.all_premium_clubs_length(), 0);
+    let mut got_premium_club_exist = test.contract.premium_club_exist(
+        &test.admin,
+        &sport_club_name,
+    );
+    assert_eq!(got_premium_club_exist, false);
 
-    let res = test.contract.create_premium_club(
+    let premium_club_addresses = test.contract.create_premium_club(
         &test.admin,
         &sport_club_name,
         &pegged,
@@ -53,6 +57,20 @@ fn create_premium_club() {
         &nft_symbol
     );
 
-    // assert_eq!(test.contract.all_premium_clubs_length(), 1);
+    assert_eq!(test.contract.all_premium_clubs_length(), 1);
+    assert_eq!(test.contract.all_addresses(&1), premium_club_addresses);
+
+    let got_premium_club_addresses = test.contract.get_premium_club_addresses(
+        &test.admin,
+        &sport_club_name,
+    );
+
+    assert_eq!(got_premium_club_addresses, premium_club_addresses);
+
+    got_premium_club_exist = test.contract.premium_club_exist(
+        &test.admin,
+        &sport_club_name,
+    );
+    assert_eq!(got_premium_club_exist, true); 
 }
 
