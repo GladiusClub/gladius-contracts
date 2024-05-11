@@ -112,6 +112,4 @@ impl<'a> GladiusFactoryTest<'a> {
 
 mod initialize;
 mod premium_clubs;
-// mod events;
-
-// pub mod deterministic;
+mod events;

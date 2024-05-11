@@ -58,7 +58,7 @@ fn create_premium_club() {
     );
 
     assert_eq!(test.contract.all_premium_clubs_length(), 1);
-    assert_eq!(test.contract.all_addresses(&1), premium_club_addresses);
+    assert_eq!(test.contract.all_addresses(&0), premium_club_addresses);
 
     let got_premium_club_addresses = test.contract.get_premium_club_addresses(
         &test.admin,
