@@ -1,7 +1,7 @@
 # D1: Gladius and Clubs Coins Tokenomics Model: 
 Formulate a sustainable economic model wherein parents contribute payments to clubs for student fees, with a portion allocated to a pool. Clubs can mint ClubCoins and NFT’s to students. Students can subsequently trade their NFTs or Coins for physical goods or for other valuable NFT’s. This deliverable includes the technical description of every smart contract that will be developed.
 
-**Reviewer Instructions**: The Tokenomics Model and Techincal report will be shared on the Gladius GitHub repository and on the Stellar Discord Channel.
+**Reviewer Instructions**: The Tokenomics Model and Techincal report [is shared on the Gladius GitHub repository](https://gladiusclub.gitbook.io/docs) and on the [Stellar Discord Channel](https://discord.com/channels/897514728459468821/1203612889865261147).
 
 **Status**: Done
 
