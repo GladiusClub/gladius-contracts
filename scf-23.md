@@ -14,7 +14,10 @@ Develop a contract that handles monthly parental payments, divides the payment b
 - [x] Enables the minting of Gladius Coins for students
 - [x] Facilitates the minting of NFTs
       
-**Reviewer Instructions**:  Code will be available in Gladius GitHub as OpenSource.
+**Reviewer Instructions**:  
+Review the [documentation](https://gladiusclub.gitbook.io/docs/3_gladiussubscriptionscontract)
+
+Token Distribution Smart Contract [code is available in Gladius GitHub](https://github.com/GladiusClub/gladius-contracts/tree/main/contracts/gladius-subscriptions) as OpenSource
 
 **Status**: Done
 
@@ -24,7 +27,10 @@ Develop a contract that handles monthly parental payments, divides the payment b
 - [x] implement Pinata for IPFS descentralize image storage. 
 - [x] Implementation of a lazy minting technique in Soroban
 
-**Reviewer Instructions**:  Code will be available in Gladius GitHub as OpenSource
+**Reviewer Instructions**:  
+Review the [documentation](https://gladiusclub.gitbook.io/docs/4_gladiusnftcontract)
+
+Gladius NFT smart contract [code is available in Gladius GitHub](https://github.com/GladiusClub/gladius-contracts/tree/main/contracts/gladius-nft) as OpenSource
 
 **Status**: Done
 
@@ -32,9 +38,11 @@ Develop a contract that handles monthly parental payments, divides the payment b
 # D4: Token Distribution Factory Contract
 The Factory Contract facilitates Clubs in generating personalized Token Distribution Smart Contracts, enabling them to issue branded coins and NFTs to students, receiving premium payments and deploying both a Premium Branded Coin and Token Distribution Smart Contract.
 
-**Reviewer Instructions**: Code will be available in Gladius GitHub as OpenSource
+**Reviewer Instructions**: 
 
-**Status**: In Progress
+Token Distribution Factory Contract [code is available in Gladius GitHub](https://github.com/GladiusClub/gladius-contracts/tree/main/contracts/gladius-factory) as OpenSource
+
+**Status**: Done
 
 # D5:  User Wallets creations
 - [x] wallet creation and secure private key storage when they log in into our platform.
