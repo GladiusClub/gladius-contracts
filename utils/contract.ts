@@ -13,7 +13,7 @@ import {
   scValToNative,
   xdr,
   nativeToScVal
-} from 'stellar-sdk';
+} from '@stellar/stellar-sdk';
 import { fileURLToPath } from 'url';
 import { AddressBook, ContractNames, WasmKeys } from './address_book.js';
 import { config } from './env_config.js';

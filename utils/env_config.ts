@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import * as fs from 'fs';
 import path from 'path';
-import { Keypair, SorobanRpc } from 'stellar-sdk';
+import { Keypair, SorobanRpc } from '@stellar/stellar-sdk';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -51,6 +51,15 @@ class EnvConfig {
     const fileContents = fs.readFileSync(path.join(__dirname, '../../config.json'), 'utf8');
     const configs: Config = JSON.parse(fileContents);
 
+      // in case if .env wasn't loaded
+      //const result = dotenv.config({ path: path.join(__dirname, '../../.env') });
+      //console.log(result); // Check for any errors or parsed values
+
+      //if (result.parsed) {
+      //  process.env = { ...process.env, ...result.parsed };
+     // }
+
+    
     let rpc_url, friendbot_url, passphrase;
 
     const networkConfig = configs.networkConfig.find((config) => config.network === network);
@@ -75,7 +84,7 @@ class EnvConfig {
       }
       
       const admin = process.env.GLADIUS_ADMIN_SECRET;
-      
+
 
     const allowHttp = network === 'standalone';
 

@@ -1,4 +1,4 @@
-import { Address, Contract, Keypair, nativeToScVal } from 'stellar-sdk';
+import { Address, Contract, Keypair, nativeToScVal } from '@stellar/stellar-sdk';
 import { AddressBook } from '../utils/address_book.js';
 import { bumpContractCode, deploySorobanToken, installContract } from '../utils/contract.js';
 import { config } from '../utils/env_config.js';

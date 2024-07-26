@@ -105,6 +105,75 @@ echo "$PAYMENT_TOKEN_ADMIN_SECRET" > .soroban/token_admin_secret
 echo "$PEGGED_TOKEN_ADMIN_ADDRESS" > .soroban/token_admin_address
 
 
+# GLADIUS SPORTS CLUB ADMIN
+if [[ -n "$SPORT_CLUB_SECRET" ]]; then
+  echo "  Environmental variable SPORT_CLUB_SECRET is already set"
+  echo "  Setting up the account with this secret key"
+  echo "secret_key = \"$SPORT_CLUB_SECRET\"" > .soroban/identity/club-admin.toml
+  else
+    echo "  Environmental variable SPORT_CLUB_SECRET is not set"
+    if !(soroban config identity ls | grep club-admin 2>&1 >/dev/null); then
+      echo Create the club-admin identity
+      soroban keys generate --no-fund --network $NETWORK club-admin
+    fi
+fi
+SPORT_CLUB_SECRET="$(soroban keys show club-admin)"
+SPORT_CLUB_ADDRESS="$(soroban keys address club-admin)"
+
+echo "  SPORT_CLUB_SECRET: $SPORT_CLUB_SECRET"
+echo "  SPORT_CLUB_ADDRESS: $SPORT_CLUB_ADDRESS"
+echo "   "
+
+echo "$SPORT_CLUB_SECRET" > .soroban/club_admin_secret
+echo "$SPORT_CLUB_ADDRESS" > .soroban/club_admin_address
+
+# PARENT
+if [[ -n "$PARENT_SECRET" ]]; then
+  echo "  Environmental variable PARENT_SECRET is already set"
+  echo "  Setting up the account with this secret key"
+  echo "secret_key = \"$PARENT_SECRET\"" > .soroban/identity/club-parent.toml
+  else
+    echo "  Environmental variable PARENT_SECRET is not set"
+    if !(soroban config identity ls | grep club-parent 2>&1 >/dev/null); then
+      echo Create the club-parent identity
+      soroban keys generate --no-fund --network $NETWORK club-parent
+    fi
+fi
+PARENT_SECRET="$(soroban keys show club-parent)"
+PARENT_ADDRESS="$(soroban keys address club-parent)"
+
+echo "  PARENT_SECRET: $PARENT_SECRET"
+echo "  PARENT_ADDRESS: $PARENT_ADDRESS"
+echo "   "
+
+echo "$PARENT_SECRET" > .soroban/parent_admin_secret
+echo "$PARENT_ADDRESS" > .soroban/parent_admin_address
+
+# STUDENT
+if [[ -n "$STUDENT_SECRET" ]]; then
+  echo "  Environmental variable STUDENT_SECRET is already set"
+  echo "  Setting up the account with this secret key"
+  echo "secret_key = \"$STUDENT_SECRET\"" > .soroban/identity/club-STUDENT.toml
+  else
+    echo "  Environmental variable STUDENT_SECRET is not set"
+    if !(soroban config identity ls | grep club-STUDENT 2>&1 >/dev/null); then
+      echo Create the club-STUDENT identity
+      soroban keys generate --no-fund --network $NETWORK club-STUDENT
+    fi
+fi
+STUDENT_SECRET="$(soroban keys show club-STUDENT)"
+STUDENT_ADDRESS="$(soroban keys address club-STUDENT)"
+
+echo "  STUDENT_SECRET: $STUDENT_SECRET"
+echo "  STUDENT_ADDRESS: $STUDENT_ADDRESS"
+echo "   "
+
+echo "$STUDENT_SECRET" > .soroban/club_student_secret
+echo "$STUDENT_ADDRESS" > .soroban/club_student_address
+
+
+
+
 # NEW_KEYS_OBJECT="{ \"network\": \"$NETWORK\", \
 # \"gladius_admin_public\": \"$GLADIUS_ADMIN_ADDRESS\", \
 # \"gladius_admin_secret\": \"$GLADIUS_ADMIN_SECRET\" \
@@ -160,4 +229,19 @@ echo "   "
 echo Funding token-admin account from friendbot
 echo This will fail if the account already exists, but it\' still be fine.
 curl  -X POST "$FRIENDBOT_URL?addr=$PEGGED_TOKEN_ADMIN_ADDRESS" > /dev/null
+echo -e "${RED}===${NC}"
+echo "   "
+echo Funding club-admin account from friendbot
+echo This will fail if the account already exists, but it\' still be fine.
+curl  -X POST "$FRIENDBOT_URL?addr=$SPORT_CLUB_ADDRESS" > /dev/null
+echo -e "${RED}===${NC}"
+echo "   "
+echo Funding club-parent account from friendbot
+echo This will fail if the account already exists, but it\' still be fine.
+curl  -X POST "$FRIENDBOT_URL?addr=$PARENT_ADDRESS" > /dev/null
+echo -e "${RED}===${NC}"
+echo "   "
+echo Funding club-STUDENT account from friendbot
+echo This will fail if the account already exists, but it\' still be fine.
+curl  -X POST "$FRIENDBOT_URL?addr=$STUDENT_ADDRESS" > /dev/null
 echo -e "${RED}===${NC}"
